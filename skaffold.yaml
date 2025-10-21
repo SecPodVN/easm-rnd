@@ -1,0 +1,45 @@
+apiVersion: skaffold/v4beta7
+kind: Config
+metadata:
+  name: easm-api
+build:
+  artifacts:
+    - image: easm-api
+      context: src/backend
+      docker:
+        dockerfile: Dockerfile
+  local:
+    push: false
+    useBuildkit: true
+deploy:
+  helm:
+    releases:
+      - name: easm-api
+        chartPath: src/charts/easm-api
+        valuesFiles:
+          - src/charts/easm-api/values.yaml
+        setValues:
+          image.repository: easm-api
+          image.tag: latest
+        createNamespace: true
+portForward:
+  - resourceType: service
+    resourceName: easm-api
+    port: 8000
+    localPort: 8000
+profiles:
+  - name: dev
+    activation:
+      - command: dev
+    deploy:
+      helm:
+        releases:
+          - name: easm-api
+            chartPath: src/charts/easm-api
+            valuesFiles:
+              - src/charts/easm-api/values.yaml
+            setValues:
+              image.repository: easm-api
+              image.tag: latest
+              django.debug: "True"
+              replicaCount: 1

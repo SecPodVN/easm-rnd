@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "easm-api"
+version = "1.0.0-dev"
+description = "EASM Django REST API"
+authors = ["Thinh Huynh-Doan <thinh.huynh@secpod.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.13"
+django = "^5.2"
+djangorestframework = "^3.15"
+djangorestframework-simplejwt = "^5.3"
+psycopg2-binary = "^2.9"
+redis = "^5.0"
+django-redis = "^5.4"
+django-cors-headers = "^4.3"
+python-decouple = "^3.8"
+gunicorn = "^21.2"
+drf-spectacular = "^0.27"
+django-filter = "^23.5"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.1"
+flake8 = "^7.0"
+pytest = "^7.4"
+pytest-django = "^4.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

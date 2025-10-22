@@ -13,7 +13,7 @@ services:
     ports:
       - "5433:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-easm_user}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-easm_user} -d ${POSTGRES_DB:-easm_db}"]
       interval: 10s
       timeout: 5s
       retries: 5

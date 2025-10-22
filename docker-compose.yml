@@ -1,11 +1,10 @@
-version: '3.9'
-
 services:
   postgres:
     image: postgres:18-alpine
     container_name: easm-postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./src/backend/init-easm-user.sql:/docker-entrypoint-initdb.d/init-easm-user.sql
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-easm_db}
       - POSTGRES_USER=${POSTGRES_USER:-easm_user}
@@ -34,7 +33,7 @@ services:
   api:
     build: ./src/backend
     container_name: easm-api
-    command: sh /app/start-api.sh
+    command: bash /app/start-api.sh
     volumes:
       - ./src/backend:/app
       - static_volume:/app/staticfiles

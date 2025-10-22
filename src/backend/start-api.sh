@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# Wait for postgres
-echo "Waiting for PostgreSQL..."
-while ! nc -z $POSTGRES_HOST ${POSTGRES_PORT:-5432}; do
-  sleep 0.1
-done
-echo "PostgreSQL started"
+# # Wait for postgres
+# echo "Waiting for PostgreSQL..."
+# while ! nc -z $POSTGRES_HOST ${POSTGRES_PORT:-5432}; do
+#   sleep 0.1
+# done
+# echo "PostgreSQL started"
 
-# Wait for redis
-echo "Waiting for Redis..."
-while ! nc -z $REDIS_HOST ${REDIS_PORT:-6379}; do
-  sleep 0.1
-done
-echo "Redis started"
+# # Wait for redis
+# echo "Waiting for Redis..."
+# while ! nc -z $REDIS_HOST ${REDIS_PORT:-6379}; do
+#   sleep 0.1
+# done
+# echo "Redis started"
 
 # Run migrations
 echo "Running database migrations..."

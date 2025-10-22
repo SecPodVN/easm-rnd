@@ -1,0 +1,62 @@
+apiVersion: skaffold/v4beta7
+kind: Config
+# metadata:
+#   name: easm-api-docker
+#   annotations:
+#     description: "EASM API using Docker Compose for local development"
+
+# Build configuration
+build:
+  artifacts:
+    - image: easm-api
+      context: src/backend
+      docker:
+        dockerfile: Dockerfile
+        buildArgs:
+          POETRY_VERSION: "2.2.0"
+          DJANGO_USER: "django"
+          DJANGO_UID: "1000"
+          DJANGO_GID: "1000"
+      sync:
+        manual:
+          - src: "**/*.py"
+            dest: /app
+  local:
+    push: false
+    useBuildkit: true
+    concurrency: 1
+
+# Deploy using Docker Compose
+# Note: Docker Compose automatically loads .env file from the root directory
+deploy:
+  docker:
+    useCompose: true
+  logs:
+    prefix: container
+
+# Verify deployment health
+verify:
+  - name: health-check
+    container:
+      name: easm-api-health-check
+      image: easm-api
+      command: ["python", "manage.py", "check"]
+  - name: migrations-check
+    container:
+      name: easm-api-migrations-check
+      image: easm-api
+      command: ["python", "manage.py", "showmigrations"]
+  - name: api-endpoint-test
+    container:
+      name: easm-api-endpoint-test
+      image: easm-api
+      command: ["curl", "-f", "http://localhost:8000/health/"]
+
+# # Custom test configuration
+# test:
+#   - image: easm-api
+#     custom:
+#       - command: docker compose exec -T api python manage.py test
+#       - command: docker compose exec -T api pytest
+#       - command: docker compose exec -T api flake8 .
+#       - command: docker compose exec -T api black --check .

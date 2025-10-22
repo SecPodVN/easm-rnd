@@ -1,0 +1,77 @@
+apiVersion: skaffold/v4beta7
+kind: Config
+metadata:
+  name: easm-api-v1
+  annotations:
+    description: "EASM API with Skaffold using Docker containers"
+
+# Build configuration
+build:
+  artifacts:
+    # Main API application
+    - image: easm-api
+      context: src/backend
+      docker:
+        dockerfile: Dockerfile
+        buildArgs:
+          POETRY_VERSION: "2.2.0"
+          DJANGO_USER: "django"
+          DJANGO_UID: "1000"
+          DJANGO_GID: "1000"
+      sync:
+        manual:
+          - src: "**/*.py"
+            dest: /app
+  local:
+    push: false
+    useBuildkit: true
+    concurrency: 1
+
+# Deploy using kubectl to create Docker containers as pods
+deploy:
+  kubectl:
+    manifests:
+      - k8s/postgres-deployment.yaml
+      - k8s/redis-deployment.yaml
+      - k8s/api-deployment.yaml
+
+# Port forwarding
+portForward:
+  - resourceType: deployment
+    resourceName: easm-postgres
+    namespace: default
+    port: 5432
+    localPort: 5433
+  - resourceType: deployment
+    resourceName: easm-redis
+    namespace: default
+    port: 6379
+    localPort: 6379
+  - resourceType: deployment
+    resourceName: easm-api
+    namespace: default
+    port: 8000
+    localPort: 8000
+
+# Verify deployment health
+verify:
+  - name: postgres-health-check
+    container:
+      name: easm-postgres-health
+      image: postgres:18-alpine
+      command: ["pg_isready", "-h", "localhost", "-p", "5432"]
+  - name: redis-health-check
+    container:
+      name: easm-redis-health
+      image: redis:8-alpine
+      command: ["redis-cli", "-h", "localhost", "-p", "6379", "ping"]
+  - name: api-health-check
+    container:
+      name: easm-api-health
+      image: easm-api
+      command: ["python", "manage.py", "check"]
+  - name: api-endpoint-test
+    container:
+      name: easm-api-endpoint
+      image: easm-api
+      command: ["curl", "-f", "http://localhost:8000/health/"]

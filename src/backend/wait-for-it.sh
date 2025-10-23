@@ -1,5 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Use this script to test if a given TCP host/port are available
+# Compatible with Linux, macOS, and WSL
 
 WAITFORIT_cmdname=${0##*/}
 
@@ -180,4 +181,3 @@ if [[ $WAITFORIT_CLI != "" ]]; then
 else
     exit $WAITFORIT_RESULT
 fi
- 

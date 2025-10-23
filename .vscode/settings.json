@@ -1,0 +1,265 @@
+{
+  // Python & Django Settings
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.envFile": "${workspaceFolder}/.env",
+  "python.terminal.activateEnvironment": true,
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.diagnosticMode": "workspace",
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.flake8Args": [
+    "--max-line-length=120",
+    "--ignore=E501,W503,E203"
+  ],
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length=120"],
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": ["."],
+
+  // Django specific
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.rulers": [120],
+    "editor.tabSize": 4
+  },
+  "emmet.includeLanguages": {
+    "django-html": "html"
+  },
+
+  // JavaScript & TypeScript (React) Settings
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.tabSize": 2,
+    "editor.rulers": [100]
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.tabSize": 2,
+    "editor.rulers": [100]
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.tabSize": 2,
+    "editor.rulers": [100]
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.tabSize": 2,
+    "editor.rulers": [100]
+  },
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "javascript.preferences.importModuleSpecifier": "relative",
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  // Shell Script Settings
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format",
+    "editor.formatOnSave": false,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "shellformat.flag": "-i 2 -ci",
+  "shellcheck.enable": true,
+  "shellcheck.run": "onSave",
+
+  // General Editor Settings
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.trimAutoWhitespace": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.eol": "\n",
+
+  // File Exclusions
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/.pytest_cache": true,
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/build": true,
+    "**/dist": true
+  },
+  "files.watcherExclude": {
+    "**/__pycache__/**": true,
+    "**/venv/**": true,
+    "**/.venv/**": true,
+    "**/node_modules/**": true
+  },
+  "search.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.venv": true,
+    "**/venv": true,
+    "**/.git": true
+  },
+
+  // Docker & Kubernetes
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+
+  // YAML Settings (Kubernetes, Helm, Docker Compose, etc.)
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.autoIndent": "advanced",
+    "editor.quickSuggestions": {
+      "other": true,
+      "comments": false,
+      "strings": true
+    },
+    "editor.rulers": [80],
+    "editor.wordWrap": "off",
+    "diffEditor.ignoreTrimWhitespace": false
+  },
+
+  // YAML Language Server Settings
+  "yaml.format.enable": true,
+  "yaml.format.singleQuote": false,
+  "yaml.format.bracketSpacing": true,
+  "yaml.format.proseWrap": "preserve",
+  "yaml.format.printWidth": 80,
+  "yaml.validate": true,
+  "yaml.hover": true,
+  "yaml.completion": true,
+  "yaml.customTags": [
+    "!Base64",
+    "!Cidr",
+    "!FindInMap sequence",
+    "!GetAtt",
+    "!GetAZs",
+    "!ImportValue",
+    "!Join sequence",
+    "!Ref",
+    "!Select sequence",
+    "!Split sequence",
+    "!Sub"
+  ],
+
+  // YAML Schema Associations
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.{yml,yaml}",
+    "https://json.schemastore.org/github-action.json": "action.{yml,yaml}",
+    "https://json.schemastore.org/ansible-stable-2.9.json": "roles/tasks/*.{yml,yaml}",
+    "https://json.schemastore.org/prettierrc.json": ".prettierrc.{yml,yaml}",
+    "https://json.schemastore.org/stylelintrc.json": ".stylelintrc.{yml,yaml}",
+    "https://json.schemastore.org/circleciconfig.json": ".circleci/**/*.{yml,yaml}",
+    "https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json": [
+      "docker-compose*.{yml,yaml}",
+      "compose*.{yml,yaml}"
+    ],
+    "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0-standalone-strict/all.json": [
+      "k8s/**/*.yaml",
+      "kubernetes/**/*.yaml",
+      "**/k8s/**/*.yaml",
+      "**/kubernetes/**/*.yaml"
+    ],
+    "https://json.schemastore.org/helmfile.json": "helmfile.{yml,yaml}",
+    "https://json.schemastore.org/kustomization.json": "kustomization.{yml,yaml}",
+    "https://json.schemastore.org/helmvalues.json": [
+      "**/values.yaml",
+      "**/values.*.yaml"
+    ],
+    "https://json.schemastore.org/chart.json": "Chart.yaml",
+    "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.29.0-standalone-strict/all.json": [
+      "helm/**/templates/**/*.yaml",
+      "src/charts/**/templates/**/*.yaml"
+    ]
+  },
+
+  // Kubernetes & Helm specific
+  "vs-kubernetes": {
+    "vs-kubernetes.helm-path.linux": "/usr/local/bin/helm",
+    "vs-kubernetes.helm-path.mac": "/usr/local/bin/helm",
+    "vs-kubernetes.helm-path.windows": "helm",
+    "vs-kubernetes.kubectl-path.linux": "/usr/local/bin/kubectl",
+    "vs-kubernetes.kubectl-path.mac": "/usr/local/bin/kubectl",
+    "vs-kubernetes.kubectl-path.windows": "kubectl",
+    "vs-kubernetes.minikube-path.linux": "/usr/local/bin/minikube",
+    "vs-kubernetes.minikube-path.mac": "/usr/local/bin/minikube",
+    "vs-kubernetes.minikube-path.windows": "minikube",
+    "vs-kubernetes.namespace": "",
+    "checkForMinikubeUpgrade": true,
+    "imageBuildTool": "Docker"
+  },
+
+  // File associations for YAML variants
+  "files.associations": {
+    "**/*.html": "html",
+    "**/templates/**/*.html": "django-html",
+    "**/templates/**/*": "django-txt",
+    "**/requirements{/**,*}.{txt,in}": "pip-requirements",
+    "*.yaml": "yaml",
+    "*.yml": "yaml",
+    "skaffold.yaml": "yaml",
+    "docker-compose*.yml": "yaml",
+    "docker-compose*.yaml": "yaml",
+    "Chart.yaml": "yaml",
+    "values*.yaml": "yaml",
+    "helmfile*.yaml": "yaml",
+    "kustomization.yaml": "yaml",
+    ".github/workflows/*.yml": "yaml",
+    ".github/workflows/*.yaml": "yaml"
+  },
+
+  // Git
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+
+  // Terminal
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.defaultProfile.osx": "bash",
+  "terminal.integrated.env.linux": {
+    "PYTHONPATH": "${workspaceFolder}"
+  },
+  "terminal.integrated.env.osx": {
+    "PYTHONPATH": "${workspaceFolder}"
+  },
+  "terminal.integrated.env.windows": {
+    "PYTHONPATH": "${workspaceFolder}"
+  }
+}

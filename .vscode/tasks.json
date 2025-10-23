@@ -1,0 +1,187 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Validate Kubernetes YAML",
+      "type": "shell",
+      "command": "kubectl",
+      "args": ["apply", "--dry-run=client", "--validate=true", "-f", "${file}"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Validate Helm Chart",
+      "type": "shell",
+      "command": "helm",
+      "args": ["lint", "${fileDirname}"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Render Helm Template",
+      "type": "shell",
+      "command": "helm",
+      "args": ["template", "test-release", "${fileDirname}", "--debug"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Validate Docker Compose",
+      "type": "shell",
+      "command": "docker",
+      "args": ["compose", "-f", "${file}", "config"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Validate Skaffold",
+      "type": "shell",
+      "command": "skaffold",
+      "args": ["diagnose", "--yaml-only"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Render Skaffold",
+      "type": "shell",
+      "command": "skaffold",
+      "args": ["render", "--loud"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Kubeval: Validate Kubernetes YAML",
+      "type": "shell",
+      "command": "kubeval",
+      "args": ["--strict", "${file}"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "yamllint: Lint YAML File",
+      "type": "shell",
+      "command": "yamllint",
+      "args": ["-f", "parsable", "${file}"],
+      "problemMatcher": {
+        "owner": "yamllint",
+        "fileLocation": "absolute",
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+\\[(\\w+)\\]\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Get Kubernetes Resources",
+      "type": "shell",
+      "command": "kubectl",
+      "args": ["get", "all", "-n", "${input:namespace}"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Describe Kubernetes Resource",
+      "type": "shell",
+      "command": "kubectl",
+      "args": [
+        "describe",
+        "${input:resourceType}",
+        "${input:resourceName}",
+        "-n",
+        "${input:namespace}"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "namespace",
+      "type": "promptString",
+      "description": "Enter Kubernetes namespace",
+      "default": "easm-rnd"
+    },
+    {
+      "id": "resourceType",
+      "type": "pickString",
+      "description": "Select resource type",
+      "options": [
+        "pod",
+        "deployment",
+        "service",
+        "configmap",
+        "secret",
+        "ingress",
+        "statefulset",
+        "daemonset",
+        "job",
+        "cronjob"
+      ],
+      "default": "pod"
+    },
+    {
+      "id": "resourceName",
+      "type": "promptString",
+      "description": "Enter resource name"
+    }
+  ]
+}

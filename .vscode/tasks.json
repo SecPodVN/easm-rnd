@@ -2,17 +2,6 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Fix Shell Script Line Endings",
-            "type": "shell",
-            "command": "Get-ChildItem -Path ${workspaceFolder} -Recurse -Filter *.sh | ForEach-Object { $content = Get-Content $_.FullName; $content | Set-Content -Path $_.FullName -NoNewline; Add-Content -Path $_.FullName -Value \"`n\" }",
-            "group": "build",
-            "presentation": {
-                "reveal": "always",
-                "panel": "shared"
-            },
-            "problemMatcher": []
-        },
-        {
             "label": "Fix Line Endings (using dos2unix)",
             "type": "shell",
             "command": "if (Get-Command dos2unix -ErrorAction SilentlyContinue) { Get-ChildItem -Path ${workspaceFolder} -Recurse -Filter *.sh | ForEach-Object { dos2unix $_.FullName } } else { Write-Host 'dos2unix not found. Please install it first.' }",

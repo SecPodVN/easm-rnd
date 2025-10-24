@@ -84,9 +84,9 @@ redis:
 # Django configuration
 django:
   secretKey: "change-this-to-a-random-secret-key"
+  allowedHosts: "localhost,127.0.0.1,0.0.0.0,*"
   # Use boolean for debug flag so templates render consistent types
   debug: false
-  allowedHosts: "*"
 
 # JWT configuration
 jwt:

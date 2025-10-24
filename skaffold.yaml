@@ -50,6 +50,8 @@ deploy:
         chartPath: src/charts/easm-api
         namespace: "{{.K8S_NAMESPACE}}"
         createNamespace: true
+        valuesFiles:
+          - src/charts/easm-api/values.yaml
         setValueTemplates:
           image.repository: "{{.API_IMAGE}}"
           image.tag: "{{.API_IMAGE_TAG}}"
@@ -64,7 +66,7 @@ deploy:
           redis.db: "{{.REDIS_DB}}"
           django.debug: "{{.DEBUG}}"
           django.secretKey: "{{.SECRET_KEY}}"
-          django.allowedHosts: "{{.ALLOWED_HOSTS}}"
+          #django.allowedHosts: "{{.ALLOWED_HOSTS}}"
           jwt.accessTokenLifetime: "{{.JWT_ACCESS_TOKEN_LIFETIME}}"
           jwt.refreshTokenLifetime: "{{.JWT_REFRESH_TOKEN_LIFETIME}}"
           replicaCount: "{{.K8S_REPLICA_COUNT}}"

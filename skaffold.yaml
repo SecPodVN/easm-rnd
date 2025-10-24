@@ -1,7 +1,8 @@
 apiVersion: skaffold/v4beta7
 kind: Config
 metadata:
-  name: easm-api
+  name: easm-rnd
+
 build:
   artifacts:
     - image: easm-api
@@ -11,36 +12,81 @@ build:
   local:
     push: false
     useBuildkit: true
-deploy:
 
+deploy:
   helm:
     releases:
+      # PostgreSQL from Bitnami (Latest LTS)
+      - name: postgresql
+        remoteChart: postgresql
+        repo: https://charts.bitnami.com/bitnami
+        version: "18.1.1"
+        namespace: "{{.K8S_NAMESPACE}}"
+        createNamespace: true
+        setValues:
+          auth.database: easm_db
+          auth.username: easm_user
+          auth.password: easm_password
+          primary.persistence.enabled: false
+          image.pullPolicy: IfNotPresent
+        wait: false
+
+      # Redis from Bitnami (Latest LTS)
+      - name: redis
+        remoteChart: redis
+        repo: https://charts.bitnami.com/bitnami
+        version: "23.2.1"
+        namespace: "{{.K8S_NAMESPACE}}"
+        createNamespace: true
+        setValues:
+          auth.enabled: false
+          architecture: standalone
+          master.persistence.enabled: false
+          image.pullPolicy: IfNotPresent
+        wait: false
+
+      # EASM API from local Helm chart
       - name: easm-api
         chartPath: src/charts/easm-api
-        valuesFiles:
-          - src/charts/easm-api/values.yaml
-        setValues:
-          image.repository: easm-api
-          image.tag: latest
+        namespace: "{{.K8S_NAMESPACE}}"
         createNamespace: true
+        setValueTemplates:
+          image.repository: "{{.API_IMAGE}}"
+          image.tag: "{{.API_IMAGE_TAG}}"
+          appVersion: "{{.API_APP_VERSION}}"
+          postgresql.host: "{{.POSTGRES_HOST}}"
+          postgresql.port: "{{.POSTGRES_PORT}}"
+          postgresql.database: "{{.POSTGRES_DB}}"
+          postgresql.username: "{{.POSTGRES_USER}}"
+          postgresql.password: "{{.POSTGRES_PASSWORD}}"
+          redis.host: "{{.REDIS_HOST}}"
+          redis.port: "{{.REDIS_PORT}}"
+          redis.db: "{{.REDIS_DB}}"
+          django.debug: "{{.DEBUG}}"
+          django.secretKey: "{{.SECRET_KEY}}"
+          django.allowedHosts: "{{.ALLOWED_HOSTS}}"
+          jwt.accessTokenLifetime: "{{.JWT_ACCESS_TOKEN_LIFETIME}}"
+          jwt.refreshTokenLifetime: "{{.JWT_REFRESH_TOKEN_LIFETIME}}"
+          replicaCount: "{{.K8S_REPLICA_COUNT}}"
+        setValues:
+          image.pullPolicy: Never
+          postgresql.enabled: false
+          redis.enabled: false
+        wait: false
+
 portForward:
   - resourceType: service
     resourceName: easm-api
+    namespace: "{{.K8S_NAMESPACE}}"
     port: 8000
     localPort: 8000
-profiles:
-  - name: dev
-    activation:
-      - command: dev
-    deploy:
-      helm:
-        releases:
-          - name: easm-api
-            chartPath: src/charts/easm-api
-            valuesFiles:
-              - src/charts/easm-api/values.yaml
-            setValues:
-              image.repository: easm-api
-              image.tag: latest
-              django.debug: "True"
-              replicaCount: 1
+  - resourceType: service
+    resourceName: postgresql
+    namespace: "{{.K8S_NAMESPACE}}"
+    port: 5432
+    localPort: 5432
+  - resourceType: service
+    resourceName: redis-master
+    namespace: "{{.K8S_NAMESPACE}}"
+    port: 6379
+    localPort: 6379

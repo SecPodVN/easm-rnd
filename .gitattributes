@@ -1,0 +1,66 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Force LF for shell scripts
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Force LF for Python files
+*.py text eol=lf
+
+# Force LF for JavaScript/TypeScript files
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+
+# Force LF for config files
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+.editorconfig text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Force LF for Docker files
+Dockerfile text eol=lf
+docker-compose*.yml text eol=lf
+*.dockerfile text eol=lf
+
+# Force LF for documentation
+*.md text eol=lf
+*.txt text eol=lf
+LICENSE text eol=lf
+README text eol=lf
+
+# Force LF for web files
+*.html text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.sass text eol=lf
+*.xml text eol=lf
+*.svg text eol=lf
+
+# Allow CRLF for Windows-specific files
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary

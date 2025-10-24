@@ -13,10 +13,11 @@ spec:
       {{- include "easm-api.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        app.kubernetes.io/version: {{ .Values.appVersion | quote }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "easm-api.selectorLabels" . | nindent 8 }}
     spec:
@@ -32,7 +33,7 @@ spec:
         securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
         ports:
         - name: http
           containerPort: {{ .Values.service.targetPort }}
@@ -42,22 +43,24 @@ spec:
             name: {{ include "easm-api.fullname" . }}
         - secretRef:
             name: {{ include "easm-api.fullname" . }}
+        # Allow additional env entries via values.yaml
         {{- with .Values.env }}
         env:
           {{- toYaml . | nindent 10 }}
         {{- end }}
+        # Use /health/ endpoint with trailing slash to avoid redirects
         livenessProbe:
           httpGet:
-            path: /api/docs/
-            port: http
+            path: /health/
+            port: {{ .Values.service.targetPort }}
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
-            path: /api/docs/
-            port: http
-          initialDelaySeconds: 20
-          periodSeconds: 10
+            path: /health/
+            port: {{ .Values.service.targetPort }}
+          initialDelaySeconds: 10
+          periodSeconds: 5
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

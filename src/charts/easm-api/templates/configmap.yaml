@@ -12,7 +12,7 @@ data:
   REDIS_HOST: {{ .Values.redis.host | quote }}
   REDIS_PORT: {{ .Values.redis.port | quote }}
   REDIS_DB: {{ .Values.redis.db | quote }}
-  DEBUG: {{ .Values.django.debug | quote }}
+  DEBUG: {{ .Values.django.debug | toString | quote }}
   ALLOWED_HOSTS: {{ .Values.django.allowedHosts | quote }}
   JWT_ACCESS_TOKEN_LIFETIME: {{ .Values.jwt.accessTokenLifetime | quote }}
   JWT_REFRESH_TOKEN_LIFETIME: {{ .Values.jwt.refreshTokenLifetime | quote }}

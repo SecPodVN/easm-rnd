@@ -121,7 +121,7 @@ minikube addons enable metrics-server
 minikube status
 ```
 
-### Deploy Infrastructure
+### Deploy Infra
 
 ```bash
 # Deploy PostgreSQL and Redis
@@ -309,7 +309,7 @@ curl -X DELETE http://localhost:8000/api/todos/1/ \
    ```bash
    # Check if PostgreSQL is running
    docker-compose ps postgres
-   
+
    # Check database settings in .env
    ```
 

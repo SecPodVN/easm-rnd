@@ -167,7 +167,7 @@ docker-compose exec web bash
 # Start Minikube
 minikube start
 
-# Deploy infrastructure
+# Deploy infra
 kubectl apply -f k8s/deployment.yaml
 
 # Deploy with Skaffold

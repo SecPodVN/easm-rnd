@@ -75,7 +75,7 @@ minikube start
 # 2. Enable ingress
 minikube addons enable ingress
 
-# 3. Deploy infrastructure
+# 3. Deploy infra
 kubectl apply -f k8s/deployment.yaml
 
 # 4. Build and deploy with Skaffold

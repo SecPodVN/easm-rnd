@@ -1,0 +1,47 @@
+{
+  "recommendations": [
+    // Python & Django
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.black-formatter",
+    "ms-python.flake8",
+    "ms-python.isort",
+    "batisteo.vscode-django",
+
+    // JavaScript & TypeScript (React)
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "dsznajder.es7-react-js-snippets",
+    "formulahendry.auto-rename-tag",
+    "bradlc.vscode-tailwindcss",
+
+    // Shell Script
+    "foxundermoon.shell-format",
+    "timonwong.shellcheck",
+    "mads-hartmann.bash-ide-vscode",
+
+    // Docker & Kubernetes
+    "ms-azuretools.vscode-docker",
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
+    "redhat.vscode-yaml",
+    "redhat.vscode-commons",
+
+    // Helm & YAML
+    "Tim-Koehler.helm-intellisense",
+    "technosophos.vscode-helm",
+    "actionshub.kubectl",
+    "GoogleCloudTools.cloudcode",
+
+    // Git
+    "eamodio.gitlens",
+    "mhutchie.git-graph",
+
+    // General Utilities
+    "editorconfig.editorconfig",
+    "christian-kohler.path-intellisense",
+    "visualstudioexptteam.vscodeintellicode",
+    "usernamehw.errorlens",
+    "gruntfuggly.todo-tree",
+    "ms-vscode.makefile-tools"
+  ]
+}

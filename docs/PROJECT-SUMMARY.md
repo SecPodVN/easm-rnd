@@ -140,7 +140,7 @@ poetry run python manage.py runserver
 # Start Minikube
 minikube start
 
-# Deploy infrastructure
+# Deploy infra
 kubectl apply -f k8s/deployment.yaml
 
 # Deploy with Skaffold
@@ -344,7 +344,7 @@ See **QUICKSTART.md** for common issues and solutions.
 
 ## ✨ Success!
 
-Your Django REST API is ready to use! 
+Your Django REST API is ready to use!
 
 **Access Points:**
 - API: http://localhost:8000/api/todos/

@@ -1,18 +1,36 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e
 
-# # Wait for postgres
-# echo "Waiting for PostgreSQL..."
-# while ! nc -z $POSTGRES_HOST ${POSTGRES_PORT:-5432}; do
-#   sleep 0.1
-# done
-# echo "PostgreSQL started"
+# Wait for PostgreSQL
+echo "Waiting for PostgreSQL at ${POSTGRES_HOST:-localhost}:${POSTGRES_PORT:-5432}..."
+timeout=30
+count=0
+until nc -z "${POSTGRES_HOST:-localhost}" "${POSTGRES_PORT:-5432}" 2>/dev/null || [ $count -eq $timeout ]; do
+  count=$((count + 1))
+  echo "  Attempt $count/$timeout..."
+  sleep 1
+done
 
-# # Wait for redis
-# echo "Waiting for Redis..."
-# while ! nc -z $REDIS_HOST ${REDIS_PORT:-6379}; do
-#   sleep 0.1
-# done
-# echo "Redis started"
+if [ $count -eq $timeout ]; then
+  echo "ERROR: PostgreSQL not available after ${timeout}s"
+  exit 1
+fi
+echo "PostgreSQL is ready!"
+
+# Wait for Redis
+echo "Waiting for Redis at ${REDIS_HOST:-localhost}:${REDIS_PORT:-6379}..."
+count=0
+until nc -z "${REDIS_HOST:-localhost}" "${REDIS_PORT:-6379}" 2>/dev/null || [ $count -eq $timeout ]; do
+  count=$((count + 1))
+  echo "  Attempt $count/$timeout..."
+  sleep 1
+done
+
+if [ $count -eq $timeout ]; then
+  echo "ERROR: Redis not available after ${timeout}s"
+  exit 1
+fi
+echo "Redis is ready!"
 
 # Run migrations
 echo "Running database migrations..."

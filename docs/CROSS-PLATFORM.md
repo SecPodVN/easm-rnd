@@ -10,8 +10,9 @@ All shell scripts use `#!/usr/bin/env bash` shebang for maximum compatibility.
 
 Run shell scripts directly:
 ```bash
-chmod +x start-skaffold.sh
-./start-skaffold.sh
+# Make scripts executable
+chmod +x skaffold.sh
+./skaffold.sh
 ```
 
 ### Windows (WSL)
@@ -19,14 +20,19 @@ chmod +x start-skaffold.sh
 1. Install WSL2: https://docs.microsoft.com/en-us/windows/wsl/install
 2. Run scripts in WSL terminal:
 ```bash
-./start-skaffold.sh
+```bash
+# Linux/macOS
+./skaffold.sh
+```
+
+**PowerShell (Windows):**
 ```
 
 ### Windows (PowerShell)
 
 Use PowerShell scripts (`.ps1`) instead:
 ```powershell
-.\start-skaffold.ps1
+.\skaffold.ps1
 ```
 
 ## Line Endings

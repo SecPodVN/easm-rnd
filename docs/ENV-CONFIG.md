@@ -26,11 +26,13 @@ Set environment variables for Docker Compose:
 
 ### Kubernetes/Skaffold
 ```bash
-# Windows PowerShell
-.\start-skaffold.ps1
+```powershell
+# Windows
+.\skaffold.ps1
 
-# Linux/Mac bash
-./start-skaffold.sh
+# Linux/macOS
+./skaffold.sh
+```
 ```
 Set environment variables for Kubernetes:
 - `POSTGRES_HOST=postgresql`

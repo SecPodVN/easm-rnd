@@ -213,7 +213,7 @@ if [ $errors -eq 0 ]; then
   echo "6. Access API: http://localhost:8000/api/docs/"
   echo ""
   echo -e "${CYAN}For Kubernetes/Skaffold deployment:${NC}"
-  echo "1. Run: ./start-skaffold.sh"
+  echo "1. Run: ./skaffold.sh"
   echo ""
   echo -e "${CYAN}For detailed instructions, see QUICKSTART.md${NC}"
 else

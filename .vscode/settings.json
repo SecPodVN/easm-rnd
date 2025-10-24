@@ -221,10 +221,33 @@
     "vs-kubernetes.minikube-path.linux": "/usr/local/bin/minikube",
     "vs-kubernetes.minikube-path.mac": "/usr/local/bin/minikube",
     "vs-kubernetes.minikube-path.windows": "minikube",
-    "vs-kubernetes.namespace": "",
+    "vs-kubernetes.namespace": "easm-rnd",
     "checkForMinikubeUpgrade": true,
     "imageBuildTool": "Docker"
   },
+
+  // Helm Language Server Settings
+  "helm-ls.yamlls.enabled": true,
+  "helm-ls.yamlls.diagnosticsLimit": 50,
+  "helm-ls.yamlls.showDiagnosticsDirectly": false,
+  "helm-ls.yamlls.path": "yaml-language-server",
+  "helm-ls.yamlls.config": {
+    "schemas": {
+      "kubernetes": "templates/**/*.yaml"
+    },
+    "completion": true,
+    "hover": true,
+    "validate": true
+  },
+
+  // Helm Preview & Linting
+  "helm.lintFileOnSave": true,
+  "helm.valuesFilesForLinting": [
+    "values.yaml",
+    "values-dev.yaml",
+    "values-staging.yaml",
+    "values-prod.yaml"
+  ],
 
   // File associations for YAML variants
   "files.associations": {
@@ -238,11 +261,13 @@
     "docker-compose*.yml": "yaml",
     "docker-compose*.yaml": "yaml",
     "Chart.yaml": "yaml",
-    "values*.yaml": "yaml",
+    "values*.yaml": "helm",
     "helmfile*.yaml": "yaml",
     "kustomization.yaml": "yaml",
     ".github/workflows/*.yml": "yaml",
-    ".github/workflows/*.yaml": "yaml"
+    ".github/workflows/*.yaml": "yaml",
+    "**/charts/**/templates/**/*.yaml": "helm",
+    "**/charts/**/templates/**/*.tpl": "helm"
   },
 
   // Git

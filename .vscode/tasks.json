@@ -43,6 +43,106 @@
       }
     },
     {
+      "label": "Helm: Template with Values",
+      "type": "shell",
+      "command": "helm",
+      "args": [
+        "template",
+        "${input:releaseName}",
+        "${input:chartPath}",
+        "--values",
+        "${input:valuesFile}",
+        "--debug"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Helm: Dry-Run Install",
+      "type": "shell",
+      "command": "helm",
+      "args": [
+        "install",
+        "${input:releaseName}",
+        "${input:chartPath}",
+        "--dry-run",
+        "--debug",
+        "--namespace",
+        "${input:namespace}"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Helm: Show Computed Values",
+      "type": "shell",
+      "command": "helm",
+      "args": ["show", "values", "${input:chartPath}"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Helm: Get Manifest",
+      "type": "shell",
+      "command": "helm",
+      "args": [
+        "get",
+        "manifest",
+        "${input:releaseName}",
+        "--namespace",
+        "${input:namespace}"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Helm: Get Values",
+      "type": "shell",
+      "command": "helm",
+      "args": [
+        "get",
+        "values",
+        "${input:releaseName}",
+        "--namespace",
+        "${input:namespace}"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Helm: Lint All Charts",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "for chart in src/charts/*; do helm lint $chart; done"],
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-Command",
+          "Get-ChildItem -Path src/charts -Directory | ForEach-Object { helm lint $_.FullName }"
+        ]
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
       "label": "Validate Docker Compose",
       "type": "shell",
       "command": "docker",
@@ -182,6 +282,30 @@
       "id": "resourceName",
       "type": "promptString",
       "description": "Enter resource name"
+    },
+    {
+      "id": "releaseName",
+      "type": "promptString",
+      "description": "Enter Helm release name",
+      "default": "easm-api"
+    },
+    {
+      "id": "chartPath",
+      "type": "promptString",
+      "description": "Enter chart path",
+      "default": "src/charts/easm-api"
+    },
+    {
+      "id": "valuesFile",
+      "type": "pickString",
+      "description": "Select values file",
+      "options": [
+        "src/charts/easm-api/values.yaml",
+        "src/charts/easm-api/values-dev.yaml",
+        "src/charts/easm-api/values-staging.yaml",
+        "src/charts/easm-api/values-prod.yaml"
+      ],
+      "default": "src/charts/easm-api/values.yaml"
     }
   ]
 }

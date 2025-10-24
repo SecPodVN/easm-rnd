@@ -6,17 +6,17 @@ A modern monorepo application for External Attack Surface Management (EASM) Rese
 
 ```
 easm-rnd/
-├── backend/              # Django REST API application
+├── backend/             # EASM application leverage on Django
 │   ├── apps/            # Django applications
 │   ├── config/          # Project configuration
 │   ├── pyproject.toml   # Poetry dependencies
-│   └── manage.py
+│   └── manage.py        # Manage command inside app
 ├── frontend/            # React TypeScript application
 │   ├── src/
 │   ├── public/
 │   ├── package.json
 │   └── tsconfig.json
-├── infra/               # Kubernetes & deployment configs
+├── infra/              # Kubernetes & deployment configs
 │   ├── helm/           # Helm charts
 │   ├── docker/         # Dockerfiles
 │   └── k8s/            # Kubernetes manifests
@@ -37,7 +37,7 @@ easm-rnd/
 | Django REST Framework         | 3.15+   | RESTful API toolkit               |
 | djangorestframework-simplejwt | 5.3+    | JWT authentication                |
 | Poetry                        | 2.2+    | Dependency management             |
-| PostgreSQL                    | 16+     | Primary database                  |
+| PostgreSQL                    | 18+     | Primary database                  |
 | psycopg2-binary               | 2.9+    | PostgreSQL adapter for Python     |
 | Redis                         | 7.4+    | Caching and session store         |
 | redis (Python)                | 5.0+    | Redis Python client               |

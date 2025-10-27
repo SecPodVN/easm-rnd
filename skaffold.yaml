@@ -92,8 +92,3 @@ portForward:
     namespace: "{{.K8S_NAMESPACE}}"
     port: 6379
     localPort: 6379
-profiles:
-  - name: profile-prod
-    requiresAllActivations: false
-    patches:
-      - op: replace

@@ -57,14 +57,10 @@ deploy:
           image.tag: "{{.API_IMAGE_TAG}}"
           appVersion: "{{.API_APP_VERSION}}"
           postgresql.host: "{{.POSTGRES_HOST}}"
-          postgresql.port: "{{.POSTGRES_PORT}}"
           postgresql.database: "{{.POSTGRES_DB}}"
           postgresql.username: "{{.POSTGRES_USER}}"
           postgresql.password: "{{.POSTGRES_PASSWORD}}"
           redis.host: "{{.REDIS_HOST}}"
-          redis.port: "{{.REDIS_PORT}}"
-          redis.db: "{{.REDIS_DB}}"
-          django.debug: "{{.DEBUG}}"
           django.secretKey: "{{.SECRET_KEY}}"
           #django.allowedHosts: "{{.ALLOWED_HOSTS}}"
           jwt.accessTokenLifetime: "{{.JWT_ACCESS_TOKEN_LIFETIME}}"
@@ -74,6 +70,13 @@ deploy:
           image.pullPolicy: Never
           postgresql.enabled: false
           redis.enabled: false
+          postgresql.port: 5432
+          redis.port: 6379
+          redis.db: 0
+          django.debug: true
+          jwt.accessTokenLifetime: 60
+          jwt.refreshTokenLifetime: 1440
+          replicaCount: 1
         wait: false
 
 portForward:

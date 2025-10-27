@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'django_filters',
 
-
     # Local apps
     'apps.api.apps.ApiConfig',
     'apps.todos.apps.TodosConfig',

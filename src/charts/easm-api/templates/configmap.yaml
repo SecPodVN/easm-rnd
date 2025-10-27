@@ -1,3 +1,4 @@
+{{- if and .Values.easmApi.enabled (ne (.Values.easmApi.enabled | toString) "False") }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -5,17 +6,24 @@ metadata:
   labels:
     {{- include "easm-api.labels" . | nindent 4 }}
 data:
+  {{- if and .Values.postgresql.enabled (ne (.Values.postgresql.enabled | toString) "False") }}
   POSTGRES_HOST: {{ .Values.postgresql.host | quote }}
   POSTGRES_PORT: {{ .Values.postgresql.port | quote }}
   POSTGRES_DB: {{ .Values.postgresql.database | quote }}
   POSTGRES_USER: {{ .Values.postgresql.username | quote }}
+  {{- end }}
+  {{- if and .Values.redis.enabled (ne (.Values.redis.enabled | toString) "False") }}
   REDIS_HOST: {{ .Values.redis.host | quote }}
   REDIS_PORT: {{ .Values.redis.port | quote }}
   REDIS_DB: {{ .Values.redis.db | quote }}
+  {{- end }}
+  {{- if and .Values.mongodb.enabled (ne (.Values.mongodb.enabled | toString) "False") }}
   MONGODB_HOST: {{ .Values.mongodb.host | quote }}
   MONGODB_PORT: {{ .Values.mongodb.port | quote }}
   MONGODB_DB: {{ .Values.mongodb.database | quote }}
+  {{- end }}
   DEBUG: {{ .Values.django.debug | toString | quote }}
   ALLOWED_HOSTS: {{ .Values.django.allowedHosts | quote }}
   JWT_ACCESS_TOKEN_LIFETIME: {{ .Values.jwt.accessTokenLifetime | quote }}
   JWT_REFRESH_TOKEN_LIFETIME: {{ .Values.jwt.refreshTokenLifetime | quote }}
+{{- end }}

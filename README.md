@@ -6,17 +6,17 @@ A modern monorepo application for External Attack Surface Management (EASM) Rese
 
 ```
 easm-rnd/
-├── backend/              # Django REST API application
+├── backend/             # EASM application leverage on Django
 │   ├── apps/            # Django applications
 │   ├── config/          # Project configuration
 │   ├── pyproject.toml   # Poetry dependencies
-│   └── manage.py
+│   └── manage.py        # Manage command inside app
 ├── frontend/            # React TypeScript application
 │   ├── src/
 │   ├── public/
 │   ├── package.json
 │   └── tsconfig.json
-├── infrastructure/      # Kubernetes & deployment configs
+├── infra/              # Kubernetes & deployment configs
 │   ├── helm/           # Helm charts
 │   ├── docker/         # Dockerfiles
 │   └── k8s/            # Kubernetes manifests
@@ -29,30 +29,45 @@ easm-rnd/
 ## 🚀 Tech Stack
 
 ### Backend
-- **Python 3.12+** - Latest stable Python version
-- **Django 5.1+** - Web framework
-- **Django REST Framework 3.15+** - RESTful API toolkit
-- **Poetry 1.8+** - Dependency management
-- **PostgreSQL 16+** - Primary database
-- **Redis 7.4+** - Caching and session store
-- **RabbitMQ 3.13+** - Message broker
-- **Celery 5.4+** - Distributed task queue
+
+| Name                          | Version | Description                        |
+|-------------------------------|---------|-----------------------------------|
+| Python                        | 3.13+   | Latest stable Python version      |
+| Django                        | 5.2+    | Web framework                     |
+| Django REST Framework         | 3.15+   | RESTful API toolkit               |
+| djangorestframework-simplejwt | 5.3+    | JWT authentication                |
+| Poetry                        | 2.2+    | Dependency management             |
+| PostgreSQL                    | 18+     | Primary database                  |
+| psycopg2-binary               | 2.9+    | PostgreSQL adapter for Python     |
+| Redis                         | 7.4+    | Caching and session store         |
+| redis (Python)                | 5.0+    | Redis Python client               |
+| django-redis                  | 5.4+    | Redis cache backend for Django    |
+| Gunicorn                      | 21.2+   | WSGI HTTP Server                  |
+| drf-spectacular               | 0.27+   | OpenAPI schema generation         |
+| django-cors-headers           | 4.3+    | CORS handling                     |
+| django-filter                 | 23.5+   | Filtering support                 |
 
 ### Frontend
-- **React 18.3+** - UI library
-- **TypeScript 5.6+** - Type-safe JavaScript
-- **Vite 5.4+** - Build tool and dev server
-- **pnpm 9.12+** or **Yarn 4.5+** - Package manager
-- **React Router 6.26+** - Client-side routing
-- **TanStack Query 5.56+** - Server state management
-- **Tailwind CSS 3.4+** - Utility-first CSS
 
-### Infrastructure
-- **Docker 27.3+** - Containerization
-- **Minikube 1.34+** - Local Kubernetes cluster
-- **Skaffold 2.13+** - Local development workflow
-- **Helm 3.16+** - Kubernetes package manager
-- **Kubernetes 1.31+** - Container orchestration
+| Name           | Version       | Description               |
+|----------------|---------------|---------------------------|
+| React          | 18.3+         | UI library                |
+| TypeScript     | 5.6+          | Type-safe JavaScript      |
+| Vite           | 5.4+          | Build tool and dev server |
+| pnpm / Yarn    | 9.12+ / 4.5+  | Package manager           |
+| React Router   | 6.26+         | Client-side routing       |
+| TanStack Query | 5.56+         | Server state management   |
+| Tailwind CSS   | 3.4+          | Utility-first CSS         |
+
+### Infra
+
+| Name       | Version | Description                  |
+|------------|---------|------------------------------|
+| Docker     | 27.3+   | Containerization             |
+| Minikube   | 1.34+   | Local Kubernetes cluster     |
+| Skaffold   | 2.13+   | Local development workflow   |
+| Helm       | 3.16+   | Kubernetes package manager   |
+| Kubernetes | 1.31+   | Container orchestration      |
 
 ## 🛠️ Prerequisites
 
@@ -116,10 +131,10 @@ docker build -t easm-backend:latest ./backend
 docker build -t easm-frontend:latest ./frontend
 
 # Deploy with Helm
-helm install easm-rnd ./infrastructure/helm/easm-rnd \
+helm install easm-rnd ./infra/helm/easm-rnd \
   --namespace easm-rnd \
   --create-namespace \
-  --values ./infrastructure/helm/easm-rnd/values-dev.yaml
+  --values ./infra/helm/easm-rnd/values-dev.yaml
 ```
 
 ## 🌿 Git Branching Convention
@@ -264,7 +279,7 @@ git checkout -b release/v1.2.0
 # 2. Update version numbers
 # backend/pyproject.toml
 # frontend/package.json
-# infrastructure/helm/easm-rnd/Chart.yaml
+# infra/helm/easm-rnd/Chart.yaml
 
 # 3. Update CHANGELOG.md
 # Document all changes since last release
@@ -323,7 +338,7 @@ pnpm test:e2e         # or yarn test:e2e
 ## 📊 Monitoring
 
 - **Application**: Django Debug Toolbar (dev), Sentry (prod)
-- **Infrastructure**: Prometheus + Grafana
+- **Infra**: Prometheus + Grafana
 - **Logs**: ELK Stack (Elasticsearch, Logstash, Kibana)
 - **Tracing**: Jaeger
 

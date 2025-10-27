@@ -1,0 +1,15 @@
+{
+    "files.eol": "\n",
+    "files.associations": {
+        "*.sh": "shellscript"
+    },
+    "[shellscript]": {
+        "files.eol": "\n"
+    },
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "editor.renderControlCharacters": true,
+    "editor.renderWhitespace": "boundary",
+    "files.eolMarker": "lf"
+}

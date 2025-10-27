@@ -1,0 +1,16 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Fix Line Endings (using dos2unix)",
+            "type": "shell",
+            "command": "if (Get-Command dos2unix -ErrorAction SilentlyContinue) { Get-ChildItem -Path ${workspaceFolder} -Recurse -Filter *.sh | ForEach-Object { dos2unix $_.FullName } } else { Write-Host 'dos2unix not found. Please install it first.' }",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

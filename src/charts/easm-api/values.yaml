@@ -1,6 +1,9 @@
 # Default values for easm-api.
 replicaCount: 1
 
+# Application version
+appVersion: "0.1.0"
+
 image:
   repository: easm-api
   pullPolicy: IfNotPresent
@@ -60,7 +63,9 @@ affinity: {}
 
 # PostgreSQL configuration
 postgresql:
-  enabled: true
+  # Default: use external Postgres (Bitnami) in Skaffold deployments.
+  # Set to true if you want the chart to deploy its own PostgreSQL instance.
+  enabled: false
   host: postgres
   port: 5432
   database: easm_db
@@ -69,7 +74,9 @@ postgresql:
 
 # Redis configuration
 redis:
-  enabled: true
+  # Default: use external Redis (Bitnami) in Skaffold deployments.
+  # Set to true if you want the chart to deploy its own Redis instance.
+  enabled: false
   host: redis
   port: 6379
   db: 0
@@ -77,8 +84,9 @@ redis:
 # Django configuration
 django:
   secretKey: "change-this-to-a-random-secret-key"
-  debug: "False"
-  allowedHosts: "*"
+  allowedHosts: "localhost,127.0.0.1,0.0.0.0,*"
+  # Use boolean for debug flag so templates render consistent types
+  debug: false
 
 # JWT configuration
 jwt:

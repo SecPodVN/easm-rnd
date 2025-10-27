@@ -335,7 +335,7 @@ django:
   allowedHosts: "api.yourdomain.com"
 ```
 
-### Deploy Infrastructure
+### Deploy Infra
 
 ```bash
 # Install NGINX Ingress Controller
@@ -574,11 +574,11 @@ def health_check(request):
     try:
         # Check database
         connections['default'].cursor()
-        
+
         # Check Redis
         r = Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
         r.ping()
-        
+
         return JsonResponse({'status': 'healthy'}, status=200)
     except Exception as e:
         return JsonResponse({'status': 'unhealthy', 'error': str(e)}, status=503)

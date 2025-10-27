@@ -41,7 +41,6 @@ venv.bak/
 poetry.lock
 
 # IDEs
-.vscode/
 .idea/
 *.swp
 *.swo

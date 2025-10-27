@@ -1,0 +1,107 @@
+---
+# yamllint configuration for Kubernetes, Helm, and general YAML files
+extends: default
+
+rules:
+  # Line length
+  line-length:
+    max: 120
+    level: warning
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+
+  # Indentation
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    check-multi-line-strings: false
+
+  # Trailing spaces
+  trailing-spaces: enable
+
+  # New lines
+  new-line-at-end-of-file: enable
+  new-lines:
+    type: unix
+
+  # Comments
+  comments:
+    min-spaces-from-content: 1
+    require-starting-space: true
+    ignore-shebangs: true
+
+  # Document formatting
+  document-start: disable # Don't require --- at the start
+  document-end: disable # Don't require ... at the end
+
+  # Empty values
+  empty-values:
+    forbid-in-block-mappings: false
+    forbid-in-flow-mappings: true
+
+  # Brackets and braces
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+    min-spaces-inside-empty: 0
+    max-spaces-inside-empty: 0
+
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+    min-spaces-inside-empty: 0
+    max-spaces-inside-empty: 0
+
+  # Colons
+  colons:
+    max-spaces-before: 0
+    max-spaces-after: 1
+
+  # Commas
+  commas:
+    max-spaces-before: 0
+    min-spaces-after: 1
+    max-spaces-after: 1
+
+  # Hyphens
+  hyphens:
+    max-spaces-after: 1
+
+  # Key ordering
+  key-ordering: disable # Don't enforce alphabetical key ordering
+
+  # Octal values
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
+
+  # Quoted strings
+  quoted-strings:
+    quote-type: any
+    required: false
+    allow-quoted-quotes: true
+
+  # Truthy values (allow on/off for kubernetes)
+  truthy:
+    allowed-values: ["true", "false", "on", "off", "yes", "no"]
+    check-keys: false
+
+# Ignore patterns
+ignore: |
+  .venv/
+  venv/
+  node_modules/
+  build/
+  dist/
+  .git/
+  __pycache__/
+  *.pyc
+  .pytest_cache/
+  .coverage
+  htmlcov/
+  .tox/
+  .eggs/
+  *.egg-info/
+  .mypy_cache/
+  .dmypy.json
+  dmypy.json

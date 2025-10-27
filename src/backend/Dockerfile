@@ -3,9 +3,9 @@ FROM python:3.13-slim
 
 # Security: Add labels for metadata
 LABEL maintainer="thinh.huynh@secpod.com" \
-      version="1.0.0" \
-      description="EASM Django REST API - Poetry Build" \
-      security.scan="enabled"
+    version="1.0.0" \
+    description="EASM Django REST API - Poetry Build" \
+    security.scan="enabled"
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -77,4 +77,7 @@ USER $DJANGO_USER
 EXPOSE 8000
 
 # Set entrypoint
-# ENTRYPOINT ["/app/docker-entrypoint.sh"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+
+# Default command (can be overridden)
+CMD ["sh", "/app/start-api.sh"]

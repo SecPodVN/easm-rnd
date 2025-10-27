@@ -1,4 +1,4 @@
-{{- if .Values.autoscaling.enabled }}
+{{- if and .Values.autoscaling.enabled .Values.easmApi.enabled (ne (.Values.easmApi.enabled | toString) "False") }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:

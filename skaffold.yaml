@@ -83,12 +83,15 @@ deploy:
           postgresql.database: "{{.POSTGRES_DB}}"
           postgresql.username: "{{.POSTGRES_USER}}"
           postgresql.password: "{{.POSTGRES_PASSWORD}}"
+          postgresql.enabled: "{{.POSTGRESQL_ENABLED}}"
           redis.host: "{{.REDIS_HOST}}"
           redis.port: "{{.REDIS_PORT}}"
           redis.db: "{{.REDIS_DB}}"
+          redis.enabled: "{{.REDIS_ENABLED}}"
           mongodb.host: "{{.MONGODB_HOST}}"
           mongodb.port: "{{.MONGODB_PORT}}"
           mongodb.database: "{{.MONGODB_DB}}"
+          easmApi.enabled: "{{.EASM_API_ENABLED}}"
           django.debug: "{{.DEBUG}}"
           django.secretKey: "{{.SECRET_KEY}}"
           # django.allowedHosts moved to skaffold-values.yaml (handles commas properly)
@@ -97,9 +100,9 @@ deploy:
           replicaCount: "{{.K8S_REPLICA_COUNT}}"
         setValues:
           image.pullPolicy: Never
-          postgresql.enabled: false
-          redis.enabled: false
-          mongodb.enabled: false  # ??? Enable if using internal MongoDB
+          postgresql.deploy: false
+          redis.deploy: false
+          mongodb.deploy: false
         wait: false
 
 # Port forwarding configuration

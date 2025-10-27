@@ -1,5 +1,11 @@
 # Quick start script for deploying EASM with Skaffold (PowerShell)
 
+
+
+# 1. read .env file and set environment variables
+# 2. generated file values.yaml used by skaffold from values.template.yaml
+# 3. run skaffold.yaml with the values.yaml has just been generat
+
 Write-Host "=== EASM Skaffold Deployment Script ===" -ForegroundColor Cyan
 Write-Host ""
 

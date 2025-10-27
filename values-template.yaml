@@ -38,6 +38,7 @@ deploy:
         version: "23.2.1"
         namespace: "{{.K8S_NAMESPACE}}"
         createNamespace: true
+
         setValues:
           auth.enabled: false
           architecture: standalone
@@ -47,11 +48,11 @@ deploy:
 
       # EASM API from local Helm chart
       - name: easm-api
-        chartPath: {{.API_HELM_CHART_PATH}}
+        chartPath: src/charts/easm-api
         namespace: "{{.K8S_NAMESPACE}}"
         createNamespace: true
         valuesFiles:
-          - src/values.yaml
+          - src/charts/easm-api/values-placeholder.yaml
         setValueTemplates:
           image.repository: "{{.API_IMAGE}}"
           image.tag: "{{.API_IMAGE_TAG}}"
@@ -92,8 +93,3 @@ portForward:
     namespace: "{{.K8S_NAMESPACE}}"
     port: 6379
     localPort: 6379
-profiles:
-  - name: profile-prod
-    requiresAllActivations: false
-    patches:
-      - op: replace

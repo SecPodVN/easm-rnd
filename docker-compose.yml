@@ -41,7 +41,7 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - .env
+      - skaffold.env
     environment:
       - POSTGRES_HOST=postgres
       - REDIS_HOST=redis

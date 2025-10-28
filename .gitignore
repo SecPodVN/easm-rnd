@@ -33,6 +33,8 @@ media/
 skaffold.env
 skaffold.env.*
 !skaffold.env.example
+skaffold.temp.yaml
+skaffold-values.yaml
 .venv
 env/
 venv/

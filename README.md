@@ -148,6 +148,9 @@ pnpm dev      # or yarn dev
 # Setup environment file (if not done already)
 cp skaffold.env.example skaffold.env
 
+# Edit skaffold.env to configure ports and other settings
+# Optional: Change API_LOCAL_PORT, POSTGRES_LOCAL_PORT, REDIS_LOCAL_PORT
+
 # Start Minikube
 minikube start --cpus=4 --memory=8192 --driver=docker
 
@@ -155,18 +158,31 @@ minikube start --cpus=4 --memory=8192 --driver=docker
 minikube addons enable ingress
 minikube addons enable metrics-server
 
-# Start Skaffold for hot-reload development
+# Option 1: Use the interactive deployment script (RECOMMENDED)
+# PowerShell (if execution policy blocks, use bypass):
+powershell -ExecutionPolicy Bypass -File .\skaffold.ps1
+
+# Or set execution policy once:
+# Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# Bash/Linux/macOS:
+./skaffold.sh
+
+# The script will:
+# - Load environment variables from skaffold.env
+# - Generate temporary skaffold config with your custom ports
+# - Show you deployment mode options
+# - Display the ports being used
+# - Clean up temporary files automatically
+
+# Option 2: Run Skaffold directly (uses default ports 8000, 5432, 6379)
 skaffold dev
-
-# Optional: Use custom ports from skaffold.env (PowerShell)
-Get-Content skaffold.env | Where-Object { $_ -notmatch '^\s*#' } | ForEach-Object { $k,$v = $_ -split '=',2; [Environment]::SetEnvironmentVariable($k.Trim(),$v.Trim(),'Process') }; skaffold dev --port-forward-ports="$env:API_LOCAL_PORT:8000,$env:POSTGRES_LOCAL_PORT:5432,$env:REDIS_LOCAL_PORT:6379"
-
-# Optional: Use custom ports from skaffold.env (Bash)
-source skaffold.env && skaffold dev --port-forward-ports="${API_LOCAL_PORT}:8000,${POSTGRES_LOCAL_PORT}:5432,${REDIS_LOCAL_PORT}:6379"
 
 # Access services
 minikube service list
 ```
+
+**Note:** The `skaffold.ps1` and `skaffold.sh` scripts automatically read port configuration from `skaffold.env` and generate a temporary `skaffold.yaml` with your custom ports. This is the recommended way to use custom ports since Skaffold doesn't support port override via CLI flags.
 
 ### Manual Kubernetes Deployment
 

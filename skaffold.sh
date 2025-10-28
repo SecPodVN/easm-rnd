@@ -4,20 +4,39 @@
 
 set -e
 
+# Cleanup function for temporary files
+cleanup_temp_files() {
+    echo ""
+    echo "[*] Cleaning up temporary files..."
+    rm -f "skaffold.temp.yaml"
+    rm -f "skaffold-values.yaml"
+}
+
+# Register cleanup on script exit (including Ctrl+C)
+trap cleanup_temp_files EXIT INT TERM
+
 echo "=== EASM Skaffold Deployment Script ==="
 echo ""
 
-# Load environment variables from .env file
-if [ -f .env ]; then
-    echo "[*] Loading environment variables from .env file..."
+# Load environment variables from skaffold.env file (new) or .env (fallback)
+if [ -f "skaffold.env" ]; then
+    ENV_FILE="skaffold.env"
+elif [ -f ".env" ]; then
+    ENV_FILE=".env"
+else
+    ENV_FILE=""
+fi
+
+if [ -n "$ENV_FILE" ]; then
+    echo "[*] Loading environment variables from $ENV_FILE..."
     set -a
-    source .env
+    source "$ENV_FILE"
     set +a
     echo "  [+] Environment variables loaded"
     echo ""
 else
-    echo "[!] Warning: .env file not found!"
-    echo "    Copy .env.example to .env and configure your environment"
+    echo "[!] Warning: skaffold.env or .env file not found!"
+    echo "    Copy skaffold.env.example to skaffold.env and configure your environment"
     echo ""
 fi
 
@@ -44,6 +63,39 @@ echo "[*] Updating Helm repositories..."
 helm repo update
 
 echo ""
+
+# Get port configuration from environment or use defaults
+API_PORT="${API_LOCAL_PORT:-8000}"
+POSTGRES_PORT="${POSTGRES_LOCAL_PORT:-5432}"
+REDIS_PORT="${REDIS_LOCAL_PORT:-6379}"
+
+# Show port configuration
+echo "Port Forwarding Configuration:"
+echo "   API:        localhost:$API_PORT -> container:8000"
+echo "   PostgreSQL: localhost:$POSTGRES_PORT -> container:5432"
+echo "   Redis:      localhost:$REDIS_PORT -> container:6379"
+echo ""
+
+# Generate temporary values file for ALLOWED_HOSTS (handles commas properly)
+echo "[*] Generating values file for comma-separated configs..."
+ALLOWED_HOSTS_VALUE="${ALLOWED_HOSTS:-localhost,127.0.0.1}"
+cat > skaffold-values.yaml <<EOF
+# Auto-generated from skaffold.env
+# This file handles values with commas that can't be passed via --set
+django:
+  allowedHosts: "$ALLOWED_HOSTS_VALUE"
+EOF
+
+# Generate temporary skaffold.yaml with custom ports
+# (Skaffold doesn't support CLI port override or template variables in localPort)
+echo "[*] Generating temporary skaffold config with custom ports..."
+TEMP_SKAFFOLD_FILE="skaffold.temp.yaml"
+sed -e "s/^\(\s*localPort:\s*\)8000\(.*\)$/\1$API_PORT\2/" \
+    -e "s/^\(\s*localPort:\s*\)5432\(.*\)$/\1$POSTGRES_PORT\2/" \
+    -e "s/^\(\s*localPort:\s*\)6379\(.*\)$/\1$REDIS_PORT\2/" \
+    skaffold.yaml > "$TEMP_SKAFFOLD_FILE"
+echo ""
+
 echo "Choose deployment mode:"
 echo "  1) Development (skaffold dev - with hot reload)"
 echo "  2) One-time deployment (skaffold run)"
@@ -58,17 +110,17 @@ case $choice in
         echo "[>>] Starting Skaffold in development mode..."
         echo "[*] Press Ctrl+C to stop"
         echo ""
-        skaffold dev
+        skaffold dev -f "$TEMP_SKAFFOLD_FILE"
         ;;
     2)
         echo ""
         echo "[>>] Deploying with Skaffold..."
-        skaffold run
+        skaffold run -f "$TEMP_SKAFFOLD_FILE"
         echo ""
         echo "[OK] Deployment complete!"
         echo ""
         echo "Access the application:"
-        echo "  API: http://localhost:8000"
+        echo "  API: http://localhost:$API_PORT"
         echo ""
         echo "To view logs: kubectl logs -f deployment/easm-api"
         echo "To delete: skaffold delete"
@@ -78,17 +130,17 @@ case $choice in
         echo "[>>] Starting Skaffold with dev profile..."
         echo "[*] Press Ctrl+C to stop"
         echo ""
-        skaffold dev --profile=dev
+        skaffold dev --profile=dev -f "$TEMP_SKAFFOLD_FILE"
         ;;
     4)
         echo ""
         echo "[>>] Deploying with production profile..."
-        skaffold run --profile=prod
+        skaffold run --profile=prod -f "$TEMP_SKAFFOLD_FILE"
         echo ""
         echo "[OK] Deployment complete!"
         echo ""
         echo "Access the application:"
-        echo "  kubectl port-forward service/easm-api 8000:8000"
+        echo "  kubectl port-forward service/easm-api $API_PORT:8000"
         echo ""
         echo "To view logs: kubectl logs -f deployment/easm-api"
         echo "To delete: skaffold delete"

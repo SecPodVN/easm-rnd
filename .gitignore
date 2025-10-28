@@ -30,6 +30,9 @@ media/
 
 # Environment
 .env
+skaffold.env
+skaffold.env.*
+!skaffold.env.example
 .venv
 env/
 venv/

@@ -1,0 +1,106 @@
+# ===================================
+# Helm Chart Default Values for EASM API
+# ===================================
+# This file provides default values for the Helm chart.
+# Values are overridden by Skaffold using variables from skaffold.env
+#
+# Note: This file is referenced by skaffold.yaml and should remain in the root directory
+# alongside skaffold.yaml and skaffold.env for consistency.
+#
+# Default values for easm-api.
+replicaCount: 1
+
+# Application version
+appVersion: "0.1.0"
+
+image:
+  repository: easm-api
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: easm-api.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# PostgreSQL configuration
+postgresql:
+  # Default: use external Postgres (Bitnami) in Skaffold deployments.
+  # Set to true if you want the chart to deploy its own PostgreSQL instance.
+  enabled: false
+  host: postgres
+  port: 5432
+  database: easm_db
+  username: easm_user
+  password: easm_password
+
+# Redis configuration
+redis:
+  # Default: use external Redis (Bitnami) in Skaffold deployments.
+  # Set to true if you want the chart to deploy its own Redis instance.
+  enabled: false
+  host: redis
+  port: 6379
+  db: 0
+
+# Django configuration
+django:
+  secretKey: "change-this-to-a-random-secret-key"
+  allowedHosts: "localhost,127.0.0.1,0.0.0.0,*"
+  # Use boolean for debug flag so templates render consistent types
+  debug: false
+
+# JWT configuration
+jwt:
+  accessTokenLifetime: 60
+  refreshTokenLifetime: 1440
+
+# Environment variables
+env: []

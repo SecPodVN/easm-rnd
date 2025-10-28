@@ -13,16 +13,21 @@ build:
     push: false
     useBuildkit: true
 
+# Environment variables are automatically loaded from skaffold.env file in project root
 deploy:
   helm:
     releases:
       # PostgreSQL from Bitnami (Latest LTS)
       - name: postgresql
         remoteChart: postgresql
-        repo: https://charts.bitnami.com/bitnami
-        version: "18.1.1"
+        repo: "{{.BITNAMI_REPO_URL}}"
+        version: "{{.POSTGRESQL_CHART_VERSION}}"
         namespace: "{{.K8S_NAMESPACE}}"
         createNamespace: true
+        setValueTemplates:
+          auth.database: "{{.POSTGRES_DB}}"
+          auth.username: "{{.POSTGRES_USER}}"
+          auth.password: "{{.POSTGRES_PASSWORD}}"
         setValues:
           auth.database: easm_db
           auth.username: easm_user
@@ -34,8 +39,8 @@ deploy:
       # Redis from Bitnami (Latest LTS)
       - name: redis
         remoteChart: redis
-        repo: https://charts.bitnami.com/bitnami
-        version: "23.2.1"
+        repo: "{{.BITNAMI_REPO_URL}}"
+        version: "{{.REDIS_CHART_VERSION}}"
         namespace: "{{.K8S_NAMESPACE}}"
         createNamespace: true
         setValues:
@@ -93,7 +98,7 @@ deploy:
           image.pullPolicy: Never
           postgresql.enabled: false
           redis.enabled: false
-          mongodb.enabled: false  # ??? Enable if using internal MongoDB
+          mongodb.enabled: false # ??? Enable if using internal MongoDB
         wait: false
 
 portForward:
@@ -101,12 +106,12 @@ portForward:
     resourceName: easm-api
     namespace: "{{.K8S_NAMESPACE}}"
     port: 8000
-    localPort: 8000
+    localPort: 8000 # Override with skaffold.ps1/sh or CLI flags
   - resourceType: service
     resourceName: postgresql
     namespace: "{{.K8S_NAMESPACE}}"
     port: 5432
-    localPort: 5432
+    localPort: 5432 # Override with skaffold.ps1/sh or CLI flags
   - resourceType: service
     resourceName: redis-master
     namespace: "{{.K8S_NAMESPACE}}"

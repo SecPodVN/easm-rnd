@@ -25,14 +25,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # Third party apps
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
     'drf_spectacular',
     'django_filters',
-    
+
     # Local apps
     'apps.api.apps.ApiConfig',
     'apps.todos.apps.TodosConfig',
@@ -76,7 +76,7 @@ DATABASES = {
         'NAME': config('POSTGRES_DB', default='easm_db'),
         'USER': config('POSTGRES_USER', default='easm_user'),
         'PASSWORD': config('POSTGRES_PASSWORD', default='easm_password'),
-        'HOST': config('POSTGRES_HOST', default='localhost'),
+        'HOST': config('POSTGRES_HOST', default='postgres'),
         'PORT': config('POSTGRES_PORT', default='5432'),
     }
 }

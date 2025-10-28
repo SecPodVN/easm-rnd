@@ -16,19 +16,22 @@ from .health import health_check, readiness_check, liveness_check
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
+
     # Health checks
     path('health/', health_check, name='health'),
     path('health/ready/', readiness_check, name='readiness'),
     path('health/live/', liveness_check, name='liveness'),
-    
+
     # JWT Authentication
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    
+
     # API endpoints - Centralized REST API
     path('api/', include('apps.api.urls')),
-    
+
+    # Scanner API endpoints
+    path('api/scanner/', include('apps.scanner.urls')),
+
     # API Documentation
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

@@ -32,6 +32,23 @@ if [ $count -eq $timeout ]; then
 fi
 echo "Redis is ready!"
 
+# Wait for MongoDB (optional, only if MongoDB is configured)
+if [ -n "${MONGODB_HOST}" ]; then
+  echo "Waiting for MongoDB at ${MONGODB_HOST}:${MONGODB_PORT:-27017}..."
+  count=0
+  until nc -z "${MONGODB_HOST}" "${MONGODB_PORT:-27017}" 2>/dev/null || [ $count -eq $timeout ]; do
+    count=$((count + 1))
+    echo "  Attempt $count/$timeout..."
+    sleep 1
+  done
+
+  if [ $count -eq $timeout ]; then
+    echo "WARNING: MongoDB not available after ${timeout}s (continuing anyway)"
+  else
+    echo "MongoDB is ready!"
+  fi
+fi
+
 # Run migrations
 echo "Running database migrations..."
 python manage.py migrate --noinput

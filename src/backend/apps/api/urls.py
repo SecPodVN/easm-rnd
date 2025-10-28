@@ -14,7 +14,7 @@ app_name = 'api'
 urlpatterns = [
     # API root endpoint
     path('', api_root, name='api-root'),
-    
+
     # Router URLs
     path('', include(router.urls)),
 ]

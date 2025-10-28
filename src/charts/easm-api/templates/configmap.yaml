@@ -12,6 +12,9 @@ data:
   REDIS_HOST: {{ .Values.redis.host | quote }}
   REDIS_PORT: {{ .Values.redis.port | quote }}
   REDIS_DB: {{ .Values.redis.db | quote }}
+  MONGODB_HOST: {{ .Values.mongodb.host | quote }}
+  MONGODB_PORT: {{ .Values.mongodb.port | quote }}
+  MONGODB_DB: {{ .Values.mongodb.database | quote }}
   DEBUG: {{ .Values.django.debug | toString | quote }}
   ALLOWED_HOSTS: {{ .Values.django.allowedHosts | quote }}
   JWT_ACCESS_TOKEN_LIFETIME: {{ .Values.jwt.accessTokenLifetime | quote }}

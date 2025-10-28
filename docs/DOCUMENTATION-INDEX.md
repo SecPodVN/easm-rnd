@@ -48,6 +48,22 @@ This project includes comprehensive documentation covering setup, development, d
 - Filtering, searching, sorting
 - Pagination
 - Error responses
+
+#### 🔍 [SCANNER-API-DOCUMENTATION.md](SCANNER-API-DOCUMENTATION.md)
+**Scanner app API reference** with MongoDB-based resource scanning endpoints.
+- 11 REST endpoints for EASM scanning
+- Resource, Rule, and Finding models
+- Scanning engine capabilities
+- Analytics and reporting
+- Bulk operations
+
+#### ⚡ [SCANNER-QUICKSTART.md](SCANNER-QUICKSTART.md)
+**Quick start guide for Scanner API** with practical examples.
+- Service health check
+- Upload resources and rules
+- Execute scans
+- Query findings
+- Real-world examples
 - Python examples
 
 ### 4. Production

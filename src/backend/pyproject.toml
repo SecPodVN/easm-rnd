@@ -6,8 +6,9 @@ authors = ["Thinh Huynh-Doan <thinh.huynh@secpod.com>"]
 readme = "README.md"
 package-mode = false
 
+# Updated: 2025-10-27 - Added MongoDB support - Python 3.12 for pymongo compatibility
 [tool.poetry.dependencies]
-python = "^3.13"
+python = "^3.12"
 django = "^5.2"
 djangorestframework = "^3.15"
 djangorestframework-simplejwt = "^5.3"
@@ -19,6 +20,8 @@ python-decouple = "^3.8"
 gunicorn = "^21.2"
 drf-spectacular = "^0.27"
 django-filter = "^23.5"
+pymongo = "^4.6"
+dnspython = "^2.4"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.1"

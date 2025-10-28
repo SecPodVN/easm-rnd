@@ -17,8 +17,8 @@ trap {
 Write-Host "=== EASM Skaffold Deployment Script ===" -ForegroundColor Cyan
 Write-Host ""
 
-# Load environment variables from skaffold.env file (new) or .env (fallback)
-$envFile = if (Test-Path "skaffold.env") { "skaffold.env" } elseif (Test-Path ".env") { ".env" } else { $null }
+# Load environment variables from .env file
+$envFile = if (Test-Path ".env") { ".env" } else { $null }
 
 if ($envFile) {
     Write-Host "[*] Loading environment variables from $envFile..." -ForegroundColor Yellow
@@ -34,8 +34,8 @@ if ($envFile) {
     }
     Write-Host ""
 } else {
-    Write-Host "[!] Warning: skaffold.env or .env file not found!" -ForegroundColor Yellow
-    Write-Host "    Copy skaffold.env.example to skaffold.env and configure your environment" -ForegroundColor Yellow
+    Write-Host "[!] Warning: .env file not found!" -ForegroundColor Yellow
+    Write-Host "    Copy .env.example to .env and configure your environment" -ForegroundColor Yellow
     Write-Host ""
 }
 
@@ -84,7 +84,7 @@ Write-Host ""
 Write-Host "[*] Generating values file for comma-separated configs..." -ForegroundColor Yellow
 $allowedHosts = if ($env:ALLOWED_HOSTS) { $env:ALLOWED_HOSTS } else { "localhost,127.0.0.1" }
 $valuesContent = @"
-# Auto-generated from skaffold.env
+# Auto-generated from .env
 # This file handles values with commas that can't be passed via --set
 django:
   allowedHosts: "$allowedHosts"

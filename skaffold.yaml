@@ -13,7 +13,7 @@ build:
     push: false
     useBuildkit: true
 
-# Environment variables are automatically loaded from skaffold.env file in project root
+# Environment variables are automatically loaded from .env file in project root
 deploy:
   helm:
     releases:
@@ -105,9 +105,9 @@ deploy:
 # Port forwarding configuration
 # NOTE: localPort does NOT support template variables (Skaffold limitation)
 #
-# To use custom ports from skaffold.env:
+# To use custom ports from .env:
 #   - Use skaffold.ps1 or skaffold.sh scripts (RECOMMENDED)
-#   - Or manually run: skaffold dev --port-forward-ports="${API_LOCAL_PORT}:8000,..."
+#   - Scripts read ports from .env and generate temporary config
 #
 # These default ports are used ONLY when running "skaffold dev" directly
 portForward:

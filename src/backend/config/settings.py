@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     # Local apps
     'apps.api.apps.ApiConfig',
     'apps.todos.apps.TodosConfig',
+    'apps.scanner.apps.ScannerConfig',
 ]
 
 MIDDLEWARE = [
@@ -79,6 +80,13 @@ DATABASES = {
         'HOST': config('POSTGRES_HOST', default='postgres'),
         'PORT': config('POSTGRES_PORT', default='5432'),
     }
+}
+
+# MongoDB Configuration (using pymongo directly, not as Django ORM database)
+MONGODB_SETTINGS = {
+    'host': config('MONGODB_HOST', default='localhost'),
+    'port': config('MONGODB_PORT', default='27017', cast=int),
+    'database': config('MONGODB_DB', default='easm_mongo'),
 }
 
 # Cache (Redis)

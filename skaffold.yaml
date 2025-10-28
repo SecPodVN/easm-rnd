@@ -45,6 +45,22 @@ deploy:
           image.pullPolicy: IfNotPresent
         wait: false
 
+      # MongoDB from Bitnami (Latest LTS)
+      - name: mongodb
+        remoteChart: mongodb
+        repo: https://charts.bitnami.com/bitnami
+
+        version: "16.3.1"
+        namespace: "{{.K8S_NAMESPACE}}"
+        createNamespace: true
+        setValues:
+          auth.enabled: false
+          architecture: standalone
+          persistence.enabled: false
+          image.pullPolicy: IfNotPresent
+          image.tag: latest
+        wait: false
+
       # EASM API from local Helm chart
       - name: easm-api
         chartPath: src/charts/easm-api
@@ -64,6 +80,9 @@ deploy:
           redis.host: "{{.REDIS_HOST}}"
           redis.port: "{{.REDIS_PORT}}"
           redis.db: "{{.REDIS_DB}}"
+          mongodb.host: "{{.MONGODB_HOST}}"
+          mongodb.port: "{{.MONGODB_PORT}}"
+          mongodb.database: "{{.MONGODB_DB}}"
           django.debug: "{{.DEBUG}}"
           django.secretKey: "{{.SECRET_KEY}}"
           #django.allowedHosts: "{{.ALLOWED_HOSTS}}"
@@ -74,6 +93,7 @@ deploy:
           image.pullPolicy: Never
           postgresql.enabled: false
           redis.enabled: false
+          mongodb.enabled: false  # ??? Enable if using internal MongoDB
         wait: false
 
 portForward:
@@ -92,3 +112,8 @@ portForward:
     namespace: "{{.K8S_NAMESPACE}}"
     port: 6379
     localPort: 6379
+  - resourceType: service
+    resourceName: mongodb
+    namespace: "{{.K8S_NAMESPACE}}"
+    port: 27017
+    localPort: 27017

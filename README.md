@@ -32,12 +32,14 @@ easm-rnd/
 
 | Name                          | Version | Description                        |
 |-------------------------------|---------|-----------------------------------|
-| Python                        | 3.13+   | Latest stable Python version      |
+| Python                        | 3.12+   | Python runtime                    |
 | Django                        | 5.2+    | Web framework                     |
 | Django REST Framework         | 3.15+   | RESTful API toolkit               |
 | djangorestframework-simplejwt | 5.3+    | JWT authentication                |
 | Poetry                        | 2.2+    | Dependency management             |
-| PostgreSQL                    | 18+     | Primary database                  |
+| PostgreSQL                    | 18+     | Primary database (Django ORM)     |
+| MongoDB                       | 8+      | NoSQL database (Scanner app)      |
+| PyMongo                       | 4.6+    | MongoDB driver for Python         |
 | psycopg2-binary               | 2.9+    | PostgreSQL adapter for Python     |
 | Redis                         | 7.4+    | Caching and session store         |
 | redis (Python)                | 5.0+    | Redis Python client               |
@@ -358,6 +360,14 @@ pnpm test:e2e         # or yarn test:e2e
 - **API Documentation**: `/api/docs/` (Swagger/OpenAPI)
 - **API Schema**: `/api/schema/`
 - **Admin Panel**: `/admin/`
+- **Scanner API Guide**: [SCANNER-QUICKSTART.md](docs/SCANNER-QUICKSTART.md)
+- **Scanner API Reference**: [SCANNER-API-DOCUMENTATION.md](docs/SCANNER-API-DOCUMENTATION.md)
+- **Scanner Implementation**: [SCANNER_IMPLEMENTATION.md](SCANNER_IMPLEMENTATION.md)
+
+### Django Apps
+
+- **todos**: Task management API
+- **scanner**: MongoDB-based EASM resource scanning with 11 REST endpoints
 
 ## 🤝 Contributing
 

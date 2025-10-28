@@ -32,6 +32,9 @@ urlpatterns = [
     # API endpoints - Centralized REST API
     path('api/', include('apps.api.urls')),
 
+    # Scanner API endpoints
+    path('api/scanner/', include('apps.scanner.urls')),
+
     # API Documentation
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

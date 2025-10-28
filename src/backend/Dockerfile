@@ -1,5 +1,7 @@
-# Use Python 3.13 slim image
-FROM python:3.13-slim
+# FROM python:3.12-slim
+FROM python:3.12-slim
+# Force rebuild - Updated 2025-10-27 for MongoDB support
+ARG REBUILD=2025-10-27-22:00
 
 # Security: Add labels for metadata
 LABEL maintainer="thinh.huynh@secpod.com" \
@@ -46,9 +48,15 @@ RUN pip install "poetry==$POETRY_VERSION"
 # Copy poetry files
 COPY pyproject.toml poetry.lock* ./
 
-# Install dependencies (without dev dependencies)
-# POETRY_VIRTUALENVS_CREATE=false installs packages globally
-RUN poetry install --no-root --without dev
+# Generate lock file and install dependencies with verbose output
+RUN echo "=== Running poetry lock ===" && \
+    poetry lock -vvv && \
+    echo "=== Running poetry install ===" && \
+    poetry install --no-root --without dev -vvv && \
+    echo "=== Verifying pymongo installation ===" && \
+    pip list | grep -i pymongo && \
+    python -c "import pymongo; print(f'PyMongo version: {pymongo.__version__}')" || \
+    (echo "ERROR: pymongo not found!" && exit 1)
 
 # Copy startup scripts
 COPY ./*.sh $APP_HOME/

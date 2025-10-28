@@ -31,6 +31,21 @@ services:
       timeout: 5s
       retries: 5
 
+  mongodb:
+    image: mongo:8-jammy
+    container_name: easm-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_DB:-easm_mongo}
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   api:
     build: ./src/backend
     container_name: easm-api
@@ -45,14 +60,20 @@ services:
     environment:
       - POSTGRES_HOST=postgres
       - REDIS_HOST=redis
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+      - MONGODB_DB=${MONGO_DB:-easm_mongo}
       - GUNICORN_WORKERS=4
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
 
 volumes:
   postgres_data:
   redis_data:
+  mongodb_data:
   static_volume:

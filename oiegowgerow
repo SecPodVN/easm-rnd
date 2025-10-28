@@ -1,0 +1,56 @@
+# ===================================
+# EASM Application Environment Variables
+# ===================================
+# Copy this file to .env and modify values as needed
+
+# Django Settings
+DEBUG=True
+SECRET_KEY=django-insecure-change-this-to-a-random-secret-key-for-production
+
+# Database Configuration
+POSTGRES_DB=easm_db
+POSTGRES_USER=easm_user
+POSTGRES_PASSWORD=easm_password
+POSTGRES_HOST=postgresql
+POSTGRES_PORT=5432
+
+# Redis Configuration
+REDIS_HOST=redis-master
+REDIS_PORT=6379
+REDIS_DB=0
+
+# MongoDB Configuration (for Scanner App)
+MONGODB_HOST=mongodb
+MONGODB_PORT=27017
+MONGODB_DB=easm_mongo
+
+# JWT Settings (in minutes)
+JWT_ACCESS_TOKEN_LIFETIME=60
+JWT_REFRESH_TOKEN_LIFETIME=1440
+
+# Application Version
+API_APP_VERSION=0.1.0
+
+# Docker Image Configuration
+API_IMAGE=easm-api
+API_IMAGE_TAG=latest
+
+# Kubernetes/Skaffold specific settings
+K8S_NAMESPACE=easm-rnd
+K8S_REPLICA_COUNT=1
+
+# ===================================
+# Instructions:
+# ===================================
+# 1. Copy this file: cp .env.example .env
+# 2. Update values in .env for your environment
+# 3. For production, change SECRET_KEY and POSTGRES_PASSWORD
+# 4. Set appropriate values for POSTGRES_HOST, REDIS_HOST, and MONGO_HOST:
+#    - For Docker Compose: use POSTGRES_HOST=postgres, REDIS_HOST=redis, MONGO_HOST=mongodb
+#    - For Kubernetes: use POSTGRES_HOST=postgresql, REDIS_HOST=redis-master, MONGO_HOST=mongodb
+#    - For local development: use POSTGRES_HOST=localhost, REDIS_HOST=localhost, MONGO_HOST=localhost
+#
+# Note: ALLOWED_HOSTS with multiple values (comma-separated) may cause issues
+# with skaffold render command due to Helm --set parsing limitations.
+# For development, using ALLOWED_HOSTS=* works fine.
+# For production, consider using a single domain or modify the Helm template.

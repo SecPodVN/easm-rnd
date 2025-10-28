@@ -99,7 +99,7 @@ deploy:
           image.pullPolicy: Never
           postgresql.enabled: false
           redis.enabled: false
-          mongodb.enabled: false # ??? Enable if using internal MongoDB
+          mongodb.enabled: false  # ??? Enable if using internal MongoDB
         wait: false
 
 # Port forwarding configuration

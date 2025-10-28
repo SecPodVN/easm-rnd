@@ -77,7 +77,7 @@ DATABASES = {
         'NAME': config('POSTGRES_DB', default='easm_db'),
         'USER': config('POSTGRES_USER', default='easm_user'),
         'PASSWORD': config('POSTGRES_PASSWORD', default='easm_password'),
-        'HOST': config('POSTGRES_HOST', default='localhost'),
+        'HOST': config('POSTGRES_HOST', default='postgres'),
         'PORT': config('POSTGRES_PORT', default='5432'),
     }
 }

@@ -29,12 +29,9 @@ deploy:
           auth.username: "{{.POSTGRES_USER}}"
           auth.password: "{{.POSTGRES_PASSWORD}}"
         setValues:
-<<<<<<< HEAD
           auth.database: easm_db
           auth.username: easm_user
           auth.password: easm_password
-=======
->>>>>>> 9963da2 (feat(env): Handle ',' issue in allowHosts of skaffold.env by creating dynamic yaml file)
           primary.persistence.enabled: false
           image.pullPolicy: IfNotPresent
         wait: false
@@ -75,12 +72,8 @@ deploy:
         namespace: "{{.K8S_NAMESPACE}}"
         createNamespace: true
         valuesFiles:
-<<<<<<< HEAD
-          - src/charts/easm-api/values.yaml
-=======
           - values.yaml
           - skaffold-values.yaml # Generated file for comma-separated values
->>>>>>> 9963da2 (feat(env): Handle ',' issue in allowHosts of skaffold.env by creating dynamic yaml file)
         setValueTemplates:
           image.repository: "{{.API_IMAGE}}"
           image.tag: "{{.API_IMAGE_TAG}}"
@@ -98,11 +91,7 @@ deploy:
           mongodb.database: "{{.MONGODB_DB}}"
           django.debug: "{{.DEBUG}}"
           django.secretKey: "{{.SECRET_KEY}}"
-<<<<<<< HEAD
-          #django.allowedHosts: "{{.ALLOWED_HOSTS}}"
-=======
           # django.allowedHosts moved to skaffold-values.yaml (handles commas properly)
->>>>>>> 9963da2 (feat(env): Handle ',' issue in allowHosts of skaffold.env by creating dynamic yaml file)
           jwt.accessTokenLifetime: "{{.JWT_ACCESS_TOKEN_LIFETIME}}"
           jwt.refreshTokenLifetime: "{{.JWT_REFRESH_TOKEN_LIFETIME}}"
           replicaCount: "{{.K8S_REPLICA_COUNT}}"
@@ -113,8 +102,6 @@ deploy:
           mongodb.enabled: false # ??? Enable if using internal MongoDB
         wait: false
 
-<<<<<<< HEAD
-=======
 # Port forwarding configuration
 # NOTE: localPort does NOT support template variables (Skaffold limitation)
 #
@@ -123,7 +110,6 @@ deploy:
 #   - Or manually run: skaffold dev --port-forward-ports="${API_LOCAL_PORT}:8000,..."
 #
 # These default ports are used ONLY when running "skaffold dev" directly
->>>>>>> 9963da2 (feat(env): Handle ',' issue in allowHosts of skaffold.env by creating dynamic yaml file)
 portForward:
   - resourceType: service
     resourceName: easm-api
@@ -139,34 +125,9 @@ portForward:
     resourceName: redis-master
     namespace: "{{.K8S_NAMESPACE}}"
     port: 6379
-<<<<<<< HEAD
     localPort: 6379
   - resourceType: service
     resourceName: mongodb
     namespace: "{{.K8S_NAMESPACE}}"
     port: 27017
     localPort: 27017
-=======
-    localPort: 6379 # Override with skaffold.ps1/sh or CLI flags
-# Profiles for custom port configuration
-# Unfortunately, Skaffold's portForward.localPort does NOT support template variables
-# Solutions:
-#   1. Use skaffold CLI: --port-forward-ports="${API_LOCAL_PORT}:8000,..."
-#   2. Edit the localPort values above directly
-#   3. Use a profile with specific ports (uncomment and customize below)
-#
-# profiles:
-#   - name: custom-ports
-#     patches:
-#       - op: replace
-#         path: /portForward/0/localPort
-#         value: 8080  # Your custom API port
-#       - op: replace
-#         path: /portForward/1/localPort
-#         value: 5433  # Your custom PostgreSQL port
-#       - op: replace
-#         path: /portForward/2/localPort
-#         value: 6380  # Your custom Redis port
-#
-# Usage: skaffold dev -p custom-ports
->>>>>>> 9963da2 (feat(env): Handle ',' issue in allowHosts of skaffold.env by creating dynamic yaml file)

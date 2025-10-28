@@ -70,12 +70,14 @@ Write-Host ""
 $apiPort = if ($env:API_LOCAL_PORT) { $env:API_LOCAL_PORT } else { "8000" }
 $postgresPort = if ($env:POSTGRES_LOCAL_PORT) { $env:POSTGRES_LOCAL_PORT } else { "5432" }
 $redisPort = if ($env:REDIS_LOCAL_PORT) { $env:REDIS_LOCAL_PORT } else { "6379" }
+$mongodbPort = if ($env:MONGODB_LOCAL_PORT) { $env:MONGODB_LOCAL_PORT } else { "27017" }
 
 # Show port configuration
 Write-Host "Port Forwarding Configuration:" -ForegroundColor Cyan
 Write-Host "   API:        localhost:$apiPort -> container:8000" -ForegroundColor White
 Write-Host "   PostgreSQL: localhost:$postgresPort -> container:5432" -ForegroundColor White
 Write-Host "   Redis:      localhost:$redisPort -> container:6379" -ForegroundColor White
+Write-Host "   MongoDB:    localhost:$mongodbPort -> container:27017" -ForegroundColor White
 Write-Host ""
 
 # Generate temporary values file for ALLOWED_HOSTS (handles commas properly)

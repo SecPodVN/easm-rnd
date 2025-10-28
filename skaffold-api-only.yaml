@@ -17,7 +17,7 @@ deploy:
   helm:
     releases:
       # EASM API from local Helm chart
-      # PostgreSQL and Redis are managed separately via helm commands
+      # PostgreSQL, Redis and MongoDB are managed separately via helm commands
       - name: easm-api
         chartPath: src/charts/easm-api
         namespace: "{{.K8S_NAMESPACE}}"
@@ -38,6 +38,12 @@ deploy:
           redis.port: "{{.REDIS_PORT}}"
           redis.db: "{{.REDIS_DB}}"
           redis.enabled: "{{.REDIS_ENABLED}}"
+          mongodb.host: "{{.MONGODB_HOST}}"
+          mongodb.port: "{{.MONGODB_PORT}}"
+          mongodb.database: "{{.MONGODB_DATABASE}}"
+          mongodb.username: "{{.MONGODB_USERNAME}}"
+          mongodb.password: "{{.MONGODB_PASSWORD}}"
+          mongodb.enabled: "{{.MONGODB_ENABLED}}"
           easmApi.enabled: "{{.EASM_API_ENABLED}}"
           django.debug: "{{.DEBUG}}"
           django.secretKey: "{{.SECRET_KEY}}"
@@ -67,3 +73,8 @@ portForward:
     namespace: "{{.K8S_NAMESPACE}}"
     port: 6379
     localPort: 6379
+  - resourceType: service
+    resourceName: mongodb
+    namespace: "{{.K8S_NAMESPACE}}"
+    port: 27017
+    localPort: 27017

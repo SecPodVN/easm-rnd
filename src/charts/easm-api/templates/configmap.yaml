@@ -20,7 +20,8 @@ data:
   {{- if and .Values.mongodb.enabled (ne (.Values.mongodb.enabled | toString) "False") }}
   MONGODB_HOST: {{ .Values.mongodb.host | quote }}
   MONGODB_PORT: {{ .Values.mongodb.port | quote }}
-  MONGODB_DB: {{ .Values.mongodb.database | quote }}
+  MONGODB_DATABASE: {{ .Values.mongodb.database | quote }}
+  MONGODB_USERNAME: {{ .Values.mongodb.username | quote }}
   {{- end }}
   DEBUG: {{ .Values.django.debug | toString | quote }}
   ALLOWED_HOSTS: {{ .Values.django.allowedHosts | quote }}

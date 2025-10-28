@@ -31,42 +31,41 @@ easm-rnd/
 ### Backend
 
 <<<<<<< HEAD
-| Name                          | Version | Description                        |
+| Name | Version | Description |
 |-------------------------------|---------|-----------------------------------|
-| Python                        | 3.12+   | Python runtime                    |
-| Django                        | 5.2+    | Web framework                     |
-| Django REST Framework         | 3.15+   | RESTful API toolkit               |
-| djangorestframework-simplejwt | 5.3+    | JWT authentication                |
-| Poetry                        | 2.2+    | Dependency management             |
-| PostgreSQL                    | 18+     | Primary database (Django ORM)     |
-| MongoDB                       | 8+      | NoSQL database (Scanner app)      |
-| PyMongo                       | 4.6+    | MongoDB driver for Python         |
-| psycopg2-binary               | 2.9+    | PostgreSQL adapter for Python     |
-| Redis                         | 7.4+    | Caching and session store         |
-| redis (Python)                | 5.0+    | Redis Python client               |
-| django-redis                  | 5.4+    | Redis cache backend for Django    |
-| Gunicorn                      | 21.2+   | WSGI HTTP Server                  |
-| drf-spectacular               | 0.27+   | OpenAPI schema generation         |
-| django-cors-headers           | 4.3+    | CORS handling                     |
-| django-filter                 | 23.5+   | Filtering support                 |
+| Python | 3.12+ | Python runtime |
+| Django | 5.2+ | Web framework |
+| Django REST Framework | 3.15+ | RESTful API toolkit |
+| djangorestframework-simplejwt | 5.3+ | JWT authentication |
+| Poetry | 2.2+ | Dependency management |
+| PostgreSQL | 18+ | Primary database (Django ORM) |
+| MongoDB | 8+ | NoSQL database (Scanner app) |
+| PyMongo | 4.6+ | MongoDB driver for Python |
+| psycopg2-binary | 2.9+ | PostgreSQL adapter for Python |
+| Redis | 7.4+ | Caching and session store |
+| redis (Python) | 5.0+ | Redis Python client |
+| django-redis | 5.4+ | Redis cache backend for Django |
+| Gunicorn | 21.2+ | WSGI HTTP Server |
+| drf-spectacular | 0.27+ | OpenAPI schema generation |
+| django-cors-headers | 4.3+ | CORS handling |
+| django-filter | 23.5+ | Filtering support |
 =======
-| Name                          | Version | Description                    |
+| Name | Version | Description |
 | ----------------------------- | ------- | ------------------------------ |
-| Python                        | 3.13+   | Latest stable Python version   |
-| Django                        | 5.2+    | Web framework                  |
-| Django REST Framework         | 3.15+   | RESTful API toolkit            |
-| djangorestframework-simplejwt | 5.3+    | JWT authentication             |
-| Poetry                        | 2.2+    | Dependency management          |
-| PostgreSQL                    | 18+     | Primary database               |
-| psycopg2-binary               | 2.9+    | PostgreSQL adapter for Python  |
-| Redis                         | 7.4+    | Caching and session store      |
-| redis (Python)                | 5.0+    | Redis Python client            |
-| django-redis                  | 5.4+    | Redis cache backend for Django |
-| Gunicorn                      | 21.2+   | WSGI HTTP Server               |
-| drf-spectacular               | 0.27+   | OpenAPI schema generation      |
-| django-cors-headers           | 4.3+    | CORS handling                  |
-| django-filter                 | 23.5+   | Filtering support              |
->>>>>>> c12f4f2 (feat(env): Read from skaffold.env only for both k8s and docker)
+| Python | 3.13+ | Latest stable Python version |
+| Django | 5.2+ | Web framework |
+| Django REST Framework | 3.15+ | RESTful API toolkit |
+| djangorestframework-simplejwt | 5.3+ | JWT authentication |
+| Poetry | 2.2+ | Dependency management |
+| PostgreSQL | 18+ | Primary database |
+| psycopg2-binary | 2.9+ | PostgreSQL adapter for Python |
+| Redis | 7.4+ | Caching and session store |
+| redis (Python) | 5.0+ | Redis Python client |
+| django-redis | 5.4+ | Redis cache backend for Django |
+| Gunicorn | 21.2+ | WSGI HTTP Server |
+| drf-spectacular | 0.27+ | OpenAPI schema generation |
+| django-cors-headers | 4.3+ | CORS handling |
+| django-filter | 23.5+ | Filtering support |
 
 ### Frontend
 
@@ -106,13 +105,13 @@ easm-rnd/
 
 ### Environment Configuration
 
-This project uses a **single environment file** (`skaffold.env`) for both Skaffold and Docker Compose deployments.
+This project uses a **single environment file** (`.env`) for both Skaffold and Docker Compose deployments.
 
 ```bash
 # Copy the example environment file
-cp skaffold.env.example skaffold.env
+cp .env.example .env
 
-# Edit skaffold.env with your configuration
+# Edit .env with your configuration
 # Update SECRET_KEY, POSTGRES_PASSWORD, and other values as needed
 ```
 
@@ -124,7 +123,7 @@ git clone <repository-url>
 cd easm-rnd
 
 # Setup environment file
-cp skaffold.env.example skaffold.env
+cp .env.example .env
 
 # Start all services
 docker-compose up -d
@@ -146,9 +145,9 @@ pnpm dev      # or yarn dev
 
 ```bash
 # Setup environment file (if not done already)
-cp skaffold.env.example skaffold.env
+cp .env.example .env
 
-# Edit skaffold.env to configure ports and other settings
+# Edit .env to configure ports and other settings
 # Optional: Change API_LOCAL_PORT, POSTGRES_LOCAL_PORT, REDIS_LOCAL_PORT
 
 # Start Minikube
@@ -169,7 +168,7 @@ powershell -ExecutionPolicy Bypass -File .\skaffold.ps1
 ./skaffold.sh
 
 # The script will:
-# - Load environment variables from skaffold.env
+# - Load environment variables from .env
 # - Generate temporary skaffold config with your custom ports
 # - Show you deployment mode options
 # - Display the ports being used
@@ -182,7 +181,7 @@ skaffold dev
 minikube service list
 ```
 
-**Note:** The `skaffold.ps1` and `skaffold.sh` scripts automatically read port configuration from `skaffold.env` and generate a temporary `skaffold.yaml` with your custom ports. This is the recommended way to use custom ports since Skaffold doesn't support port override via CLI flags.
+**Note:** The `skaffold.ps1` and `skaffold.sh` scripts automatically read port configuration from `.env` and generate a temporary `skaffold.yaml` with your custom ports. This is the recommended way to use custom ports since Skaffold doesn't support port override via CLI flags.
 
 ### Manual Kubernetes Deployment
 

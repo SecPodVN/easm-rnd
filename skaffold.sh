@@ -18,10 +18,8 @@ trap cleanup_temp_files EXIT INT TERM
 echo "=== EASM Skaffold Deployment Script ==="
 echo ""
 
-# Load environment variables from skaffold.env file (new) or .env (fallback)
-if [ -f "skaffold.env" ]; then
-    ENV_FILE="skaffold.env"
-elif [ -f ".env" ]; then
+# Load environment variables from .env file
+if [ -f ".env" ]; then
     ENV_FILE=".env"
 else
     ENV_FILE=""
@@ -35,8 +33,8 @@ if [ -n "$ENV_FILE" ]; then
     echo "  [+] Environment variables loaded"
     echo ""
 else
-    echo "[!] Warning: skaffold.env or .env file not found!"
-    echo "    Copy skaffold.env.example to skaffold.env and configure your environment"
+    echo "[!] Warning: .env file not found!"
+    echo "    Copy .env.example to .env and configure your environment"
     echo ""
 fi
 
@@ -80,7 +78,7 @@ echo ""
 echo "[*] Generating values file for comma-separated configs..."
 ALLOWED_HOSTS_VALUE="${ALLOWED_HOSTS:-localhost,127.0.0.1}"
 cat > skaffold-values.yaml <<EOF
-# Auto-generated from skaffold.env
+# Auto-generated from .env
 # This file handles values with commas that can't be passed via --set
 django:
   allowedHosts: "$ALLOWED_HOSTS_VALUE"

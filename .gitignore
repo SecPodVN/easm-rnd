@@ -30,9 +30,8 @@ media/
 
 # Environment
 .env
-skaffold.env
-skaffold.env.*
-!skaffold.env.example
+.env.*
+!.env.example
 skaffold.temp.yaml
 skaffold-values.yaml
 .venv

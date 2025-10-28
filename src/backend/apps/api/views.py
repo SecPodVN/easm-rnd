@@ -59,11 +59,6 @@ class TodoViewSet(viewsets.ModelViewSet):
         """
         serializer.save(user=self.request.user)
 
-    @extend_schema(
-        summary="Mark todo as completed",
-        description="Mark a specific todo as completed and set completion timestamp.",
-        responses={200: TodoSerializer}
-    )
     @action(detail=True, methods=['post'])
     def complete(self, request, pk=None):
         """

@@ -14,7 +14,7 @@ from .serializers import TodoSerializer, TodoCreateUpdateSerializer
 class TodoViewSet(viewsets.ModelViewSet):
     """
     ViewSet for Todo CRUD operations
-    
+
     Provides:
     - list: GET /api/todos/
     - create: POST /api/todos/
@@ -32,13 +32,13 @@ class TodoViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'description']
     ordering_fields = ['created_at', 'updated_at', 'due_date', 'priority']
     ordering = ['-created_at']
-    
+
     def get_queryset(self):
         """
         Return todos for the current user
         """
         return Todo.objects.filter(user=self.request.user)
-    
+
     def get_serializer_class(self):
         """
         Return appropriate serializer based on action
@@ -46,13 +46,13 @@ class TodoViewSet(viewsets.ModelViewSet):
         if self.action in ['create', 'update', 'partial_update']:
             return TodoCreateUpdateSerializer
         return TodoSerializer
-    
+
     def perform_create(self, serializer):
         """
         Set the user when creating a todo
         """
         serializer.save(user=self.request.user)
-    
+
     @action(detail=True, methods=['post'])
     def complete(self, request, pk=None):
         """
@@ -64,7 +64,7 @@ class TodoViewSet(viewsets.ModelViewSet):
         todo.save()
         serializer = self.get_serializer(todo)
         return Response(serializer.data)
-    
+
     @action(detail=False, methods=['get'])
     def my_todos(self, request):
         """
@@ -75,10 +75,10 @@ class TodoViewSet(viewsets.ModelViewSet):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-    
+
     @action(detail=False, methods=['get'])
     def statistics(self, request):
         """
@@ -89,7 +89,7 @@ class TodoViewSet(viewsets.ModelViewSet):
         pending = queryset.filter(status='pending').count()
         in_progress = queryset.filter(status='in_progress').count()
         completed = queryset.filter(status='completed').count()
-        
+
         return Response({
             'total': total,
             'pending': pending,

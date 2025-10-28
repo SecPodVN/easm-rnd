@@ -11,5 +11,6 @@
     "files.trimFinalNewlines": true,
     "editor.renderControlCharacters": true,
     "editor.renderWhitespace": "boundary",
-    "files.eolMarker": "lf"
+    "files.eolMarker": "lf",
+    "chatgpt.runCodexInWindowsSubsystemForLinux": true
 }

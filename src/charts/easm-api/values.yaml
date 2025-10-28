@@ -93,12 +93,16 @@ redis:
 
 # MongoDB configuration
 mongodb:
+  # Service enablement flag
+  enabled: true
   # Default: use external MongoDB (Bitnami) in Skaffold deployments.
-  # Set to true if you want the chart to deploy its own MongoDB instance.
-  enabled: false
+  # Set deploy to true if you want the chart to deploy its own MongoDB instance.
+  deploy: false
   host: mongodb
   port: 27017
-  database: easm_mongo
+  database: easm_db
+  username: easm_user
+  password: easm_password
 
 # Django configuration
 django:

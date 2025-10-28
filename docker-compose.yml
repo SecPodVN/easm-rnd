@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   postgres:
@@ -11,9 +11,13 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-easm_user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-easm_password}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_LOCAL_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-easm_user} -d ${POSTGRES_DB:-easm_db}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-easm_user} -d ${POSTGRES_DB:-easm_db}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -22,7 +26,7 @@ services:
     image: redis:8-alpine
     container_name: easm-redis
     ports:
-      - "6379:6379"
+      - "${REDIS_LOCAL_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -54,9 +58,9 @@ services:
       - ./src/backend:/app
       - static_volume:/app/staticfiles
     ports:
-      - "8000:8000"
+      - "${API_LOCAL_PORT:-8000}:8000"
     env_file:
-      - .env
+      - skaffold.env
     environment:
       - POSTGRES_HOST=postgres
       - REDIS_HOST=redis

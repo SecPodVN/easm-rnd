@@ -30,6 +30,7 @@ easm-rnd/
 
 ### Backend
 
+<<<<<<< HEAD
 | Name                          | Version | Description                        |
 |-------------------------------|---------|-----------------------------------|
 | Python                        | 3.12+   | Python runtime                    |
@@ -48,28 +49,46 @@ easm-rnd/
 | drf-spectacular               | 0.27+   | OpenAPI schema generation         |
 | django-cors-headers           | 4.3+    | CORS handling                     |
 | django-filter                 | 23.5+   | Filtering support                 |
+=======
+| Name                          | Version | Description                    |
+| ----------------------------- | ------- | ------------------------------ |
+| Python                        | 3.13+   | Latest stable Python version   |
+| Django                        | 5.2+    | Web framework                  |
+| Django REST Framework         | 3.15+   | RESTful API toolkit            |
+| djangorestframework-simplejwt | 5.3+    | JWT authentication             |
+| Poetry                        | 2.2+    | Dependency management          |
+| PostgreSQL                    | 18+     | Primary database               |
+| psycopg2-binary               | 2.9+    | PostgreSQL adapter for Python  |
+| Redis                         | 7.4+    | Caching and session store      |
+| redis (Python)                | 5.0+    | Redis Python client            |
+| django-redis                  | 5.4+    | Redis cache backend for Django |
+| Gunicorn                      | 21.2+   | WSGI HTTP Server               |
+| drf-spectacular               | 0.27+   | OpenAPI schema generation      |
+| django-cors-headers           | 4.3+    | CORS handling                  |
+| django-filter                 | 23.5+   | Filtering support              |
+>>>>>>> c12f4f2 (feat(env): Read from skaffold.env only for both k8s and docker)
 
 ### Frontend
 
-| Name           | Version       | Description               |
-|----------------|---------------|---------------------------|
-| React          | 18.3+         | UI library                |
-| TypeScript     | 5.6+          | Type-safe JavaScript      |
-| Vite           | 5.4+          | Build tool and dev server |
-| pnpm / Yarn    | 9.12+ / 4.5+  | Package manager           |
-| React Router   | 6.26+         | Client-side routing       |
-| TanStack Query | 5.56+         | Server state management   |
-| Tailwind CSS   | 3.4+          | Utility-first CSS         |
+| Name           | Version      | Description               |
+| -------------- | ------------ | ------------------------- |
+| React          | 18.3+        | UI library                |
+| TypeScript     | 5.6+         | Type-safe JavaScript      |
+| Vite           | 5.4+         | Build tool and dev server |
+| pnpm / Yarn    | 9.12+ / 4.5+ | Package manager           |
+| React Router   | 6.26+        | Client-side routing       |
+| TanStack Query | 5.56+        | Server state management   |
+| Tailwind CSS   | 3.4+         | Utility-first CSS         |
 
 ### Infra
 
-| Name       | Version | Description                  |
-|------------|---------|------------------------------|
-| Docker     | 27.3+   | Containerization             |
-| Minikube   | 1.34+   | Local Kubernetes cluster     |
-| Skaffold   | 2.13+   | Local development workflow   |
-| Helm       | 3.16+   | Kubernetes package manager   |
-| Kubernetes | 1.31+   | Container orchestration      |
+| Name       | Version | Description                |
+| ---------- | ------- | -------------------------- |
+| Docker     | 27.3+   | Containerization           |
+| Minikube   | 1.34+   | Local Kubernetes cluster   |
+| Skaffold   | 2.13+   | Local development workflow |
+| Helm       | 3.16+   | Kubernetes package manager |
+| Kubernetes | 1.31+   | Container orchestration    |
 
 ## 🛠️ Prerequisites
 
@@ -85,12 +104,27 @@ easm-rnd/
 
 ## 🏃 Getting Started
 
+### Environment Configuration
+
+This project uses a **single environment file** (`skaffold.env`) for both Skaffold and Docker Compose deployments.
+
+```bash
+# Copy the example environment file
+cp skaffold.env.example skaffold.env
+
+# Edit skaffold.env with your configuration
+# Update SECRET_KEY, POSTGRES_PASSWORD, and other values as needed
+```
+
 ### Local Development with Docker Compose
 
 ```bash
 # Clone the repository
 git clone <repository-url>
 cd easm-rnd
+
+# Setup environment file
+cp skaffold.env.example skaffold.env
 
 # Start all services
 docker-compose up -d
@@ -111,6 +145,12 @@ pnpm dev      # or yarn dev
 ### Local Development with Minikube & Skaffold
 
 ```bash
+# Setup environment file (if not done already)
+cp skaffold.env.example skaffold.env
+
+# Edit skaffold.env to configure ports and other settings
+# Optional: Change API_LOCAL_PORT, POSTGRES_LOCAL_PORT, REDIS_LOCAL_PORT
+
 # Start Minikube
 minikube start --cpus=4 --memory=8192 --driver=docker
 
@@ -118,12 +158,31 @@ minikube start --cpus=4 --memory=8192 --driver=docker
 minikube addons enable ingress
 minikube addons enable metrics-server
 
-# Start Skaffold for hot-reload development
+# Option 1: Use the interactive deployment script (RECOMMENDED)
+# PowerShell (if execution policy blocks, use bypass):
+powershell -ExecutionPolicy Bypass -File .\skaffold.ps1
+
+# Or set execution policy once:
+# Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# Bash/Linux/macOS:
+./skaffold.sh
+
+# The script will:
+# - Load environment variables from skaffold.env
+# - Generate temporary skaffold config with your custom ports
+# - Show you deployment mode options
+# - Display the ports being used
+# - Clean up temporary files automatically
+
+# Option 2: Run Skaffold directly (uses default ports 8000, 5432, 6379)
 skaffold dev
 
 # Access services
 minikube service list
 ```
+
+**Note:** The `skaffold.ps1` and `skaffold.sh` scripts automatically read port configuration from `skaffold.env` and generate a temporary `skaffold.yaml` with your custom ports. This is the recommended way to use custom ports since Skaffold doesn't support port override via CLI flags.
 
 ### Manual Kubernetes Deployment
 

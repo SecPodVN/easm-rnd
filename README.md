@@ -30,7 +30,6 @@ easm-rnd/
 
 ### Backend
 
-<<<<<<< HEAD
 | Name                          | Version | Description                        |
 |-------------------------------|---------|-----------------------------------|
 | Python                        | 3.12+   | Python runtime                    |
@@ -49,24 +48,6 @@ easm-rnd/
 | drf-spectacular               | 0.27+   | OpenAPI schema generation         |
 | django-cors-headers           | 4.3+    | CORS handling                     |
 | django-filter                 | 23.5+   | Filtering support                 |
-=======
-| Name                          | Version | Description                    |
-| ----------------------------- | ------- | ------------------------------ |
-| Python                        | 3.13+   | Latest stable Python version   |
-| Django                        | 5.2+    | Web framework                  |
-| Django REST Framework         | 3.15+   | RESTful API toolkit            |
-| djangorestframework-simplejwt | 5.3+    | JWT authentication             |
-| Poetry                        | 2.2+    | Dependency management          |
-| PostgreSQL                    | 18+     | Primary database               |
-| psycopg2-binary               | 2.9+    | PostgreSQL adapter for Python  |
-| Redis                         | 7.4+    | Caching and session store      |
-| redis (Python)                | 5.0+    | Redis Python client            |
-| django-redis                  | 5.4+    | Redis cache backend for Django |
-| Gunicorn                      | 21.2+   | WSGI HTTP Server               |
-| drf-spectacular               | 0.27+   | OpenAPI schema generation      |
-| django-cors-headers           | 4.3+    | CORS handling                  |
-| django-filter                 | 23.5+   | Filtering support              |
->>>>>>> c12f4f2 (feat(env): Read from skaffold.env only for both k8s and docker)
 
 ### Frontend
 

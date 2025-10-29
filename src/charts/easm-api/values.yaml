@@ -4,6 +4,12 @@ replicaCount: 1
 # Application version
 appVersion: "0.1.0"
 
+# Service enablement flags
+# Service ONLY disabled when value is exactly "False" (case-sensitive)
+# All other values (including true, True, yes, etc.) will enable the service
+easmApi:
+  enabled: true
+
 image:
   repository: easm-api
   pullPolicy: IfNotPresent
@@ -63,9 +69,11 @@ affinity: {}
 
 # PostgreSQL configuration
 postgresql:
+  # Service enablement flag
+  enabled: true
   # Default: use external Postgres (Bitnami) in Skaffold deployments.
-  # Set to true if you want the chart to deploy its own PostgreSQL instance.
-  enabled: false
+  # Set deploy to true if you want the chart to deploy its own PostgreSQL instance.
+  deploy: false
   host: postgres
   port: 5432
   database: easm_db
@@ -74,21 +82,27 @@ postgresql:
 
 # Redis configuration
 redis:
+  # Service enablement flag
+  enabled: true
   # Default: use external Redis (Bitnami) in Skaffold deployments.
-  # Set to true if you want the chart to deploy its own Redis instance.
-  enabled: false
+  # Set deploy to true if you want the chart to deploy its own Redis instance.
+  deploy: false
   host: redis
   port: 6379
   db: 0
 
 # MongoDB configuration
 mongodb:
+  # Service enablement flag
+  enabled: true
   # Default: use external MongoDB (Bitnami) in Skaffold deployments.
-  # Set to true if you want the chart to deploy its own MongoDB instance.
-  enabled: false
+  # Set deploy to true if you want the chart to deploy its own MongoDB instance.
+  deploy: false
   host: mongodb
   port: 27017
-  database: easm_mongo
+  database: easm_db
+  username: easm_user
+  password: easm_password
 
 # Django configuration
 django:

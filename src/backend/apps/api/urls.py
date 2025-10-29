@@ -5,7 +5,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 # Import todos and auth views
-from .views import api_root, register, TodoViewSet
+from .views import api_root, TodoViewSet
 
 # Import scanner views
 from .scanner.views import (
@@ -27,8 +27,6 @@ urlpatterns = [
     # API root endpoint
     path('', api_root, name='api-root'),
 
-    # User registration
-    path('register/', register, name='user-register'),
     # Scanner health check
     path('scanner/healthStatus', scanner_health, name='scanner-health'),
 

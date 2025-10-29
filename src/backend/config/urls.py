@@ -12,10 +12,23 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from drf_spectacular.utils import extend_schema
 
 from .health import health_check, readiness_check, liveness_check
+from apps.api.views import register
 from django.conf import settings
 from django.conf.urls.static import static
+
+
+# Custom JWT views with proper tags for documentation
+@extend_schema(tags=['Authentication'])
+class CustomTokenObtainPairView(TokenObtainPairView):
+    pass
+
+
+@extend_schema(tags=['Authentication'])
+class CustomTokenRefreshView(TokenRefreshView):
+    pass
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,8 +39,9 @@ urlpatterns = [
     path('health/live/', liveness_check, name='liveness'),
 
     # JWT Authentication
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/register/', register, name='token_register'),
 
     # API endpoints - Centralized REST API (includes todos and scanner)
     path('api/', include('apps.api.urls')),

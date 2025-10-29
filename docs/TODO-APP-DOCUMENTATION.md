@@ -65,7 +65,7 @@ src/backend/
 
 ### Authentication Endpoints
 ```http
-POST /api/register/          # Register new user
+POST /api/token/register/    # Register new user
 POST /api/token/             # Login (get JWT tokens)
 POST /api/token/refresh/     # Refresh access token
 ```
@@ -102,14 +102,14 @@ class Todo(models.Model):
     # Basic Information
     title = CharField(max_length=200)           # Required
     description = TextField(blank=True)         # Optional
-    
+
     # Status & Priority
     status = CharField(max_length=20)           # pending/in_progress/completed
     priority = CharField(max_length=10)         # low/medium/high
-    
+
     # User Association
     user = ForeignKey(User)                     # Owner of the todo
-    
+
     # Timestamps
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
@@ -200,7 +200,7 @@ JWT_REFRESH_TOKEN_LIFETIME=1440
 
 ### 1. User Registration
 ```bash
-curl -X POST http://localhost:8000/api/register/ \
+curl -X POST http://localhost:8000/api/token/register/ \
   -H "Content-Type: application/json" \
   -d '{
     "username": "johndoe",
@@ -453,6 +453,6 @@ docker compose exec api python manage.py test --with-coverage
 
 For questions, issues, or contributions, please refer to the main project repository.
 
-**API Base URL**: `http://localhost:8000/api/`  
-**Documentation**: `http://localhost:8000/api/docs/`  
+**API Base URL**: `http://localhost:8000/api/`
+**Documentation**: `http://localhost:8000/api/docs/`
 **Version**: 1.0.0

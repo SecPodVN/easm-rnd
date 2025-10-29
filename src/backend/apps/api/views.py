@@ -225,7 +225,7 @@ def api_root(request):
         'version': '1.0.0',
         'endpoints': {
             'auth': {
-                'register': '/api/register/',
+                'register': '/api/token/register/',
                 'token_obtain': '/api/token/',
                 'token_refresh': '/api/token/refresh/',
             },

@@ -7,12 +7,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
-<<<<<<< HEAD
 from django.contrib.auth.models import User
 from drf_spectacular.utils import extend_schema, OpenApiExample
 from apps.todos.models import Todo
 from .serializers import TodoSerializer, TodoCreateUpdateSerializer, UserRegistrationSerializer, UserSerializer
-=======
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 from apps.todos.models import Todo
@@ -31,7 +29,6 @@ from .serializers import (
 # ============================================================================
 # TODO VIEWSETS
 # ============================================================================
->>>>>>> 9f021e7 (feat(scanner): refactor serializers to be in /api)
 
 
 @extend_schema(tags=['Todos'])

@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from apps.todos.models import Todo
 
 
-<<<<<<< HEAD
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """
     User registration serializer
@@ -27,11 +26,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         validated_data.pop('password_confirm')
         user = User.objects.create_user(**validated_data)
         return user
-=======
 # ============================================================================
 # TODO SERIALIZERS
 # ============================================================================
->>>>>>> 9f021e7 (feat(scanner): refactor serializers to be in /api)
 
 
 class UserSerializer(serializers.ModelSerializer):

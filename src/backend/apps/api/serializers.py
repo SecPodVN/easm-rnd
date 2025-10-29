@@ -1,5 +1,5 @@
 """
-REST API Serializers - Centralized serializers for API
+REST API Serializers - Todos and Authentication
 """
 from rest_framework import serializers
 from django.contrib.auth.models import User

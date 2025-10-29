@@ -175,4 +175,11 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'EASM Django REST API',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'TAGS': [
+        {'name': 'Authentication', 'description': 'Authentication endpoints (JWT tokens)'},
+        {'name': 'Todos', 'description': 'Todo management endpoints'},
+        {'name': 'Scanner', 'description': 'Security scanner endpoints'},
+    ],
+    'SCHEMA_COERCE_PATH_PK_SUFFIX': True,
+    'COMPONENT_SPLIT_REQUEST': True,
 }

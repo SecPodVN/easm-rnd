@@ -1,5 +1,5 @@
 """
-REST API Views - Centralized REST API business logic
+REST API Views - Todos and Authentication
 """
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action, api_view, permission_classes
@@ -7,10 +7,19 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
-from django.contrib.auth.models import User
-from drf_spectacular.utils import extend_schema, OpenApiExample
+from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
+
 from apps.todos.models import Todo
-from .serializers import TodoSerializer, TodoCreateUpdateSerializer, UserRegistrationSerializer, UserSerializer
+
+from .serializers import (
+    UserSerializer, UserRegistrationSerializer,
+    TodoSerializer, TodoCreateUpdateSerializer
+)
+
+
+# ============================================================================
+# TODO VIEWSETS
+# ============================================================================
 
 
 @extend_schema(tags=['Todos'])
@@ -59,6 +68,11 @@ class TodoViewSet(viewsets.ModelViewSet):
         """
         serializer.save(user=self.request.user)
 
+    @extend_schema(
+        summary="Mark todo as completed",
+        description="Mark a specific todo as completed and set completion timestamp.",
+        responses={200: TodoSerializer}
+    )
     @action(detail=True, methods=['post'])
     def complete(self, request, pk=None):
         """
@@ -224,6 +238,12 @@ def api_root(request):
                 'complete': '/api/todos/{id}/complete/',
                 'my_todos': '/api/todos/my_todos/',
                 'statistics': '/api/todos/statistics/',
+            },
+            'scanner': {
+                'resources': '/api/scanner/resources/',
+                'rules': '/api/scanner/rules/',
+                'findings': '/api/scanner/findings/',
+                'scan': '/api/scanner/scan/',
             },
             'docs': {
                 'swagger': '/api/docs/',

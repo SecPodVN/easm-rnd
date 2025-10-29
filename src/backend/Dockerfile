@@ -1,5 +1,5 @@
 # FROM python:3.12-slim
-FROM python:3.12-slim
+FROM python:3.13
 # Force rebuild - Updated 2025-10-27 for MongoDB support
 ARG REBUILD=2025-10-27-22:00
 

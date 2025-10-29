@@ -7,17 +7,14 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
-from django.contrib.auth.models import User
-from drf_spectacular.utils import extend_schema, OpenApiExample
-from apps.todos.models import Todo
-from .serializers import TodoSerializer, TodoCreateUpdateSerializer, UserRegistrationSerializer, UserSerializer
-from drf_spectacular.utils import extend_schema, OpenApiResponse
+from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
 
 from apps.todos.models import Todo
 from apps.scanner.models import Resource, Rule, Finding
 from apps.scanner.engine import ScanEngine
 
 from .serializers import (
+    UserSerializer, UserRegistrationSerializer,
     TodoSerializer, TodoCreateUpdateSerializer,
     ResourceSerializer, ResourceUploadSerializer, ResourceListSerializer,
     RuleSerializer, RuleUploadSerializer, FindingSerializer,
@@ -77,6 +74,11 @@ class TodoViewSet(viewsets.ModelViewSet):
         """
         serializer.save(user=self.request.user)
 
+    @extend_schema(
+        summary="Mark todo as completed",
+        description="Mark a specific todo as completed and set completion timestamp.",
+        responses={200: TodoSerializer}
+    )
     @action(detail=True, methods=['post'])
     def complete(self, request, pk=None):
         """
@@ -263,7 +265,7 @@ def api_root(request):
 # ============================================================================
 
 @extend_schema(
-    tags=['Scanner - Health'],
+    tags=['Scanner'],
     summary='Scanner health check',
     description='Returns health status of the scanner service.',
     responses={200: OpenApiResponse(description='Scanner service is healthy')}
@@ -279,6 +281,7 @@ def scanner_health(request):
     })
 
 
+@extend_schema(tags=['Scanner'])
 class ResourceViewSet(viewsets.ViewSet):
     """
     ViewSet for Resource CRUD operations with MongoDB.
@@ -291,7 +294,6 @@ class ResourceViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
 
     @extend_schema(
-        tags=['Scanner - Resources'],
         summary='Upload resources in bulk',
         description='Bulk inserts an array of resource objects into the MongoDB resources collection.',
         request=ResourceUploadSerializer,
@@ -314,7 +316,6 @@ class ResourceViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(
-        tags=['Scanner - Resources'],
         summary='List resources with filtering and pagination',
         description='Returns a paginated list of resources matching the filter, with search and sort capabilities.',
         request=ResourceListSerializer,
@@ -350,7 +351,6 @@ class ResourceViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(
-        tags=['Scanner - Resources'],
         summary='Delete resources by filter',
         description='Deletes resources matching the specified MongoDB filter.',
         request=DeleteSerializer,
@@ -373,6 +373,7 @@ class ResourceViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(tags=['Scanner'])
 class RuleViewSet(viewsets.ViewSet):
     """
     ViewSet for Rule CRUD operations with MongoDB.
@@ -384,7 +385,6 @@ class RuleViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
 
     @extend_schema(
-        tags=['Scanner - Rules'],
         summary='Upload rules in bulk',
         description='Bulk inserts an array of rule objects into the MongoDB rules collection.',
         request=RuleUploadSerializer,
@@ -407,7 +407,6 @@ class RuleViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(
-        tags=['Scanner - Rules'],
         summary='Delete rules by filter',
         description='Deletes rules matching the specified MongoDB filter.',
         request=DeleteSerializer,
@@ -430,6 +429,7 @@ class RuleViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(tags=['Scanner'])
 class FindingViewSet(viewsets.ViewSet):
     """
     ViewSet for Finding operations and analytics with MongoDB.
@@ -443,7 +443,6 @@ class FindingViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
 
     @extend_schema(
-        tags=['Scanner - Findings'],
         summary='List all findings',
         description='Returns all findings from the findings collection. Each finding represents a detected issue from resource scanning.',
         responses={
@@ -459,7 +458,6 @@ class FindingViewSet(viewsets.ViewSet):
         return Response(findings, status=status.HTTP_200_OK)
 
     @extend_schema(
-        tags=['Scanner - Analytics'],
         summary='Get severity status summary',
         description='Aggregates findings by severity level (CRITICAL, HIGH, MEDIUM, LOW, INFO).',
         responses={
@@ -476,7 +474,6 @@ class FindingViewSet(viewsets.ViewSet):
         return Response(severity_counts, status=status.HTTP_200_OK)
 
     @extend_schema(
-        tags=['Scanner - Analytics'],
         summary='Get issues by resource type',
         description='Aggregates findings by resource type.',
         responses={
@@ -493,7 +490,6 @@ class FindingViewSet(viewsets.ViewSet):
         return Response(results, status=status.HTTP_200_OK)
 
     @extend_schema(
-        tags=['Scanner - Analytics'],
         summary='Get issues by region',
         description='Joins findings with resources to get region information and aggregates findings by region.',
         responses={
@@ -510,6 +506,7 @@ class FindingViewSet(viewsets.ViewSet):
         return Response(results, status=status.HTTP_200_OK)
 
 
+@extend_schema(tags=['Scanner'])
 class ScannerViewSet(viewsets.ViewSet):
     """
     ViewSet for scanning operations.
@@ -520,7 +517,6 @@ class ScannerViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
 
     @extend_schema(
-        tags=['Scanner - Scanning'],
         summary='Scan all resources against rules',
         description='Fetches all resources and rules, evaluates each resource against all rules using the logic engine, and creates findings for any matches.',
         responses={

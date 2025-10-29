@@ -4,8 +4,11 @@ REST API URL Configuration - Centralized API routing (Todos and Scanner)
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-# Import todos and auth views
-from .views import api_root, TodoViewSet
+# Import auth views
+from .views import api_root
+
+# Import todos views
+from .todos.views import TodoViewSet
 
 # Import scanner views
 from .scanner.views import (

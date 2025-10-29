@@ -4,6 +4,8 @@
 
 The Todo App is a RESTful task management application built with Django REST Framework that allows users to create, manage, and track their personal tasks. It provides a complete CRUD (Create, Read, Update, Delete) interface with advanced features like filtering, sorting, and task statistics.
 
+> **Recent Update**: The API has been restructured into a modular architecture where todo-related functionality is organized in `apps/api/todos/` module, providing better code organization and maintainability.
+
 ## Table of Contents
 
 1. [Architecture](#architecture)
@@ -13,8 +15,9 @@ The Todo App is a RESTful task management application built with Django REST Fra
 5. [Authentication](#authentication)
 6. [Setup & Installation](#setup--installation)
 7. [Usage Examples](#usage-examples)
-8. [Error Handling](#error-handling)
-9. [Testing](#testing)
+8. [Development Guide](#development-guide)
+9. [Error Handling](#error-handling)
+10. [Testing](#testing)
 
 ## Architecture
 
@@ -23,9 +26,17 @@ The Todo App is a RESTful task management application built with Django REST Fra
 src/backend/
 ├── apps/
 │   ├── api/                 # Centralized API controller
-│   │   ├── views.py        # Todo API views and endpoints
-│   │   ├── serializers.py  # API serializers
+│   │   ├── views.py        # Authentication & API root views
+│   │   ├── serializers.py  # Authentication serializers
 │   │   ├── urls.py         # API routing
+│   │   ├── todos/          # Todo API module
+│   │   │   ├── views.py    # Todo ViewSet and endpoints
+│   │   │   ├── serializers.py # Todo serializers
+│   │   │   └── __init__.py
+│   │   ├── scanner/        # Scanner API module
+│   │   │   ├── views.py    # Scanner views and endpoints
+│   │   │   ├── serializers.py # Scanner serializers
+│   │   │   └── __init__.py
 │   │   └── ...
 │   └── todos/              # Todo data models
 │       ├── models.py       # Todo model definition
@@ -36,10 +47,36 @@ src/backend/
 ```
 
 ### Design Pattern
-- **Centralized API Pattern**: All API logic is handled by the `api` app
-- **Separation of Concerns**: Data models in `todos` app, API logic in `api` app
+- **Modular API Architecture**: API functionality organized into focused modules (todos, scanner, auth)
+- **Centralized Routing**: Main `api` app coordinates all API endpoints
+- **Separation of Concerns**: Data models in dedicated apps, API logic in modular API components
 - **RESTful Design**: Standard HTTP methods for CRUD operations
 - **Token-based Authentication**: JWT tokens for secure API access
+
+### API Module Organization
+The API follows a modular structure where related functionality is grouped together:
+
+#### Authentication Module (`api/views.py` & `api/serializers.py`)
+- User registration endpoint
+- API root information endpoint
+- Authentication-related serializers
+
+#### Todo Module (`api/todos/`)
+- `TodoViewSet`: Complete CRUD operations for todos
+- `TodoSerializer`: Data serialization for API responses
+- `TodoCreateUpdateSerializer`: Validation for create/update operations
+- Custom actions: complete, my_todos, statistics
+
+#### Scanner Module (`api/scanner/`)
+- Security scanner endpoints and functionality
+- Resource, rule, and finding management
+- Scan execution capabilities
+
+This modular approach provides:
+- **Better Code Organization**: Related functionality grouped together
+- **Easier Maintenance**: Changes to one module don't affect others
+- **Scalability**: Easy to add new modules without disrupting existing code
+- **Team Development**: Different developers can work on different modules independently
 
 ## Features
 
@@ -327,6 +364,30 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
     "status": ["Invalid status value."]
 }
 ```
+
+## Development Guide
+
+### Code Organization
+When working with the Todo API, you'll primarily interact with these files:
+
+#### Todo-related Development
+- **Models**: `apps/todos/models.py` - Todo data model definition
+- **API Views**: `apps/api/todos/views.py` - Todo API endpoints and business logic
+- **API Serializers**: `apps/api/todos/serializers.py` - Data validation and serialization
+- **URLs**: `apps/api/urls.py` - API routing configuration
+
+#### Authentication Development
+- **API Views**: `apps/api/views.py` - Registration and API root endpoints
+- **API Serializers**: `apps/api/serializers.py` - User registration serializers
+- **URLs**: `config/urls.py` - JWT token endpoints
+
+#### Adding New Features
+To add new todo-related features:
+1. Add model changes in `apps/todos/models.py`
+2. Create/run migrations: `python manage.py makemigrations && python manage.py migrate`
+3. Update serializers in `apps/api/todos/serializers.py`
+4. Add/modify views in `apps/api/todos/views.py`
+5. Update URL routing if needed in `apps/api/urls.py`
 
 ## Testing
 

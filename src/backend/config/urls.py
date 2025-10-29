@@ -29,11 +29,8 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
-    # API endpoints - Centralized REST API
+    # API endpoints - Centralized REST API (includes todos and scanner)
     path('api/', include('apps.api.urls')),
-
-    # Scanner API endpoints
-    path('api/scanner/', include('apps.scanner.urls')),
 
     # API Documentation
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

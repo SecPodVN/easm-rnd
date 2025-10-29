@@ -109,10 +109,11 @@ Write-Host "  1) Development (skaffold dev - with hot reload)"
 Write-Host "  2) One-time deployment (skaffold run)"
 Write-Host "  3) Development profile (no persistence)"
 Write-Host "  4) Production profile (with persistence and scaling)"
-Write-Host "  5) Auto-watch mode (.env changes trigger redeploy)" -ForegroundColor Green
+Write-Host "  5) DEBUG mode (skaffold dev --cleanup=false --status-check=false)"
+Write-Host "  6) Auto-watch mode (.env changes trigger redeploy)"
 Write-Host ""
 
-$choice = Read-Host "Enter your choice (1-5)"
+$choice = Read-Host "Enter your choice (1-6)"
 
 switch ($choice) {
     "1" {
@@ -176,6 +177,20 @@ switch ($choice) {
         Write-Host "To delete: skaffold delete" -ForegroundColor Yellow
     }
     "5" {
+        Write-Host ""
+        Write-Host "[>>] Starting Skaffold in DEBUG mode..." -ForegroundColor Magenta
+        Write-Host "[*] Cleanup on exit will be DISABLED" -ForegroundColor Yellow
+        Write-Host "[*] Press Ctrl+C to stop (resources will remain)" -ForegroundColor Yellow
+        Write-Host ""
+        skaffold dev --cleanup=false --status-check=false
+        Write-Host ""
+        Write-Host "[DEBUG] Resources are still running. To debug:" -ForegroundColor Cyan
+        Write-Host "  View logs: kubectl logs -f deployment/easm-api" -ForegroundColor Yellow
+        Write-Host "  Shell into pod: kubectl exec -it deployment/easm-api -- /bin/bash" -ForegroundColor Yellow
+        Write-Host "  Check packages: kubectl exec -it deployment/easm-api -- pip list" -ForegroundColor Yellow
+        Write-Host "  Delete when done: skaffold delete" -ForegroundColor Yellow
+    }
+    "6" {
         Write-Host ""
         Write-Host "[>>] Starting Auto-Watch Mode..." -ForegroundColor Green
         Write-Host "[*] Watching .env file for changes..." -ForegroundColor Cyan

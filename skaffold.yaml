@@ -53,10 +53,15 @@ deploy:
       # MongoDB from Bitnami (Latest LTS)
       - name: mongodb
         remoteChart: mongodb
-        repo: https://charts.bitnami.com/bitnami
-        version: "16.3.1"
+        repo: "{{.BITNAMI_REPO_URL}}"
+        version: "{{.MONGODB_CHART_VERSION}}"
         namespace: "{{.K8S_NAMESPACE}}"
         createNamespace: true
+        setValueTemplates:
+          auth.rootPassword: "{{.MONGODB_PASSWORD}}"
+          auth.username: "{{.MONGODB_USERNAME}}"
+          auth.password: "{{.MONGODB_PASSWORD}}"
+          auth.database: "{{.MONGODB_DB}}"
         setValues:
           auth.rootPassword: easm_password
           auth.username: easm_user
@@ -91,7 +96,7 @@ deploy:
           redis.enabled: "{{.REDIS_ENABLED}}"
           mongodb.host: "{{.MONGODB_HOST}}"
           mongodb.port: "{{.MONGODB_PORT}}"
-          mongodb.database: "{{.MONGODB_DATABASE}}"
+          mongodb.database: "{{.MONGODB_DB}}"
           mongodb.username: "{{.MONGODB_USERNAME}}"
           mongodb.password: "{{.MONGODB_PASSWORD}}"
           mongodb.enabled: "{{.MONGODB_ENABLED}}"
@@ -106,6 +111,7 @@ deploy:
           image.pullPolicy: Never
           postgresql.deploy: false
           redis.deploy: false
+          mongodb.deploy: false
         wait: false
 
 # Port forwarding configuration

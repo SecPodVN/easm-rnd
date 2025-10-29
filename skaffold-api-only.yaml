@@ -40,7 +40,7 @@ deploy:
           redis.enabled: "{{.REDIS_ENABLED}}"
           mongodb.host: "{{.MONGODB_HOST}}"
           mongodb.port: "{{.MONGODB_PORT}}"
-          mongodb.database: "{{.MONGODB_DATABASE}}"
+          mongodb.database: "{{.MONGODB_DB}}"
           mongodb.username: "{{.MONGODB_USERNAME}}"
           mongodb.password: "{{.MONGODB_PASSWORD}}"
           mongodb.enabled: "{{.MONGODB_ENABLED}}"

@@ -43,12 +43,22 @@ easm-rnd/
 │   ├── wsgi.py                # WSGI config
 │   └── asgi.py                # ASGI config
 │
-├── todos/                     # Todo application
-│   ├── models.py              # Todo model
-│   ├── serializers.py         # DRF serializers
-│   ├── views.py               # API views
-│   ├── urls.py                # Todo URLs
-│   └── admin.py               # Admin configuration
+├── apps/                      # Django applications
+│   ├── api/                   # Centralized API app
+│   │   ├── views.py           # Auth & API root views
+│   │   ├── serializers.py     # Auth serializers
+│   │   ├── urls.py            # API routing
+│   │   ├── todos/             # Todo API module
+│   │   │   ├── views.py       # Todo ViewSet
+│   │   │   ├── serializers.py # Todo serializers
+│   │   │   └── __init__.py
+│   │   └── scanner/           # Scanner API module
+│   │       ├── views.py       # Scanner views
+│   │       ├── serializers.py # Scanner serializers
+│   │       └── __init__.py
+│   └── todos/                 # Todo data models
+│       ├── models.py          # Todo model definition
+│       └── apps.py            # App configuration
 │
 ├── charts/easm-api/           # Helm chart (NEW LOCATION)
 │   ├── Chart.yaml

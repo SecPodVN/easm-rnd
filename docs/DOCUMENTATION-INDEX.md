@@ -137,11 +137,14 @@ Once running, visit: **http://localhost:8000/api/redoc/**
 ## 📋 Technology-Specific Documentation
 
 ### Python/Django
-- Django settings: `src/backend/easm/settings.py`
-- Models: `todos/models.py`
-- Views: `todos/views.py`
-- Serializers: `todos/serializers.py`
-- URL routing: `src/backend/easm/urls.py`
+- Django settings: `src/backend/config/settings.py`
+- Todo models: `src/backend/apps/todos/models.py`
+- Todo API views: `src/backend/apps/api/todos/views.py`
+- Todo API serializers: `src/backend/apps/api/todos/serializers.py`
+- Auth API views: `src/backend/apps/api/views.py`
+- Auth API serializers: `src/backend/apps/api/serializers.py`
+- API routing: `src/backend/apps/api/urls.py`
+- Main URL routing: `src/backend/config/urls.py`
 
 ### Docker
 - Dockerfile: `Dockerfile`

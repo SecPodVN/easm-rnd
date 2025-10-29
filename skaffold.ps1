@@ -18,24 +18,24 @@ trap {
 Write-Host "=== EASM Skaffold Deployment Script ===" -ForegroundColor Cyan
 Write-Host ""
 
-# Load environment variables from .env file
-$envFile = if (Test-Path ".env") { ".env" } else { $null }
-
-if ($envFile) {
-    Write-Host "[*] Loading environment variables from $envFile..." -ForegroundColor Yellow
-    Get-Content $envFile | Where-Object {
-        $_ -notmatch '^\s*#' -and $_ -notmatch '^\s*$'
-    } | ForEach-Object {
-        if ($_ -match '^\s*([^=]+)=(.*)$') {
-            $name = $matches[1].Trim()
-            $value = $matches[2].Trim()
-            [Environment]::SetEnvironmentVariable($name, $value, 'Process')
-            Write-Host "  [+] Set $name" -ForegroundColor Gray
+# Function to load environment variables from .env file
+function Load-EnvFile {
+    $envVars = @{}
+    if (Test-Path .env) {
+        Get-Content .env | ForEach-Object {
+            if ($_ -match '^\s*([^#][^=]+)=(.*)$') {
+                $name = $matches[1].Trim()
+                $value = $matches[2].Trim()
+                $envVars[$name] = $value
+                [Environment]::SetEnvironmentVariable($name, $value, 'Process')
+                Write-Host "  [+] Set $name" -ForegroundColor Gray
+            }
         }
     }
     return $envVars
 }
 
+$envFile = Load-EnvFile
 if (-not $envFile) {
     Write-Host "[ERROR] Failed to load environment variables from .env file" -ForegroundColor Red
 }

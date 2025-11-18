@@ -1,9 +1,10 @@
 version: "3.9"
 
+# Development docker-compose with hot-reload for frontend
 services:
   postgres:
     image: postgres:18-alpine
-    container_name: easm-postgres
+    container_name: easm-postgres-dev
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
@@ -24,7 +25,7 @@ services:
 
   redis:
     image: redis:8-alpine
-    container_name: easm-redis
+    container_name: easm-redis-dev
     ports:
       - "${REDIS_LOCAL_PORT:-6379}:6379"
     volumes:
@@ -37,7 +38,7 @@ services:
 
   mongodb:
     image: mongo:8-jammy
-    container_name: easm-mongodb
+    container_name: easm-mongodb-dev
     ports:
       - "27017:27017"
     volumes:
@@ -52,7 +53,7 @@ services:
 
   api:
     build: ./src/backend
-    container_name: easm-api
+    container_name: easm-api-dev
     command: sh /app/start-api.sh
     volumes:
       - ./src/backend:/app
@@ -79,14 +80,21 @@ services:
   frontend:
     build:
       context: ./src/frontend
-      dockerfile: Dockerfile
-    container_name: easm-frontend
+      dockerfile: Dockerfile.dev
+    container_name: easm-frontend-dev
+    volumes:
+      - ./src/frontend:/app
+      - /app/node_modules
     ports:
-      - "${FRONTEND_PORT:-80}:80"
+      - "${FRONTEND_PORT:-3000}:3000"
     depends_on:
       - api
     environment:
       - REACT_APP_API_URL=http://localhost:${API_LOCAL_PORT:-8000}
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    stdin_open: true
+    tty: true
     restart: unless-stopped
 
 volumes:

@@ -9,6 +9,10 @@ build:
       context: src/backend
       docker:
         dockerfile: Dockerfile
+    - image: easm-frontend
+      context: src/frontend
+      docker:
+        dockerfile: Dockerfile
   local:
     push: false
     useBuildkit: true
@@ -114,6 +118,21 @@ deploy:
           mongodb.deploy: false
         wait: false
 
+      # EASM Frontend from local Helm chart
+      - name: easm-frontend
+        chartPath: src/charts/easm-frontend
+        namespace: "{{.K8S_NAMESPACE}}"
+        createNamespace: true
+        setValueTemplates:
+          image.repository: "{{.FRONTEND_IMAGE}}"
+          image.tag: "{{.FRONTEND_IMAGE_TAG}}"
+          appVersion: "{{.FRONTEND_APP_VERSION}}"
+          frontend.apiUrl: "{{.FRONTEND_API_URL}}"
+          frontend.environment: "{{.FRONTEND_ENVIRONMENT}}"
+        setValues:
+          image.pullPolicy: Never
+        wait: false
+
 # Port forwarding configuration
 # NOTE: localPort does NOT support template variables (Skaffold limitation)
 #
@@ -123,6 +142,11 @@ deploy:
 #
 # These default ports are used ONLY when running "skaffold dev" directly
 portForward:
+  - resourceType: service
+    resourceName: easm-frontend
+    namespace: "{{.K8S_NAMESPACE}}"
+    port: 80
+    localPort: 3000 # Override with skaffold.ps1/sh or CLI flags
   - resourceType: service
     resourceName: easm-api
     namespace: "{{.K8S_NAMESPACE}}"

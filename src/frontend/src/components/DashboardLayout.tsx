@@ -31,7 +31,23 @@ import {
 
 const drawerWidth = 240;
 
-const DashboardLayout = ({ children }) => {
+interface MenuItem {
+  text: string;
+  icon: React.ReactNode;
+  active: boolean;
+}
+
+interface MenuItems {
+  general: MenuItem[];
+  dashboards: MenuItem[];
+  manage: MenuItem[];
+}
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openGeneral, setOpenGeneral] = useState(true);
   const [openDashboards, setOpenDashboards] = useState(true);
@@ -41,7 +57,7 @@ const DashboardLayout = ({ children }) => {
     setMobileOpen(!mobileOpen);
   };
 
-  const menuItems = {
+  const menuItems: MenuItems = {
     general: [
       { text: 'Inventory', icon: <InventoryIcon />, active: false },
       { text: 'Inventory changes (Preview)', icon: <InventoryIcon />, active: false },

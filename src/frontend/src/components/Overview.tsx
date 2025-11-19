@@ -13,9 +13,31 @@ import {
 import StatCard from './StatCard';
 import InsightCard from './InsightCard';
 
-const Overview = () => {
+interface AssetData {
+  icon: React.ReactNode;
+  title: string;
+  value: string;
+  lastDays: number;
+  change: number;
+}
+
+interface Insight {
+  name: string;
+  count: string;
+}
+
+interface InsightData {
+  title: string;
+  value: string;
+  color: string;
+  description: string;
+  insightsCount: string;
+  insights: Insight[];
+}
+
+const Overview: React.FC = () => {
   // Mock data - this would come from your API
-  const assetData = [
+  const assetData: AssetData[] = [
     { icon: <DomainIcon />, title: 'Domains', value: '4.7K', lastDays: 30, change: 16 },
     { icon: <HostIcon />, title: 'Hosts', value: '26.9K', lastDays: 30, change: -2.8 },
     { icon: <PageIcon />, title: 'Pages', value: '256.2K', lastDays: 30, change: 13.2 },
@@ -26,7 +48,7 @@ const Overview = () => {
     { icon: <ContactIcon />, title: 'Contacts', value: '152', lastDays: 30, change: 7 },
   ];
 
-  const insightsData = [
+  const insightsData: InsightData[] = [
     {
       title: 'High',
       value: '68',

@@ -10,8 +10,7 @@ import {
   Public as IPAddressIcon,
   Contacts as ContactIcon,
 } from '@mui/icons-material';
-import StatCard from './StatCard';
-import InsightCard from './InsightCard';
+import { StatCard, InsightCard } from '../../shared/components';
 
 interface AssetData {
   icon: React.ReactNode;

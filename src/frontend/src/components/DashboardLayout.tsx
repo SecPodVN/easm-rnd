@@ -20,61 +20,46 @@ import {
   Inventory as InventoryIcon,
   Security as SecurityIcon,
   Assessment as AssessmentIcon,
-  TrendingUp as TrendingUpIcon,
-  Label as LabelIcon,
-  Storage as StorageIcon,
-  Link as LinkIcon,
-  Task as TaskIcon,
+  BugReport as VulnIcon,
+  Search as DiscoveryIcon,
+  Description as ReportIcon,
+  Settings as SettingsIcon,
+  Notifications as NotificationIcon,
   ExpandLess,
   ExpandMore,
 } from '@mui/icons-material';
 
 const drawerWidth = 240;
 
-interface MenuItem {
-  text: string;
-  icon: React.ReactNode;
-  active: boolean;
-}
-
-interface MenuItems {
-  general: MenuItem[];
-  dashboards: MenuItem[];
-  manage: MenuItem[];
-}
-
 interface DashboardLayoutProps {
   children: React.ReactNode;
+  onNavigate?: (page: string) => void;
+  currentPage?: string;
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({
+  children,
+  onNavigate,
+  currentPage: externalCurrentPage
+}) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [openGeneral, setOpenGeneral] = useState(true);
-  const [openDashboards, setOpenDashboards] = useState(true);
-  const [openManage, setOpenManage] = useState(false);
+  const [openAssets, setOpenAssets] = useState(true);
+  const [openSecurity, setOpenSecurity] = useState(false);
+  const [openReports, setOpenReports] = useState(false);
+  const [internalCurrentPage, setInternalCurrentPage] = useState('overview');
+
+  const currentPage = externalCurrentPage || internalCurrentPage;
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const menuItems: MenuItems = {
-    general: [
-      { text: 'Inventory', icon: <InventoryIcon />, active: false },
-      { text: 'Inventory changes (Preview)', icon: <InventoryIcon />, active: false },
-    ],
-    dashboards: [
-      { text: 'Attack surface summary', icon: <SecurityIcon />, active: false },
-      { text: 'Security posture', icon: <SecurityIcon />, active: false },
-      { text: 'GDPR compliance', icon: <AssessmentIcon />, active: false },
-      { text: 'OWASP Top 10', icon: <TrendingUpIcon />, active: false },
-    ],
-    manage: [
-      { text: 'Discovery', icon: <TrendingUpIcon />, active: false },
-      { text: 'Labels', icon: <LabelIcon />, active: false },
-      { text: 'Billable assets', icon: <StorageIcon />, active: false },
-      { text: 'Data connections', icon: <LinkIcon />, active: false },
-      { text: 'Task manager', icon: <TaskIcon />, active: false },
-    ],
+  const handleNavigation = (page: string) => {
+    if (onNavigate) {
+      onNavigate(page);
+    } else {
+      setInternalCurrentPage(page);
+    }
   };
 
   const drawer = (
@@ -84,7 +69,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           <SecurityIcon />
           <Box>
             <Typography variant="subtitle1" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
-              EASM Resource
+              EASM Platform
             </Typography>
             <Typography variant="caption" sx={{ opacity: 0.9 }}>
               SecPod Saner EASM
@@ -93,11 +78,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         </Box>
       </Toolbar>
 
+      {/* Main Dashboard */}
       <List sx={{ pt: 2 }}>
         <ListItem disablePadding>
-          <ListItemButton selected>
+          <ListItemButton
+            selected={currentPage === 'overview'}
+            onClick={() => handleNavigation('overview')}
+          >
             <ListItemIcon>
-              <DashboardIcon color="primary" />
+              <DashboardIcon color={currentPage === 'overview' ? 'primary' : 'inherit'} />
             </ListItemIcon>
             <ListItemText primary="Overview" />
           </ListItemButton>
@@ -106,91 +95,154 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
       <Divider sx={{ my: 1 }} />
 
-      {/* General Section */}
+      {/* Discovery Section */}
       <List dense>
-        <ListItemButton onClick={() => setOpenGeneral(!openGeneral)}>
+        <ListItemButton onClick={() => setOpenAssets(!openAssets)}>
           <ListItemText
-            primary="General"
+            primary="Discovery & Assets"
             primaryTypographyProps={{
               variant: 'caption',
               sx: { fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase' }
             }}
           />
-          {openGeneral ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+          {openAssets ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
         </ListItemButton>
-        <Collapse in={openGeneral} timeout="auto" unmountOnExit>
+        <Collapse in={openAssets} timeout="auto" unmountOnExit>
           <List component="div" disablePadding dense>
-            {menuItems.general.map((item) => (
-              <ListItemButton key={item.text} sx={{ pl: 3 }}>
-                <ListItemIcon sx={{ minWidth: 36 }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.text}
-                  primaryTypographyProps={{ variant: 'body2' }}
-                />
-              </ListItemButton>
-            ))}
+            <ListItemButton
+              sx={{ pl: 3 }}
+              selected={currentPage === 'discovery'}
+              onClick={() => handleNavigation('discovery')}
+            >
+              <ListItemIcon sx={{ minWidth: 36 }}>
+                <DiscoveryIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Discovery Seeds"
+                primaryTypographyProps={{ variant: 'body2' }}
+              />
+            </ListItemButton>
+            <ListItemButton
+              sx={{ pl: 3 }}
+              selected={currentPage === 'inventory'}
+              onClick={() => handleNavigation('inventory')}
+            >
+              <ListItemIcon sx={{ minWidth: 36 }}>
+                <InventoryIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Asset Inventory"
+                primaryTypographyProps={{ variant: 'body2' }}
+              />
+            </ListItemButton>
           </List>
         </Collapse>
       </List>
 
-      {/* Dashboards Section */}
+      {/* Security Section */}
       <List dense>
-        <ListItemButton onClick={() => setOpenDashboards(!openDashboards)}>
+        <ListItemButton onClick={() => setOpenSecurity(!openSecurity)}>
           <ListItemText
-            primary="Dashboards"
+            primary="Security & Risk"
             primaryTypographyProps={{
               variant: 'caption',
               sx: { fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase' }
             }}
           />
-          {openDashboards ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+          {openSecurity ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
         </ListItemButton>
-        <Collapse in={openDashboards} timeout="auto" unmountOnExit>
+        <Collapse in={openSecurity} timeout="auto" unmountOnExit>
           <List component="div" disablePadding dense>
-            {menuItems.dashboards.map((item) => (
-              <ListItemButton key={item.text} sx={{ pl: 3 }}>
-                <ListItemIcon sx={{ minWidth: 36 }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.text}
-                  primaryTypographyProps={{ variant: 'body2' }}
-                />
-              </ListItemButton>
-            ))}
+            <ListItemButton
+              sx={{ pl: 3 }}
+              selected={currentPage === 'vulnerabilities'}
+              onClick={() => handleNavigation('vulnerabilities')}
+            >
+              <ListItemIcon sx={{ minWidth: 36 }}>
+                <VulnIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Vulnerabilities"
+                primaryTypographyProps={{ variant: 'body2' }}
+              />
+            </ListItemButton>
+            <ListItemButton sx={{ pl: 3 }}>
+              <ListItemIcon sx={{ minWidth: 36 }}>
+                <SecurityIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Risk Scoring"
+                primaryTypographyProps={{ variant: 'body2' }}
+              />
+            </ListItemButton>
+            <ListItemButton sx={{ pl: 3 }}>
+              <ListItemIcon sx={{ minWidth: 36 }}>
+                <NotificationIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Alerts & Monitoring"
+                primaryTypographyProps={{ variant: 'body2' }}
+              />
+            </ListItemButton>
           </List>
         </Collapse>
       </List>
 
-      {/* Manage Section */}
+      {/* Reports & Compliance */}
       <List dense>
-        <ListItemButton onClick={() => setOpenManage(!openManage)}>
+        <ListItemButton onClick={() => setOpenReports(!openReports)}>
           <ListItemText
-            primary="Manage"
+            primary="Reports & Compliance"
             primaryTypographyProps={{
               variant: 'caption',
               sx: { fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase' }
             }}
           />
-          {openManage ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+          {openReports ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
         </ListItemButton>
-        <Collapse in={openManage} timeout="auto" unmountOnExit>
+        <Collapse in={openReports} timeout="auto" unmountOnExit>
           <List component="div" disablePadding dense>
-            {menuItems.manage.map((item) => (
-              <ListItemButton key={item.text} sx={{ pl: 3 }}>
-                <ListItemIcon sx={{ minWidth: 36 }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.text}
-                  primaryTypographyProps={{ variant: 'body2' }}
-                />
-              </ListItemButton>
-            ))}
+            <ListItemButton
+              sx={{ pl: 3 }}
+              selected={currentPage === 'reports'}
+              onClick={() => handleNavigation('reports')}
+            >
+              <ListItemIcon sx={{ minWidth: 36 }}>
+                <ReportIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Report Builder"
+                primaryTypographyProps={{ variant: 'body2' }}
+              />
+            </ListItemButton>
+            <ListItemButton sx={{ pl: 3 }}>
+              <ListItemIcon sx={{ minWidth: 36 }}>
+                <AssessmentIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Compliance"
+                primaryTypographyProps={{ variant: 'body2' }}
+              />
+            </ListItemButton>
           </List>
         </Collapse>
+      </List>
+
+      <Divider sx={{ my: 1 }} />
+
+      {/* Settings */}
+      <List dense>
+        <ListItem disablePadding>
+          <ListItemButton
+            selected={currentPage === 'settings'}
+            onClick={() => handleNavigation('settings')}
+          >
+            <ListItemIcon>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Settings" />
+          </ListItemButton>
+        </ListItem>
       </List>
     </div>
   );

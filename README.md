@@ -16,6 +16,9 @@ easm-rnd/
 │   ├── public/
 │   ├── package.json
 │   └── tsconfig.json
+    - portal
+    - dashboard
+    - ui-core/share-or-common-component
 ├── infra/              # Kubernetes & deployment configs
 │   ├── helm/           # Helm charts
 │   ├── docker/         # Dockerfiles

@@ -1,7 +1,21 @@
 import React from 'react';
 import { Card, CardContent, Typography, Box, List, ListItem, ListItemText, Chip } from '@mui/material';
 
-const InsightCard = ({ title, value, description, color, insights, insightsCount }) => {
+interface Insight {
+  name: string;
+  count: string;
+}
+
+interface InsightCardProps {
+  title: string;
+  value: string;
+  description: string;
+  color: string;
+  insights?: Insight[];
+  insightsCount?: string;
+}
+
+const InsightCard: React.FC<InsightCardProps> = ({ title, value, description, color, insights, insightsCount }) => {
   return (
     <Card
       sx={{

@@ -2,7 +2,16 @@ import React from 'react';
 import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
 import { TrendingUp, TrendingDown } from '@mui/icons-material';
 
-const StatCard = ({ icon, title, value, lastDays, change, variant = 'default' }) => {
+interface StatCardProps {
+  icon: React.ReactNode;
+  title: string;
+  value: string;
+  lastDays: number;
+  change: number;
+  variant?: 'default' | 'warning' | 'success';
+}
+
+const StatCard: React.FC<StatCardProps> = ({ icon, title, value, lastDays, change, variant = 'default' }) => {
   const isPositive = change >= 0;
 
   return (

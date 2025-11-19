@@ -182,4 +182,9 @@ SPECTACULAR_SETTINGS = {
     ],
     'SCHEMA_COERCE_PATH_PK_SUFFIX': True,
     'COMPONENT_SPLIT_REQUEST': True,
+    'SWAGGER_UI_SETTINGS': {
+        'persistAuthorization': True,  # Persist authorization data on browser close/refresh
+        'displayRequestDuration': True,
+        'filter': True,
+    },
 }

@@ -41,16 +41,74 @@ if (-not $envFile) {
 }
 
 # Check if Kubernetes is running
-try {
-    kubectl cluster-info 2>&1 | Out-Null
+$k8sRunning = $false
+$null = kubectl cluster-info 2>&1
+if ($LASTEXITCODE -eq 0) {
+    $k8sRunning = $true
     Write-Host "[OK] Kubernetes cluster is running" -ForegroundColor Green
-} catch {
-    Write-Host "[ERROR] Kubernetes cluster is not running!" -ForegroundColor Red
-    Write-Host "Please start your cluster first:"
-    Write-Host "  - Minikube: minikube start"
-    Write-Host "  - Docker Desktop: Enable Kubernetes in settings"
-    Write-Host "  - Kind: kind create cluster"
-    exit 1
+}
+
+if (-not $k8sRunning) {
+    Write-Host "[WARNING] Kubernetes cluster is not running!" -ForegroundColor Yellow
+    Write-Host ""
+
+    # Check if minikube is available
+    $minikubeAvailable = Get-Command minikube -ErrorAction SilentlyContinue
+
+    if ($minikubeAvailable) {
+        Write-Host "[*] Attempting to start Minikube with Docker driver..." -ForegroundColor Cyan
+        Write-Host "[*] This may take a few minutes..." -ForegroundColor Yellow
+        
+        # Start minikube and wait for it to be ready
+        minikube start --driver=docker
+        
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host ""
+            Write-Host "[ERROR] Failed to start Minikube" -ForegroundColor Red
+            Write-Host ""
+            Write-Host "Please start your cluster manually:"
+            Write-Host "  - Minikube: minikube start --driver=docker"
+            Write-Host "  - Docker Desktop: Enable Kubernetes in settings"
+            Write-Host "  - Kind: kind create cluster"
+            exit 1
+        }
+        
+        # Wait for kubectl to be able to connect
+        Write-Host "[*] Waiting for Kubernetes to be ready..." -ForegroundColor Yellow
+        $maxRetries = 30
+        $retryCount = 0
+        $kubectlReady = $false
+        
+        while (-not $kubectlReady -and $retryCount -lt $maxRetries) {
+            $null = kubectl cluster-info 2>&1
+            if ($LASTEXITCODE -eq 0) {
+                $kubectlReady = $true
+                Write-Host ""
+                Write-Host "[OK] Minikube started successfully" -ForegroundColor Green
+            } else {
+                $retryCount++
+                Start-Sleep -Seconds 2
+                Write-Host "." -NoNewline -ForegroundColor Gray
+            }
+        }
+        
+        if (-not $kubectlReady) {
+            Write-Host ""
+            Write-Host "[ERROR] Kubernetes cluster did not become ready in time" -ForegroundColor Red
+            Write-Host ""
+            Write-Host "Please check the status manually:"
+            Write-Host "  - Check Minikube: minikube status"
+            Write-Host "  - Check kubectl: kubectl cluster-info"
+            exit 1
+        }
+    } else {
+        Write-Host "[ERROR] Minikube not found!" -ForegroundColor Red
+        Write-Host "Please install Minikube or start your cluster manually:"
+        Write-Host "  - Install Minikube: https://minikube.sigs.k8s.io/docs/start/"
+        Write-Host "  - Docker Desktop: Enable Kubernetes in settings"
+        Write-Host "  - Kind: kind create cluster"
+        exit 1
+    }
 }
 
 Write-Host ""

@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { Box, Typography, Paper, Select, MenuItem, FormControl, SelectChangeEvent } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Paper,
+  Button,
+  Popover,
+  TextField,
+  ButtonGroup
+} from '@mui/material';
 import {
   Language as DomainIcon,
   Security as CertIcon,
@@ -7,6 +15,7 @@ import {
   Public as IPIcon,
   ContactMail as ContactIcon,
   CalendarToday as CalendarIcon,
+  DateRange as DateRangeIcon,
 } from '@mui/icons-material';
 import { StatCard, InsightCard } from '../../shared/components';
 
@@ -34,7 +43,11 @@ interface InsightData {
 
 const Overview: React.FC = () => {
   // Date filter state
-  const [dateRange, setDateRange] = useState<string>('30');
+  const [dateRange, setDateRange] = useState<number>(30);
+  const [customDateAnchor, setCustomDateAnchor] = useState<HTMLButtonElement | null>(null);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  const [isCustomRange, setIsCustomRange] = useState<boolean>(false);
 
   // Get current date and format it
   const currentDate = new Date();
@@ -62,17 +75,49 @@ const Overview: React.FC = () => {
     timeZoneName: 'short'
   });
 
-  const handleDateRangeChange = (event: SelectChangeEvent<string>) => {
-    setDateRange(event.target.value);
+  const handleQuickRangeClick = (days: number) => {
+    setDateRange(days);
+    setIsCustomRange(false);
+    setStartDate('');
+    setEndDate('');
+  };
+
+  const handleCustomDateClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setCustomDateAnchor(event.currentTarget);
+  };
+
+  const handleCustomDateClose = () => {
+    setCustomDateAnchor(null);
+  };
+
+  const handleApplyCustomRange = () => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      setDateRange(diffDays);
+      setIsCustomRange(true);
+      handleCustomDateClose();
+    }
+  };
+
+  const customDateOpen = Boolean(customDateAnchor);
+
+  const getDateRangeLabel = () => {
+    if (isCustomRange && startDate && endDate) {
+      return `${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}`;
+    }
+    return `Last ${dateRange} Days`;
   };
 
   // Mock data - this would come from your API
   const assetData: AssetData[] = [
-    { icon: <DomainIcon />, title: 'Domains', value: '4.7K', lastDays: parseInt(dateRange), change: 16 },
-    { icon: <CertIcon />, title: 'SSL/TLS Certificates', value: '6.6K', lastDays: parseInt(dateRange), change: 546 },
-    { icon: <ASNIcon />, title: 'ASNs', value: '15', lastDays: parseInt(dateRange), change: 0 },
-    { icon: <IPIcon />, title: 'IP Addresses', value: '119.9K', lastDays: parseInt(dateRange), change: 103 },
-    { icon: <ContactIcon />, title: 'Contacts', value: '152', lastDays: parseInt(dateRange), change: 7 },
+    { icon: <DomainIcon />, title: 'Domains', value: '4.7K', lastDays: dateRange, change: 16 },
+    { icon: <CertIcon />, title: 'SSL/TLS Certificates', value: '6.6K', lastDays: dateRange, change: 546 },
+    { icon: <ASNIcon />, title: 'ASNs', value: '15', lastDays: dateRange, change: 0 },
+    { icon: <IPIcon />, title: 'IP Addresses', value: '119.9K', lastDays: dateRange, change: 103 },
+    { icon: <ContactIcon />, title: 'Contacts', value: '152', lastDays: dateRange, change: 7 },
   ];
 
   const insightsData: InsightData[] = [
@@ -145,32 +190,140 @@ const Overview: React.FC = () => {
         </Box>
 
         {/* Actions and Date Filter */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+            <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary', mr: 1 }}>
               Time Range:
             </Typography>
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <Select
-                value={dateRange}
-                onChange={handleDateRangeChange}
+
+            {/* Quick Date Range Buttons */}
+            <ButtonGroup variant="outlined" size="small">
+              <Button
+                onClick={() => handleQuickRangeClick(7)}
+                variant={dateRange === 7 && !isCustomRange ? 'contained' : 'outlined'}
                 sx={{
-                  fontSize: '0.875rem',
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#e0e0e0',
-                  },
-                  '&:hover .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#0078d4',
-                  },
+                  textTransform: 'none',
+                  fontSize: '0.813rem',
+                  minWidth: '60px',
                 }}
               >
-                <MenuItem value="7">Last 7 Days</MenuItem>
-                <MenuItem value="14">Last 14 Days</MenuItem>
-                <MenuItem value="30">Last 30 Days</MenuItem>
-                <MenuItem value="60">Last 60 Days</MenuItem>
-                <MenuItem value="90">Last 90 Days</MenuItem>
-              </Select>
-            </FormControl>
+                7d
+              </Button>
+              <Button
+                onClick={() => handleQuickRangeClick(14)}
+                variant={dateRange === 14 && !isCustomRange ? 'contained' : 'outlined'}
+                sx={{
+                  textTransform: 'none',
+                  fontSize: '0.813rem',
+                  minWidth: '60px',
+                }}
+              >
+                14d
+              </Button>
+              <Button
+                onClick={() => handleQuickRangeClick(30)}
+                variant={dateRange === 30 && !isCustomRange ? 'contained' : 'outlined'}
+                sx={{
+                  textTransform: 'none',
+                  fontSize: '0.813rem',
+                  minWidth: '60px',
+                }}
+              >
+                30d
+              </Button>
+              <Button
+                onClick={() => handleQuickRangeClick(60)}
+                variant={dateRange === 60 && !isCustomRange ? 'contained' : 'outlined'}
+                sx={{
+                  textTransform: 'none',
+                  fontSize: '0.813rem',
+                  minWidth: '60px',
+                }}
+              >
+                60d
+              </Button>
+            </ButtonGroup>
+
+            {/* Custom Date Range Button */}
+            <Button
+              onClick={handleCustomDateClick}
+              variant={isCustomRange ? 'contained' : 'outlined'}
+              size="small"
+              startIcon={<DateRangeIcon />}
+              sx={{
+                textTransform: 'none',
+                fontSize: '0.813rem',
+                ml: 1,
+              }}
+            >
+              Custom
+            </Button>
+
+            {/* Custom Date Range Popover */}
+            <Popover
+              open={customDateOpen}
+              anchorEl={customDateAnchor}
+              onClose={handleCustomDateClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+            >
+              <Box sx={{ p: 2, minWidth: 300 }}>
+                <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+                  Select Custom Date Range
+                </Typography>
+                <TextField
+                  label="Start Date"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  fullWidth
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ mb: 2 }}
+                />
+                <TextField
+                  label="End Date"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  fullWidth
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ mb: 2 }}
+                />
+                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                  <Button
+                    onClick={handleCustomDateClose}
+                    size="small"
+                    sx={{ textTransform: 'none' }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleApplyCustomRange}
+                    variant="contained"
+                    size="small"
+                    disabled={!startDate || !endDate}
+                    sx={{ textTransform: 'none' }}
+                  >
+                    Apply
+                  </Button>
+                </Box>
+              </Box>
+            </Popover>
+
+            {/* Display current range */}
+            {isCustomRange && (
+              <Typography variant="caption" sx={{ color: 'text.secondary', ml: 1 }}>
+                ({getDateRangeLabel()})
+              </Typography>
+            )}
           </Box>
 
           <Box sx={{ display: 'flex', gap: 2 }}>

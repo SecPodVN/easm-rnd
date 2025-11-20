@@ -29,44 +29,44 @@ easm-rnd/
 └── README.md
 ```
 
+### Frontend App Structure
+
+```
+src/frontend/
+├── EASM-portal/                 # Main EASM Portal (User-facing)
+│   ├── src/
+│   │   ├── features/            # Domain-specific modules
+│   │   ├── shared/
+│   │   ├── components/
+│   ├── public/
+│   ├── package.json
+│   ├── .gitignore
+│   └── README.md
+│
+├── EASM-admin/                  # Admin Portal (Administrative interface)
+│   ├── src/
+│   │   ├── features/            # Admin-specific features
+│   │   └── shared/
+│   │       └── components/      # Admin-specific shared components
+│   ├── public/
+│   ├── package.json
+│   ├── .gitignore
+│   └── README.md                # 🚧 Under development
+│
+└── EASM-ui-core/                # Shared UI Library
+    ├── src/
+    │   ├── components/          # Shared components across apps
+    │   ├── utils/               # Utility functions
+    │   ├── hooks/               # Custom React hooks
+    │   ├── types/               # TypeScript type definitions
+    │   └── index.ts
+    ├── package.json
+    ├── tsconfig.json
+    ├── .gitignore
+    └── README.md
 ```
 
-src/frontend/EASM-admin/src/
-
-src/frontend/EASM-ui-core/src/
-
-src/frontend/EASM-portal/src/
-├── features/                     # Domain-specific modules
-│   ├── dashboard/
-│   │   ├── Overview.tsx         # Main dashboard with stats
-│   │   └── index.ts
-│   ├── discovery/
-│   │   ├── SeedManagement.tsx   # Add/manage discovery seeds
-│   │   └── index.ts
-│   ├── inventory/
-│   │   ├── AssetInventory.tsx   # Asset listing & filtering
-│   │   └── index.ts
-│   ├── vulnerabilities/
-│   │   ├── VulnerabilityManagement.tsx  # CVE tracking
-│   │   └── index.ts
-│   ├── reports/
-│   │   ├── ReportBuilder.tsx    # Report generation
-│   │   └── index.ts
-│   └── settings/                # (Empty - ready for future)
-│
-├── shared/
-│   └── components/              # Reusable UI components
-│       ├── PageHeader.tsx       # Breadcrumb navigation
-│       ├── SearchBar.tsx        # Search input
-│       ├── EmptyState.tsx       # No-data placeholder
-│       ├── LoadingState.tsx     # Loading indicator
-│       ├── StatCard.tsx         # Metric cards
-│       ├── InsightCard.tsx      # Insight displays
-│       └── index.ts
-│
-└── components/
-    └── DashboardLayout.tsx      # Main layout with navigation
-```
+**Note:** Each app (EASM-portal, EASM-admin) has its own `shared/` directory for app-specific shared components. The `EASM-ui-core` package contains components and utilities shared across all EASM applications.
 
 ## 🚀 Tech Stack
 

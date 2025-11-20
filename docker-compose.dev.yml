@@ -79,11 +79,11 @@ services:
 
   frontend:
     build:
-      context: ./src/frontend
+      context: ./src/frontend/EASM-portal
       dockerfile: Dockerfile.dev
     container_name: easm-frontend-dev
     volumes:
-      - ./src/frontend:/app
+      - ./src/frontend/EASM-portal:/app
       - /app/node_modules
     ports:
       - "${FRONTEND_PORT:-3000}:3000"

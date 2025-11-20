@@ -18,18 +18,24 @@ import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
   Inventory as InventoryIcon,
-  Security as SecurityIcon,
   Assessment as AssessmentIcon,
   BugReport as VulnIcon,
-  Search as DiscoveryIcon,
+  Tune as ConfigIcon,
   Description as ReportIcon,
   Settings as SettingsIcon,
   Notifications as NotificationIcon,
+  WorkOutline as JobIcon,
+  ListAlt as ListIcon,
+  HelpOutline as HelpIcon,
   ExpandLess,
   ExpandMore,
+  PriorityHigh as PriorityIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
 } from '@mui/icons-material';
 
 const drawerWidth = 240;
+const collapsedDrawerWidth = 72;
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -43,8 +49,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   currentPage: externalCurrentPage
 }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [openAssets, setOpenAssets] = useState(true);
   const [openSecurity, setOpenSecurity] = useState(false);
+  const [openJobs, setOpenJobs] = useState(false);
   const [openReports, setOpenReports] = useState(false);
   const [internalCurrentPage, setInternalCurrentPage] = useState('overview');
 
@@ -64,18 +72,36 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   const drawer = (
     <div>
-      <Toolbar sx={{ bgcolor: '#17C825', color: 'white' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <SecurityIcon />
-          <Box>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
-              EASM Platform
-            </Typography>
-            <Typography variant="caption" sx={{ opacity: 0.9 }}>
-              SecPod Saner EASM
-            </Typography>
-          </Box>
+      <Toolbar sx={{ bgcolor: '#1976d2', color: 'white', py: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, justifyContent: collapsed ? 'center' : 'center' }}>
+          {collapsed ? (
+            <Box
+              component="img"
+              src="/SecPod-Icon.svg"
+              alt="SecPod"
+              sx={{ height: 32, width: 32, objectFit: 'contain' }}
+            />
+          ) : (
+            <Box
+              component="img"
+              src="/SecPod-Logo-Full-Light-Background.png"
+              alt="SecPod Logo"
+              sx={{ height: 40, width: 'auto', maxWidth: '90%', objectFit: 'contain' }}
+            />
+          )}
         </Box>
+        <IconButton
+          onClick={() => setCollapsed(!collapsed)}
+          sx={{
+            color: 'white',
+            position: 'absolute',
+            right: 8,
+            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.1)' }
+          }}
+          size="small"
+        >
+          {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+        </IconButton>
       </Toolbar>
 
       {/* Main Dashboard */}
@@ -84,54 +110,63 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <ListItemButton
             selected={currentPage === 'overview'}
             onClick={() => handleNavigation('overview')}
+            sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}
           >
-            <ListItemIcon>
+            <ListItemIcon sx={{ minWidth: collapsed ? 'unset' : 36, justifyContent: 'center' }}>
               <DashboardIcon color={currentPage === 'overview' ? 'primary' : 'inherit'} />
             </ListItemIcon>
-            <ListItemText primary="Overview" />
+            {!collapsed && <ListItemText primary="Overview" />}
           </ListItemButton>
         </ListItem>
       </List>
 
       <Divider sx={{ my: 1 }} />
 
-      {/* Discovery Section */}
+      {/* Assets Section */}
       <List dense>
-        <ListItemButton onClick={() => setOpenAssets(!openAssets)}>
-          <ListItemText
-            primary="Discovery & Assets"
-            primaryTypographyProps={{
-              variant: 'caption',
-              sx: { fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase' }
-            }}
-          />
-          {openAssets ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+        <ListItemButton onClick={() => setOpenAssets(!openAssets)} sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
+          {collapsed ? (
+            <ListItemIcon sx={{ minWidth: 'unset', justifyContent: 'center' }}>
+              <InventoryIcon fontSize="small" />
+            </ListItemIcon>
+          ) : (
+            <>
+              <ListItemText
+                primary="ASSETS"
+                primaryTypographyProps={{
+                  variant: 'caption',
+                  sx: { fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase' }
+                }}
+              />
+              {openAssets ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+            </>
+          )}
         </ListItemButton>
-        <Collapse in={openAssets} timeout="auto" unmountOnExit>
+        <Collapse in={openAssets && !collapsed} timeout="auto" unmountOnExit>
           <List component="div" disablePadding dense>
             <ListItemButton
               sx={{ pl: 3 }}
-              selected={currentPage === 'discovery'}
-              onClick={() => handleNavigation('discovery')}
+              selected={currentPage === 'seed-config'}
+              onClick={() => handleNavigation('seed-config')}
             >
               <ListItemIcon sx={{ minWidth: 36 }}>
-                <DiscoveryIcon />
+                <ConfigIcon />
               </ListItemIcon>
               <ListItemText
-                primary="Discovery Seeds"
+                primary="Seed Configuration"
                 primaryTypographyProps={{ variant: 'body2' }}
               />
             </ListItemButton>
             <ListItemButton
               sx={{ pl: 3 }}
-              selected={currentPage === 'inventory'}
-              onClick={() => handleNavigation('inventory')}
+              selected={currentPage === 'asset-list'}
+              onClick={() => handleNavigation('asset-list')}
             >
               <ListItemIcon sx={{ minWidth: 36 }}>
                 <InventoryIcon />
               </ListItemIcon>
               <ListItemText
-                primary="Asset Inventory"
+                primary="Asset List"
                 primaryTypographyProps={{ variant: 'body2' }}
               />
             </ListItemButton>
@@ -139,19 +174,27 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </Collapse>
       </List>
 
-      {/* Security Section */}
+      {/* Security & Risk Section */}
       <List dense>
-        <ListItemButton onClick={() => setOpenSecurity(!openSecurity)}>
-          <ListItemText
-            primary="Security & Risk"
-            primaryTypographyProps={{
-              variant: 'caption',
-              sx: { fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase' }
-            }}
-          />
-          {openSecurity ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+        <ListItemButton onClick={() => setOpenSecurity(!openSecurity)} sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
+          {collapsed ? (
+            <ListItemIcon sx={{ minWidth: 'unset', justifyContent: 'center' }}>
+              <VulnIcon fontSize="small" />
+            </ListItemIcon>
+          ) : (
+            <>
+              <ListItemText
+                primary="SECURITY & RISK"
+                primaryTypographyProps={{
+                  variant: 'caption',
+                  sx: { fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase' }
+                }}
+              />
+              {openSecurity ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+            </>
+          )}
         </ListItemButton>
-        <Collapse in={openSecurity} timeout="auto" unmountOnExit>
+        <Collapse in={openSecurity && !collapsed} timeout="auto" unmountOnExit>
           <List component="div" disablePadding dense>
             <ListItemButton
               sx={{ pl: 3 }}
@@ -168,10 +211,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </ListItemButton>
             <ListItemButton sx={{ pl: 3 }}>
               <ListItemIcon sx={{ minWidth: 36 }}>
-                <SecurityIcon />
+                <PriorityIcon />
               </ListItemIcon>
               <ListItemText
-                primary="Risk Scoring"
+                primary="Risk Prioritization"
                 primaryTypographyProps={{ variant: 'body2' }}
               />
             </ListItemButton>
@@ -188,19 +231,66 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </Collapse>
       </List>
 
+      {/* Job Management Section */}
+      <List dense>
+        <ListItemButton onClick={() => setOpenJobs(!openJobs)} sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
+          {collapsed ? (
+            <ListItemIcon sx={{ minWidth: 'unset', justifyContent: 'center' }}>
+              <JobIcon fontSize="small" />
+            </ListItemIcon>
+          ) : (
+            <>
+              <ListItemText
+                primary="JOB MANAGEMENT"
+                primaryTypographyProps={{
+                  variant: 'caption',
+                  sx: { fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase' }
+                }}
+              />
+              {openJobs ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+            </>
+          )}
+        </ListItemButton>
+        <Collapse in={openJobs && !collapsed} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding dense>
+            <ListItemButton
+              sx={{ pl: 3 }}
+              selected={currentPage === 'jobs'}
+              onClick={() => handleNavigation('jobs')}
+            >
+              <ListItemIcon sx={{ minWidth: 36 }}>
+                <ListIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="List & Actions"
+                primaryTypographyProps={{ variant: 'body2' }}
+              />
+            </ListItemButton>
+          </List>
+        </Collapse>
+      </List>
+
       {/* Reports & Compliance */}
       <List dense>
-        <ListItemButton onClick={() => setOpenReports(!openReports)}>
-          <ListItemText
-            primary="Reports & Compliance"
-            primaryTypographyProps={{
-              variant: 'caption',
-              sx: { fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase' }
-            }}
-          />
-          {openReports ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+        <ListItemButton onClick={() => setOpenReports(!openReports)} sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
+          {collapsed ? (
+            <ListItemIcon sx={{ minWidth: 'unset', justifyContent: 'center' }}>
+              <ReportIcon fontSize="small" />
+            </ListItemIcon>
+          ) : (
+            <>
+              <ListItemText
+                primary="REPORTS & COMPLIANCE"
+                primaryTypographyProps={{
+                  variant: 'caption',
+                  sx: { fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase' }
+                }}
+              />
+              {openReports ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+            </>
+          )}
         </ListItemButton>
-        <Collapse in={openReports} timeout="auto" unmountOnExit>
+        <Collapse in={openReports && !collapsed} timeout="auto" unmountOnExit>
           <List component="div" disablePadding dense>
             <ListItemButton
               sx={{ pl: 3 }}
@@ -236,14 +326,29 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <ListItemButton
             selected={currentPage === 'settings'}
             onClick={() => handleNavigation('settings')}
+            sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}
           >
-            <ListItemIcon>
+            <ListItemIcon sx={{ minWidth: collapsed ? 'unset' : 36, justifyContent: 'center' }}>
               <SettingsIcon />
             </ListItemIcon>
-            <ListItemText primary="Settings" />
+            {!collapsed && <ListItemText primary="Settings" />}
           </ListItemButton>
         </ListItem>
       </List>
+
+      {/* Help & Support - Fixed at bottom */}
+      <Box sx={{ position: 'absolute', bottom: 0, width: '100%', borderTop: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
+        <List dense>
+          <ListItem disablePadding>
+            <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
+              <ListItemIcon sx={{ minWidth: collapsed ? 'unset' : 36, justifyContent: 'center' }}>
+                <HelpIcon />
+              </ListItemIcon>
+              {!collapsed && <ListItemText primary="Help & Support" />}
+            </ListItemButton>
+          </ListItem>
+        </List>
+      </Box>
     </div>
   );
 
@@ -251,15 +356,18 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     <Box sx={{ display: 'flex' }}>
       <AppBar
         position="fixed"
+        elevation={0}
         sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-          bgcolor: 'white',
+          width: { sm: `calc(100% - ${collapsed ? collapsedDrawerWidth : drawerWidth}px)` },
+          ml: { sm: `${collapsed ? collapsedDrawerWidth : drawerWidth}px` },
+          bgcolor: 'background.paper',
           color: 'text.primary',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          transition: 'width 0.2s, margin-left 0.2s',
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ minHeight: 64 }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -269,14 +377,18 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ color: 'text.primary' }}>
-            Dashboard (Preview)
+          <Typography variant="h6" noWrap component="div" sx={{ color: 'text.primary', fontWeight: 600 }}>
+            EASM Platform
           </Typography>
         </Toolbar>
       </AppBar>
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{
+          width: { sm: collapsed ? collapsedDrawerWidth : drawerWidth },
+          flexShrink: { sm: 0 },
+          transition: 'width 0.2s',
+        }}
       >
         <Drawer
           variant="temporary"
@@ -296,7 +408,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           variant="permanent"
           sx={{
             display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: collapsed ? collapsedDrawerWidth : drawerWidth,
+              transition: 'width 0.2s',
+              overflowX: 'hidden',
+            },
           }}
           open
         >
@@ -308,9 +425,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         sx={{
           flexGrow: 1,
           p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          bgcolor: '#f5f5f5',
+          width: { sm: `calc(100% - ${collapsed ? collapsedDrawerWidth : drawerWidth}px)` },
+          bgcolor: 'background.default',
           minHeight: '100vh',
+          transition: 'width 0.2s',
         }}
       >
         <Toolbar />

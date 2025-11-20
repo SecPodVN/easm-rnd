@@ -16,14 +16,16 @@ function App() {
     switch (currentPage) {
       case 'overview':
         return <Overview />;
-      case 'discovery':
+      case 'seed-config':
         return <SeedManagement />;
-      case 'inventory':
+      case 'asset-list':
         return <AssetInventory />;
       case 'vulnerabilities':
         return <VulnerabilityManagement />;
       case 'reports':
         return <ReportBuilder />;
+      case 'jobs':
+        return <div>Job Management - Coming Soon</div>;
       default:
         return <Overview />;
     }

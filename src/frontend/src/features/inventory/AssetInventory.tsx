@@ -25,15 +25,16 @@ import {
   Download as DownloadIcon,
   Refresh as RefreshIcon,
   Language as DomainIcon,
-  DnsOutlined as HostIcon,
+  Security as CertIcon,
+  Hub as ASNIcon,
   Public as IPIcon,
-  Security as SSLIcon,
+  ContactMail as ContactIcon,
 } from '@mui/icons-material';
 import { PageHeader, SearchBar, EmptyState } from '../../shared/components';
 
 interface Asset {
   id: string;
-  type: 'domain' | 'host' | 'ip' | 'ssl';
+  type: 'domain' | 'cert' | 'asn' | 'ip' | 'contact';
   name: string;
   status: 'active' | 'inactive';
   riskLevel: 'critical' | 'high' | 'medium' | 'low';
@@ -52,17 +53,19 @@ const AssetInventory: React.FC = () => {
 
   const mockAssets: Asset[] = [
     { id: '1', type: 'domain', name: 'example.com', status: 'active', riskLevel: 'high', lastSeen: '2025-11-19', vulnerabilities: 12 },
-    { id: '2', type: 'host', name: 'api.example.com', status: 'active', riskLevel: 'critical', lastSeen: '2025-11-19', vulnerabilities: 24 },
-    { id: '3', type: 'ip', name: '192.168.1.100', status: 'active', riskLevel: 'medium', lastSeen: '2025-11-18', vulnerabilities: 3 },
-    { id: '4', type: 'ssl', name: '*.example.com', status: 'active', riskLevel: 'low', lastSeen: '2025-11-19', vulnerabilities: 1 },
+    { id: '2', type: 'cert', name: '*.example.com (SSL/TLS)', status: 'active', riskLevel: 'critical', lastSeen: '2025-11-19', vulnerabilities: 24 },
+    { id: '3', type: 'asn', name: 'AS15169 (Google LLC)', status: 'active', riskLevel: 'medium', lastSeen: '2025-11-18', vulnerabilities: 3 },
+    { id: '4', type: 'ip', name: '192.168.1.100', status: 'active', riskLevel: 'low', lastSeen: '2025-11-19', vulnerabilities: 1 },
+    { id: '5', type: 'contact', name: 'admin@example.com', status: 'active', riskLevel: 'low', lastSeen: '2025-11-19', vulnerabilities: 0 },
   ];
 
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'domain': return <DomainIcon fontSize="small" />;
-      case 'host': return <HostIcon fontSize="small" />;
+      case 'cert': return <CertIcon fontSize="small" />;
+      case 'asn': return <ASNIcon fontSize="small" />;
       case 'ip': return <IPIcon fontSize="small" />;
-      case 'ssl': return <SSLIcon fontSize="small" />;
+      case 'contact': return <ContactIcon fontSize="small" />;
       default: return null;
     }
   };
@@ -87,9 +90,10 @@ const AssetInventory: React.FC = () => {
   const assetCounts = {
     all: mockAssets.length,
     domain: mockAssets.filter(a => a.type === 'domain').length,
-    host: mockAssets.filter(a => a.type === 'host').length,
+    cert: mockAssets.filter(a => a.type === 'cert').length,
+    asn: mockAssets.filter(a => a.type === 'asn').length,
     ip: mockAssets.filter(a => a.type === 'ip').length,
-    ssl: mockAssets.filter(a => a.type === 'ssl').length,
+    contact: mockAssets.filter(a => a.type === 'contact').length,
   };
 
   return (
@@ -112,21 +116,22 @@ const AssetInventory: React.FC = () => {
         }
       />
 
-      <Paper sx={{ mb: 2 }}>
+      <Paper sx={{ mb: 3 }}>
         <Tabs
           value={currentTab}
           onChange={(_, newValue) => {
             setCurrentTab(newValue);
-            const types = ['all', 'domain', 'host', 'ip', 'ssl'];
+            const types = ['all', 'domain', 'cert', 'asn', 'ip', 'contact'];
             setAssetType(types[newValue]);
           }}
           sx={{ borderBottom: 1, borderColor: 'divider', px: 2 }}
         >
           <Tab label={`All Assets (${assetCounts.all})`} />
           <Tab label={`Domains (${assetCounts.domain})`} />
-          <Tab label={`Hosts (${assetCounts.host})`} />
+          <Tab label={`Certificates (${assetCounts.cert})`} />
+          <Tab label={`ASNs (${assetCounts.asn})`} />
           <Tab label={`IP Addresses (${assetCounts.ip})`} />
-          <Tab label={`SSL Certificates (${assetCounts.ssl})`} />
+          <Tab label={`Contacts (${assetCounts.contact})`} />
         </Tabs>
       </Paper>
 

@@ -31,7 +31,7 @@ import { PageHeader, SearchBar, EmptyState } from '../../shared/components';
 
 interface Seed {
   id: string;
-  type: 'domain' | 'ip' | 'asn' | 'cidr';
+  type: 'domain' | 'ip' | 'asn' | 'cidr' | 'contact';
   value: string;
   status: 'active' | 'paused';
   lastScan?: string;
@@ -42,6 +42,7 @@ const SeedManagement: React.FC = () => {
   const [seeds, setSeeds] = useState<Seed[]>([
     { id: '1', type: 'domain', value: 'example.com', status: 'active', lastScan: '2025-11-19', assetsFound: 47 },
     { id: '2', type: 'ip', value: '192.168.1.0/24', status: 'active', lastScan: '2025-11-19', assetsFound: 12 },
+    { id: '3', type: 'asn', value: 'AS15169', status: 'active', lastScan: '2025-11-18', assetsFound: 234 },
   ]);
   const [searchQuery, setSearchQuery] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
@@ -181,6 +182,7 @@ const SeedManagement: React.FC = () => {
                 <MenuItem value="domain">Domain</MenuItem>
                 <MenuItem value="ip">IP/CIDR</MenuItem>
                 <MenuItem value="asn">ASN</MenuItem>
+                <MenuItem value="contact">Contact/Email</MenuItem>
               </Select>
             </FormControl>
 
@@ -190,7 +192,8 @@ const SeedManagement: React.FC = () => {
               placeholder={
                 newSeed.type === 'domain' ? 'example.com' :
                 newSeed.type === 'ip' ? '192.168.1.0/24' :
-                'AS12345'
+                newSeed.type === 'asn' ? 'AS12345' :
+                'admin@example.com'
               }
               value={newSeed.value}
               onChange={(e) => setNewSeed({ ...newSeed, value: e.target.value })}

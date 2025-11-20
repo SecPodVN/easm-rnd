@@ -101,16 +101,22 @@ def detect_mode(mode: str) -> str:
     if mode != 'auto':
         return mode
 
-    # Check if minikube is running
+    # Check if kubectl is available (minikube/k8s tools installed)
+    # If kubectl exists, use k8s mode
+    # (skaffold.ps1 will auto-start minikube if needed)
     try:
-        result = subprocess.run(['kubectl', 'cluster-info'],
-                              capture_output=True, text=True)
-        if result.returncode == 0:
-            return 'k8s'
-    except FileNotFoundError:
+        subprocess.run(
+            ['kubectl', 'version', '--client'],
+            capture_output=True,
+            check=True
+        )
+        # kubectl is installed, use k8s mode
+        # (skaffold will handle minikube startup)
+        return 'k8s'
+    except (FileNotFoundError, subprocess.CalledProcessError):
         pass
 
-    # Default to docker compose
+    # Default to docker compose (only if kubectl not installed)
     return 'compose'
 
 
@@ -161,21 +167,59 @@ def stop(args):
     # Try both k8s and compose
     stopped = False
 
-    # Try stopping k8s
+    # Try stopping k8s with Skaffold
     try:
-        result = subprocess.run(['kubectl', 'delete', 'all', '--all', '-n', 'easm-rnd'],
-                              capture_output=True)
+        # First, try to delete via Skaffold (cleaner)
+        print_info("Stopping Skaffold deployment...")
+        result = subprocess.run(
+            ['skaffold', 'delete'],
+            capture_output=True,
+            cwd=get_project_root()
+        )
         if result.returncode == 0:
-            print_success("Kubernetes resources deleted")
+            print_success("Skaffold deployment stopped")
             stopped = True
+        else:
+            # Fallback: delete all resources in namespace
+            print_info("Deleting Kubernetes resources...")
+            result = subprocess.run(
+                ['kubectl', 'delete', 'all', '--all', '-n', 'easm-rnd'],
+                capture_output=True
+            )
+            if result.returncode == 0:
+                print_success("Kubernetes resources deleted")
+                stopped = True
+
+        # Kill any running Skaffold processes
+        print_info("Stopping Skaffold processes...")
+        if sys.platform == 'win32':
+            # Windows: Kill skaffold.exe processes
+            subprocess.run(
+                ['taskkill', '/F', '/IM', 'skaffold.exe'],
+                capture_output=True
+            )
+            # Also try to find and kill PowerShell running skaffold.ps1
+            result = subprocess.run(
+                ['powershell', '-Command',
+                 'Get-Process powershell | Where-Object {$_.CommandLine '
+                 '-like "*skaffold.ps1*"} | Stop-Process -Force'],
+                capture_output=True
+            )
+        else:
+            # Linux/macOS: Kill skaffold processes
+            subprocess.run(['pkill', '-f', 'skaffold'], capture_output=True)
+        print_success("Skaffold processes stopped")
+
     except FileNotFoundError:
         pass
 
     # Try stopping compose
     try:
-        result = subprocess.run(['docker-compose', 'down'],
-                              capture_output=True,
-                              cwd=get_project_root())
+        result = subprocess.run(
+            ['docker-compose', 'down'],
+            capture_output=True,
+            cwd=get_project_root()
+        )
         if result.returncode == 0:
             print_success("Docker Compose services stopped")
             stopped = True

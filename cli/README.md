@@ -133,7 +133,7 @@ easm dev start --mode compose     # Force Docker Compose mode
 easm dev start --watch            # Enable auto-watch mode (restarts on .env changes)
 
 # Stop services
-easm dev stop                     # Stops all services (both k8s and compose)
+easm dev stop                     # Stops all services AND kills Skaffold processes
 
 # Restart services
 easm dev restart                  # Stop then start
@@ -158,14 +158,19 @@ easm dev watch                    # Start watch mode for .env changes
 
 **What `dev start` does:**
 1. Checks if `.env` file exists
-2. Detects if Kubernetes (kubectl) is available
-3. If Kubernetes mode:
-   - Checks if Minikube is running
-   - Automatically starts Minikube if not running (with Docker driver)
-   - Waits for cluster to be ready
-   - Runs `skaffold.ps1` or `skaffold.sh` based on your OS
-4. If Compose mode:
+2. Detects deployment mode:
+   - **Auto mode (default)**: Checks if `kubectl` is installed
+     - If `kubectl` found → **k8s mode** (runs `skaffold.ps1` which auto-starts Minikube if needed)
+     - If `kubectl` not found → **compose mode** (runs `docker-compose`)
+   - **Forced mode**: Use `--mode k8s` or `--mode compose` to override
+3. **Kubernetes mode (`skaffold.ps1`)**:
+   - Automatically starts Minikube if not running
+   - Waits for cluster to be ready (up to 60 seconds)
+   - Runs Skaffold in development mode
+4. **Compose mode**:
    - Runs `docker-compose up -d`
+
+**Important**: If you have `kubectl` installed, it will **always** try to use Kubernetes mode and auto-start Minikube. Use `--mode compose` to force Docker Compose.
 
 ### Database Commands (`db`)
 ```bash
@@ -378,8 +383,13 @@ easm dev start
 ### Daily Development
 
 ```bash
-# Terminal 1: Start services
-easm dev start --watch
+# Terminal 1: Start services (runs Skaffold in foreground)
+easm dev start
+
+# The Skaffold process will keep running and watching for changes
+# You can either:
+# - Press Ctrl+C in this terminal to stop Skaffold manually, OR
+# - Run 'easm dev stop' from another terminal (will kill all processes)
 
 # Terminal 2: Watch logs
 easm dev logs api -f
@@ -389,6 +399,10 @@ easm dev shell api
 # or
 easm db migrate
 easm db seed --quick
+
+# To stop everything from any terminal:
+easm dev stop
+# This will delete Kubernetes resources AND kill all Skaffold processes
 ```
 
 ### Debugging

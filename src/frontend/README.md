@@ -1,70 +1,201 @@
-# Getting Started with Create React App
+# EASM Frontend Applications
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This directory contains the frontend applications for the EASM platform.
 
-## Available Scripts
+## Architecture Overview
 
-In the project directory, you can run:
+The frontend is organized into multiple applications, each serving a specific purpose:
 
-### `npm start`
+### 📱 Applications
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+#### **EASM-portal** (Main User Portal)
+The primary user-facing application for External Attack Surface Management.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+**Features:**
+- Asset Discovery & Inventory
+- Vulnerability Management
+- Security & Risk Dashboard
+- Job Management
+- Reports & Compliance
+- Settings & Configuration
 
-### `npm test`
+**Status:** ✅ Active Development
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+#### **EASM-admin** (Administrative Portal)
+Administrative interface for platform management and configuration.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**Features:** (Planned)
+- User Management
+- System Configuration
+- Platform Monitoring
+- Access Control & RBAC
+- Audit Logs
+- License Management
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**Status:** 🚧 Under Development
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+#### **EASM-ui-core** (Shared UI Library)
+Shared component library and utilities used across all EASM applications.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+**Contents:**
+- Reusable UI Components
+- Common Utilities
+- Custom React Hooks
+- TypeScript Type Definitions
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**Status:** ✅ Active
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Directory Structure
 
-## Learn More
+```
+frontend/
+├── EASM-portal/          # Main user portal
+│   ├── src/
+│   │   ├── features/     # Feature modules
+│   │   ├── shared/       # Portal-specific shared code
+│   │   └── components/   # Portal components
+│   └── package.json
+│
+├── EASM-admin/           # Admin portal
+│   ├── src/
+│   │   ├── features/     # Admin features
+│   │   └── shared/       # Admin-specific shared code
+│   └── package.json
+│
+└── EASM-ui-core/         # Shared UI library
+    ├── src/
+    │   ├── components/   # Shared components
+    │   ├── utils/        # Utilities
+    │   ├── hooks/        # Custom hooks
+    │   └── types/        # Type definitions
+    └── package.json
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Development Workflow
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Working on EASM-portal
 
-### Code Splitting
+```bash
+cd EASM-portal
+npm install
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Working on EASM-admin
 
-### Analyzing the Bundle Size
+```bash
+cd EASM-admin
+npm install
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Working on EASM-ui-core
 
-### Making a Progressive Web App
+```bash
+cd EASM-ui-core
+npm install
+npm run dev  # Watch mode for development
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Shared Components Strategy
 
-### Advanced Configuration
+### App-Specific Shared Components
+Each application (EASM-portal, EASM-admin) has its own `shared/` directory for components that are:
+- Specific to that application's domain
+- Used across multiple features within that app
+- Not needed by other EASM applications
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Example:
+- `EASM-portal/src/shared/components/` - Components specific to portal features
+- `EASM-admin/src/shared/components/` - Components specific to admin features
 
-### Deployment
+### Cross-Application Shared Components
+Components used by multiple applications should be placed in `EASM-ui-core`:
+- Generic UI components (buttons, cards, modals)
+- Common utilities and helpers
+- Shared custom hooks
+- Type definitions
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### When to Use Which?
 
-### `npm run build` fails to minify
+**Use app-specific `shared/`:**
+- Component is only used within one application
+- Component has application-specific logic or styling
+- Component relates to a specific domain concept
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Use `EASM-ui-core`:**
+- Component is or could be used by multiple applications
+- Component is purely presentational
+- Utility function has no application-specific dependencies
+- Type definition is used across applications
+
+## Package Management
+
+Each application manages its own dependencies independently:
+
+- `EASM-portal/package.json` - Portal dependencies
+- `EASM-admin/package.json` - Admin dependencies
+- `EASM-ui-core/package.json` - Shared library dependencies
+
+Applications can reference `EASM-ui-core` using:
+
+```json
+{
+  "dependencies": {
+    "@easm/ui-core": "file:../EASM-ui-core"
+  }
+}
+```
+
+## Building for Production
+
+### Build All Applications
+
+```bash
+# From frontend directory
+cd EASM-ui-core && npm run build && cd ..
+cd EASM-portal && npm run build && cd ..
+cd EASM-admin && npm run build && cd ..
+```
+
+### Build Individual Applications
+
+```bash
+# Portal only
+cd EASM-portal && npm run build
+
+# Admin only
+cd EASM-admin && npm run build
+```
+
+## Tech Stack
+
+All applications share the same core technology stack:
+
+- **React** 18.3+ - UI library
+- **TypeScript** 5.6+ - Type-safe JavaScript
+- **Material-UI** 5.15+ - Component library
+- **React Router** 6.26+ - Client-side routing
+
+## Contributing
+
+When adding new features:
+
+1. Determine which application the feature belongs to
+2. Create feature modules in the appropriate app's `features/` directory
+3. Place app-specific shared code in the app's `shared/` directory
+4. Place truly shared code in `EASM-ui-core`
+5. Update documentation accordingly
+
+## Questions?
+
+See the README.md in each application directory for more specific information:
+- [EASM-portal README](./EASM-portal/README.md)
+- [EASM-admin README](./EASM-admin/README.md)
+- [EASM-ui-core README](./EASM-ui-core/README.md)

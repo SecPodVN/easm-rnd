@@ -78,7 +78,7 @@ services:
 
   frontend:
     build:
-      context: ./src/frontend
+      context: ./src/frontend/EASM-portal
       dockerfile: Dockerfile
     container_name: easm-frontend
     ports:

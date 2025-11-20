@@ -41,6 +41,46 @@ easm-platform/
 - **Scalability**: Easy to add new modules or services without affecting existing ones
 - **Reusability**: Shared libraries (`easm-lib`, `easm-core`, `easm-react`) promote code reuse
 
+
+### Frontend App Structure
+
+```
+src/frontend/
+├── EASM-portal/                 # Main EASM Portal (User-facing)
+│   ├── src/
+│   │   ├── features/            # Domain-specific modules
+│   │   ├── shared/
+│   │   ├── components/
+│   ├── public/
+│   ├── package.json
+│   ├── .gitignore
+│   └── README.md
+│
+├── EASM-admin/                  # Admin Portal (Administrative interface)
+│   ├── src/
+│   │   ├── features/            # Admin-specific features
+│   │   └── shared/
+│   │       └── components/      # Admin-specific shared components
+│   ├── public/
+│   ├── package.json
+│   ├── .gitignore
+│   └── README.md                # 🚧 Under development
+│
+└── EASM-ui-core/                # Shared UI Library
+    ├── src/
+    │   ├── components/          # Shared components across apps
+    │   ├── utils/               # Utility functions
+    │   ├── hooks/               # Custom React hooks
+    │   ├── types/               # TypeScript type definitions
+    │   └── index.ts
+    ├── package.json
+    ├── tsconfig.json
+    ├── .gitignore
+    └── README.md
+```
+
+**Note:** Each app (EASM-portal, EASM-admin) has its own `shared/` directory for app-specific shared components. The `EASM-ui-core` package contains components and utilities shared across all EASM applications.
+
 ## 🚀 Tech Stack
 
 | Category        | Name       | Version | Environment | Description                                                    |
@@ -336,21 +376,21 @@ pnpm test:e2e         # or yarn test:e2e
 
 | Security Feature              | Status      | Backend | Frontend | Description                                    |
 |-------------------------------|-------------|---------|----------|------------------------------------------------|
-| HTTPS/TLS Encryption          | ✅ Done     | ✅      | ✅       | Secure communication with SSL/TLS              |
+| HTTPS/TLS Encryption          | ❌ Done     | ❌      | ❌       | Secure communication with SSL/TLS              |
 | JWT Authentication            | ✅ Done     | ✅      | ✅       | Token-based authentication system              |
 | CORS Configuration            | ✅ Done     | ✅      | ✅       | Cross-Origin Resource Sharing properly configured |
-| Rate Limiting                 | ✅ Done     | ✅      | ❌       | API rate limiting to prevent abuse             |
-| SQL Injection Prevention      | ✅ Done     | ✅      | ❌       | Django ORM protection against SQL injection    |
-| XSS Protection                | ✅ Done     | ✅      | ✅       | Cross-Site Scripting prevention mechanisms     |
-| CSRF Tokens                   | ✅ Done     | ✅      | ✅       | Cross-Site Request Forgery protection          |
-| Security Headers              | ✅ Done     | ✅      | ✅       | HSTS, CSP, X-Frame-Options, etc.               |
-| Input Validation              | ✅ Done     | ✅      | ✅       | Server and client-side input validation        |
-| Password Hashing              | ✅ Done     | ✅      | ❌       | Bcrypt/PBKDF2 for secure password storage      |
-| Environment Variables         | ✅ Done     | ✅      | ✅       | Sensitive data stored in environment variables |
-| Dependency Scanning           | 🔄 Progress | ✅      | ✅       | Automated vulnerability scanning for dependencies |
-| API Key Management            | 📋 Planned  | ❌      | ❌       | Secure API key rotation and management         |
-| Two-Factor Authentication     | 📋 Planned  | ❌      | ❌       | 2FA for enhanced user security                 |
-| Security Audit Logging        | 📋 Planned  | ❌      | ❌       | Comprehensive security event logging           |
+| Rate Limiting                 | ❌ Done     | ❌      | ❌       | API rate limiting to prevent abuse             |
+| SQL Injection Prevention      | ❌ Done     | ❌      | ❌       | Django ORM protection against SQL injection    |
+| XSS Protection                | ❌ Done     | ❌      | ❌       | Cross-Site Scripting prevention mechanisms     |
+| CSRF Tokens                   | ❌ Done     | ❌      | ❌       | Cross-Site Request Forgery protection          |
+| Security Headers              | ❌ Done     | ❌      | ❌       | HSTS, CSP, X-Frame-Options, etc.               |
+| Input Validation              | ❌ Done     | ❌      | ❌       | Server and client-side input validation        |
+| Password Hashing              | ✅ Done     | ✅      | ✅       | Bcrypt/PBKDF2 for secure password storage      |
+| Environment Variables         | ❌ Done     | ❌      | ❌       | Sensitive data stored in environment variables |
+| Dependency Scanning           | ❌ Progress | ❌      | ❌       | Automated vulnerability scanning for dependencies |
+| API Key Management            | ❌ Planned  | ❌      | ❌       | Secure API key rotation and management         |
+| Two-Factor Authentication     | ❌ Planned  | ❌      | ❌       | 2FA for enhanced user security                 |
+| Security Audit Logging        | ❌ Planned  | ❌      | ❌       | Comprehensive security event logging           |
 
 **Legend:**
 - ✅ Done - Implemented and active

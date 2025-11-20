@@ -2,16 +2,12 @@ import React from 'react';
 import { Box, Typography, Paper } from '@mui/material';
 import {
   Language as DomainIcon,
-  DnsOutlined as HostIcon,
-  Description as PageIcon,
-  Security as SSLIcon,
+  Security as CertIcon,
   Hub as ASNIcon,
-  Block as IPBlockIcon,
-  Public as IPAddressIcon,
-  Contacts as ContactIcon,
+  Public as IPIcon,
+  ContactMail as ContactIcon,
 } from '@mui/icons-material';
-import StatCard from './StatCard';
-import InsightCard from './InsightCard';
+import { StatCard, InsightCard } from '../../shared/components';
 
 interface AssetData {
   icon: React.ReactNode;
@@ -39,12 +35,9 @@ const Overview: React.FC = () => {
   // Mock data - this would come from your API
   const assetData: AssetData[] = [
     { icon: <DomainIcon />, title: 'Domains', value: '4.7K', lastDays: 30, change: 16 },
-    { icon: <HostIcon />, title: 'Hosts', value: '26.9K', lastDays: 30, change: -2.8 },
-    { icon: <PageIcon />, title: 'Pages', value: '256.2K', lastDays: 30, change: 13.2 },
-    { icon: <SSLIcon />, title: 'SSL certificates', value: '6.6K', lastDays: 30, change: 546 },
+    { icon: <CertIcon />, title: 'SSL/TLS Certificates', value: '6.6K', lastDays: 30, change: 546 },
     { icon: <ASNIcon />, title: 'ASNs', value: '15', lastDays: 30, change: 0 },
-    { icon: <IPBlockIcon />, title: 'IP blocks', value: '260', lastDays: 30, change: 3 },
-    { icon: <IPAddressIcon />, title: 'IP addresses', value: '119.9K', lastDays: 30, change: 103 },
+    { icon: <IPIcon />, title: 'IP Addresses', value: '119.9K', lastDays: 30, change: 103 },
     { icon: <ContactIcon />, title: 'Contacts', value: '152', lastDays: 30, change: 7 },
   ];
 

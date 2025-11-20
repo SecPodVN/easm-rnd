@@ -58,6 +58,8 @@ Thumbs.db
 .coverage
 .pytest_cache/
 htmlcov/
+minikube-linux-amd64
+skaffold
 
 # Docker
 *.dockerignore

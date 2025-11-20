@@ -1,90 +1,66 @@
-# easm-rnd
+# easm-platform
 
-A modern monorepo application for External Attack Surface Management (EASM) Research and Development, built with Django REST API backend and React TypeScript frontend.
+A modern monorepo, modular, extensible, reusable application for External Attack Surface Management (EASM) Research and Development, built with Django REST API and GRAPHQL backend and React TypeScript frontend.
 
 ## 📁 Project Structure
 
+This project follows a modular monorepo architecture inspired by and customized from the [Pitchfork Layout](https://joholl.github.io/pitchfork-website/) for our Python/Django backend and TypeScript/React frontend stack. The structure emphasizes separation of concerns, modularity, and scalability.
+
 ```
-easm-rnd/
-├── backend/             # EASM application leverage on Django
-│   ├── apps/            # Django applications
-│   ├── config/          # Project configuration
-│   ├── pyproject.toml   # Poetry dependencies
-│   └── manage.py        # Manage command inside app
-├── frontend/            # React TypeScript application
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── tsconfig.json
-    - portal
-    - dashboard
-    - ui-core/share-or-common-component
-├── infra/              # Kubernetes & deployment configs
-│   ├── helm/           # Helm charts
-│   ├── docker/         # Dockerfiles
-│   └── k8s/            # Kubernetes manifests
+easm-platform/
+├── backend/             # Contain all backend application/lib
+│   ├── easm/            # Base Django application
+│   │   ├── apps/        # Django applications
+│   │   ├── config/      # Project configuration
+│   │   ├── pyproject.toml   # Poetry dependencies
+│   │   └── manage.py    # Manage command inside app
+│   ├── easm-cli/        # CLI tools and commands
+│   └── easm-core/       # Core, Shared libraries and utilities
+├── frontend/            # Contain all frontend application/lib
+│   ├── easm-portal-ui/  # Portal interface
+│   │   ├── src/
+│   │   ├── public/
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   ├── easm-admin-ui/   # Admin dashboard
+│   ├── easm-core/       # Shared core utilities
+│   └── easm-react/      # React components library
+├── infra/               # Kubernetes & deployment configs
+│   ├── helm/            # Helm charts
+│   ├── docker/          # Dockerfiles
+│   └── k8s/             # Kubernetes manifests
 ├── .github/
-│   └── workflows/      # GitHub Actions
-├── skaffold.yaml       # Skaffold configuration
+│   └── workflows/       # GitHub Actions
+├── skaffold.yaml        # Skaffold configuration
 └── README.md
 ```
 
+**Key Design Principles:**
+- **Modularity**: Each component (backend/frontend modules) is independently maintainable
+- **Separation**: Clear boundaries between core application, CLI tools, and shared libraries
+- **Scalability**: Easy to add new modules or services without affecting existing ones
+- **Reusability**: Shared libraries (`easm-lib`, `easm-core`, `easm-react`) promote code reuse
+
 ## 🚀 Tech Stack
 
-### Backend
-
-| Name                          | Version | Description                        |
-|-------------------------------|---------|-----------------------------------|
-| Python                        | 3.12+   | Python runtime                    |
-| Django                        | 5.2+    | Web framework                     |
-| Django REST Framework         | 3.15+   | RESTful API toolkit               |
-| djangorestframework-simplejwt | 5.3+    | JWT authentication                |
-| Poetry                        | 2.2+    | Dependency management             |
-| PostgreSQL                    | 18+     | Primary database (Django ORM)     |
-| MongoDB                       | 8+      | NoSQL database (Scanner app)      |
-| PyMongo                       | 4.6+    | MongoDB driver for Python         |
-| psycopg2-binary               | 2.9+    | PostgreSQL adapter for Python     |
-| Redis                         | 7.4+    | Caching and session store         |
-| redis (Python)                | 5.0+    | Redis Python client               |
-| django-redis                  | 5.4+    | Redis cache backend for Django    |
-| Gunicorn                      | 21.2+   | WSGI HTTP Server                  |
-| drf-spectacular               | 0.27+   | OpenAPI schema generation         |
-| django-cors-headers           | 4.3+    | CORS handling                     |
-| django-filter                 | 23.5+   | Filtering support                 |
-
-### Frontend
-
-| Name           | Version      | Description               |
-| -------------- | ------------ | ------------------------- |
-| React          | 18.3+        | UI library                |
-| TypeScript     | 5.6+         | Type-safe JavaScript      |
-| Vite           | 5.4+         | Build tool and dev server |
-| pnpm / Yarn    | 9.12+ / 4.5+ | Package manager           |
-| React Router   | 6.26+        | Client-side routing       |
-| TanStack Query | 5.56+        | Server state management   |
-| Tailwind CSS   | 3.4+         | Utility-first CSS         |
-
-### Infra
-
-| Name       | Version | Description                |
-| ---------- | ------- | -------------------------- |
-| Docker     | 27.3+   | Containerization           |
-| Minikube   | 1.34+   | Local Kubernetes cluster   |
-| Skaffold   | 2.13+   | Local development workflow |
-| Helm       | 3.16+   | Kubernetes package manager |
-| Kubernetes | 1.31+   | Container orchestration    |
-
-## 🛠️ Prerequisites
-
-- Python 3.12+
-- Node.js 20+ LTS
-- Poetry 1.8+
-- pnpm 9.12+ or Yarn 4.5+
-- Docker 27.3+
-- Minikube 1.34+
-- kubectl 1.31+
-- Skaffold 2.13+
-- Helm 3.16+
+| Category        | Name       | Version | Environment | Description                                                    |
+|-----------------|------------|---------|-------------|----------------------------------------------------------------|
+| **Infra**       | Docker     | 28.5+   | All         | Platform for developing, shipping, and running containers      |
+| **Infra**       | Kubernetes | 1.32+   | All         | Production-grade container orchestration platform              |
+| **Infra**       | Minikube   | 1.35+   | Local       | Local Kubernetes cluster for development and testing           |
+| **Infra**       | Skaffold   | 2.16+   | Local, Dev  | Command-line tool for continuous development on Kubernetes     |
+| **Infra**       | Helm       | 3.19+   | All         | Package manager for Kubernetes applications                    |
+| **Backend**     | Python     | 3.13+   | All         | Python runtime for backend services                            |
+| **Backend**     | Django     | 5.2+    | All         | High-level Python web framework for rapid development          |
+| **Backend**     | Poetry     | 2.2+    | All         | Python dependency management and packaging tool                |
+| **Backend**     | PostgreSQL | 18+     | All         | Advanced open-source relational database                       |
+| **Backend**     | MongoDB    | 8+      | All         | NoSQL document database for flexible data storage              |
+| **Backend**     | Redis      | 7.4+    | All         | In-memory data structure store for caching and sessions        |
+| **Frontend**    | Node.js    | 22+     | All         | JavaScript runtime environment                                 |
+| **Frontend**    | React      | 19+     | All         | Component-based JavaScript library for building user interfaces|
+| **Frontend**    | TypeScript | 5.7+    | All         | Typed superset of JavaScript for enhanced code quality         |
+| **Frontend**    | Vite       | 6+      | All         | Next-generation frontend build tool with HMR                   |
+| **Frontend**    | Turborepo  | 2+      | All         | High-performance build system for JavaScript/TypeScript monorepos|
 
 ## 🏃 Getting Started
 
@@ -94,8 +70,8 @@ The easiest way to manage this project is using the unified CLI:
 
 ```bash
 # 1. Clone and setup
-git clone <repository-url>
-cd easm-rnd
+git clone <repository-url> your-path-to/easm-platform
+cd easm-platform
 cp .env.example .env
 
 # 2. Start development environment (auto-detects mode)
@@ -193,10 +169,10 @@ docker build -t easm-backend:latest ./backend
 docker build -t easm-frontend:latest ./frontend
 
 # Deploy with Helm
-helm install easm-rnd ./infra/helm/easm-rnd \
-  --namespace easm-rnd \
+helm install easm-platform ./infra/helm/easm-platform \
+  --namespace easm-platform \
   --create-namespace \
-  --values ./infra/helm/easm-rnd/values-dev.yaml
+  --values ./infra/helm/easm-platform/values-dev.yaml
 ```
 
 ## 🎯 CLI Commands Reference
@@ -238,106 +214,19 @@ easm k8s services           # List services
 
 See `easm --help` or [CLI Documentation](cli/README.md) for all commands.
 
-## 🌿 Git Branching Convention
+## 🌿 Git Workflow
 
-We follow a structured branching strategy based on Git Flow:
+We follow Git Flow branching strategy with Conventional Commits specification.
 
-### Branch Types
+**📖 Complete Guide:** [Git Workflow & Commit Conventions](docs/GIT-WORKFLOW.md)
 
-- **`main`** - Production-ready code
-- **`develop`** - Integration branch for features
-- **`feature/*`** - New features (`feature/user-authentication`)
-- **`bugfix/*`** - Bug fixes for develop (`bugfix/login-validation`)
-- **`hotfix/*`** - Critical fixes for production (`hotfix/security-patch`)
-- **`release/*`** - Release preparation (`release/v1.2.0`)
-- **`chore/*`** - Maintenance tasks (`chore/update-dependencies`)
-
-### Branch Workflow
-
-```bash
-# Create feature branch
-git checkout develop
-git checkout -b feature/add-user-dashboard
-
-# Work on feature
-git add .
-git commit -m "feat(dashboard): add user analytics widget"
-
-# Keep updated with develop
-git fetch origin
-git rebase origin/develop
-
-# Push and create PR
-git push origin feature/add-user-dashboard
-```
-
-## 📝 Commit Message Convention
-
-We follow [Conventional Commits](https://www.conventionalcommits.org/) specification:
-
-### Format
-
-```
-<type>(<scope>): <subject>
-
-[optional body]
-
-[optional footer]
-```
-
-### Types
-
-- **feat** - New feature
-- **fix** - Bug fix
-- **docs** - Documentation changes
-- **style** - Code style changes (formatting, semicolons, etc.)
-- **refactor** - Code refactoring
-- **perf** - Performance improvements
-- **test** - Adding or updating tests
-- **build** - Build system or dependencies
-- **ci** - CI/CD changes
-- **chore** - Other changes that don't modify src or test files
-- **revert** - Revert previous commit
-
-### Examples
-
-```bash
-# Feature
-git commit -m "feat(auth): implement JWT authentication"
-
-# Bug fix
-git commit -m "fix(api): resolve CORS issue on user endpoint"
-
-# Documentation
-git commit -m "docs(readme): update installation instructions"
-
-# Breaking change
-git commit -m "feat(api)!: migrate to GraphQL API
-
-BREAKING CHANGE: REST API endpoints are deprecated"
-
-# Multiple scopes
-git commit -m "fix(frontend,backend): resolve timezone inconsistency"
-
-# With body and footer
-git commit -m "feat(dashboard): add real-time metrics
-
-- Add WebSocket connection
-- Implement metric cards
-- Add auto-refresh functionality
-
-Closes #123"
-```
-
-### Scope Examples
-
-- **auth** - Authentication/Authorization
-- **api** - API changes
-- **ui** - UI components
-- **db** - Database
-- **docker** - Docker configuration
-- **k8s** - Kubernetes configuration
-- **ci** - CI/CD pipeline
+This guide includes:
+- **Commit Message Convention** - Conventional Commits format, types, and examples
+- **Branch Naming** - Branch types and naming conventions
+- **Branch Workflow** - Creating and managing feature, bugfix, hotfix, and release branches
+- **Pull Request Process** - PR creation with templates and checklists
+- **Code Review Guidelines** - Best practices for reviewing and approving PRs
+- **Branch Protection Rules** - Merge strategies and protection settings
 
 ## 🚢 Release Process
 
@@ -380,7 +269,7 @@ git checkout -b release/v1.2.0
 # 2. Update version numbers
 # backend/pyproject.toml
 # frontend/package.json
-# infra/helm/easm-rnd/Chart.yaml
+# infra/helm/easm-platform/Chart.yaml
 
 # 3. Update CHANGELOG.md
 # Document all changes since last release
@@ -410,13 +299,13 @@ git push origin --delete release/v1.2.0
 
 ```bash
 # Rollback to previous Helm release
-helm rollback easm-rnd -n easm-rnd
+helm rollback easm-platform -n easm-platform
 
 # Or rollback to specific revision
-helm rollback easm-rnd 3 -n easm-rnd
+helm rollback easm-platform 3 -n easm-platform
 
 # Check rollback status
-helm history easm-rnd -n easm-rnd
+helm history easm-platform -n easm-platform
 ```
 
 ## 🧪 Testing
@@ -445,28 +334,35 @@ pnpm test:e2e         # or yarn test:e2e
 
 ## 🔒 Security
 
-- HTTPS/TLS encryption
-- JWT authentication
-- CORS configuration
-- Rate limiting
-- SQL injection prevention
-- XSS protection
-- CSRF tokens
-- Security headers (HSTS, CSP, etc.)
+| Security Feature              | Status      | Backend | Frontend | Description                                    |
+|-------------------------------|-------------|---------|----------|------------------------------------------------|
+| HTTPS/TLS Encryption          | ✅ Done     | ✅      | ✅       | Secure communication with SSL/TLS              |
+| JWT Authentication            | ✅ Done     | ✅      | ✅       | Token-based authentication system              |
+| CORS Configuration            | ✅ Done     | ✅      | ✅       | Cross-Origin Resource Sharing properly configured |
+| Rate Limiting                 | ✅ Done     | ✅      | ❌       | API rate limiting to prevent abuse             |
+| SQL Injection Prevention      | ✅ Done     | ✅      | ❌       | Django ORM protection against SQL injection    |
+| XSS Protection                | ✅ Done     | ✅      | ✅       | Cross-Site Scripting prevention mechanisms     |
+| CSRF Tokens                   | ✅ Done     | ✅      | ✅       | Cross-Site Request Forgery protection          |
+| Security Headers              | ✅ Done     | ✅      | ✅       | HSTS, CSP, X-Frame-Options, etc.               |
+| Input Validation              | ✅ Done     | ✅      | ✅       | Server and client-side input validation        |
+| Password Hashing              | ✅ Done     | ✅      | ❌       | Bcrypt/PBKDF2 for secure password storage      |
+| Environment Variables         | ✅ Done     | ✅      | ✅       | Sensitive data stored in environment variables |
+| Dependency Scanning           | 🔄 Progress | ✅      | ✅       | Automated vulnerability scanning for dependencies |
+| API Key Management            | 📋 Planned  | ❌      | ❌       | Secure API key rotation and management         |
+| Two-Factor Authentication     | 📋 Planned  | ❌      | ❌       | 2FA for enhanced user security                 |
+| Security Audit Logging        | 📋 Planned  | ❌      | ❌       | Comprehensive security event logging           |
+
+**Legend:**
+- ✅ Done - Implemented and active
+- 🔄 Progress - In development
+- 📋 Planned - Scheduled for future implementation
+- ❌ Not applicable or not implemented
 
 ## 📚 Documentation
 
 - **API Documentation**: `/api/docs/` (Swagger/OpenAPI)
 - **API Schema**: `/api/schema/`
 - **Admin Panel**: `/admin/`
-- **Scanner API Guide**: [SCANNER-QUICKSTART.md](docs/SCANNER-QUICKSTART.md)
-- **Scanner API Reference**: [SCANNER-API-DOCUMENTATION.md](docs/SCANNER-API-DOCUMENTATION.md)
-- **Scanner Implementation**: [SCANNER_IMPLEMENTATION.md](SCANNER_IMPLEMENTATION.md)
-
-### Django Apps
-
-- **todos**: Task management API
-- **scanner**: MongoDB-based EASM resource scanning with 11 REST endpoints
 
 ## 🤝 Contributing
 
@@ -480,17 +376,10 @@ pnpm test:e2e         # or yarn test:e2e
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 👥 Team
+##  Support
 
-- **Project Lead**: [Name]
-- **Backend Team**: [Names]
-- **Frontend Team**: [Names]
-- **DevOps Team**: [Names]
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/your-org/easm-rnd/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/easm-rnd/discussions)
+- **Issues**: [GitHub Issues](https://github.com/SecPod-Git/easm/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/SecPod-Git/easm/discussions)
 - **Email**: support@your-domain.com
 
 ---

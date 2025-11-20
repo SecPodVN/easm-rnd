@@ -88,9 +88,45 @@ easm-rnd/
 
 ## 🏃 Getting Started
 
+### Quick Start with CLI (Recommended)
+
+The easiest way to manage this project is using the unified CLI:
+
+```bash
+# 1. Clone and setup
+git clone <repository-url>
+cd easm-rnd
+cp .env.example .env
+
+# 2. Start development environment (auto-detects mode)
+python cli/easm.py dev start
+
+# 3. View logs
+python cli/easm.py dev logs -f
+
+# 4. Stop services
+python cli/easm.py dev stop
+```
+
+**Install CLI globally:**
+
+```bash
+# Windows PowerShell
+.\cli\install.ps1
+
+# Linux/macOS
+./cli/install.sh
+
+# After installation, use:
+easm dev start
+easm --help
+```
+
+See [CLI Documentation](cli/README.md) for complete reference.
+
 ### Environment Configuration
 
-This project uses a **single environment file** (`.env`) for both Skaffold and Docker Compose deployments.
+This project uses a **single environment file** (`.env`) for all deployment modes.
 
 ```bash
 # Copy the example environment file
@@ -103,22 +139,17 @@ cp .env.example .env
 ### Local Development with Docker Compose
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd easm-rnd
-
-# Setup environment file
-cp .env.example .env
-
-# Start all services
+# Manual method
 docker-compose up -d
+
+# Or use CLI
+python cli/easm.py dev start --mode compose
 
 # Backend setup
 cd backend
 poetry install
 poetry run python manage.py migrate
 poetry run python manage.py createsuperuser
-poetry run python manage.py runserver
 
 # Frontend setup (new terminal)
 cd frontend
@@ -129,44 +160,30 @@ pnpm dev      # or yarn dev
 ### Local Development with Minikube & Skaffold
 
 ```bash
-# Setup environment file (if not done already)
-cp .env.example .env
+# Using CLI (automatically starts Minikube if needed)
+python cli/easm.py dev start --mode k8s
 
-# Edit .env to configure ports and other settings
-# Optional: Change API_LOCAL_PORT, POSTGRES_LOCAL_PORT, REDIS_LOCAL_PORT
-
-# Start Minikube
-minikube start --cpus=4 --memory=8192 --driver=docker
-
-# Enable required addons
-minikube addons enable ingress
-minikube addons enable metrics-server
-
-# Option 1: Use the interactive deployment script (RECOMMENDED)
-# PowerShell (if execution policy blocks, use bypass):
-powershell -ExecutionPolicy Bypass -File .\skaffold.ps1
-
-# Or set execution policy once:
-# Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+# Or use the interactive deployment script
+# PowerShell:
+.\skaffold.ps1
 
 # Bash/Linux/macOS:
 ./skaffold.sh
 
-# The script will:
-# - Load environment variables from .env
-# - Generate temporary skaffold config with your custom ports
-# - Show you deployment mode options
-# - Display the ports being used
-# - Clean up temporary files automatically
-
-# Option 2: Run Skaffold directly (uses default ports 8000, 5432, 6379)
+# Manual method
+minikube start --cpus=4 --memory=8192 --driver=docker
+minikube addons enable ingress
 skaffold dev
 
 # Access services
 minikube service list
 ```
 
-**Note:** The `skaffold.ps1` and `skaffold.sh` scripts automatically read port configuration from `.env` and generate a temporary `skaffold.yaml` with your custom ports. This is the recommended way to use custom ports since Skaffold doesn't support port override via CLI flags.
+**Note:** The CLI and deployment scripts automatically:
+- Load environment variables from `.env`
+- Start Minikube if Kubernetes is not running
+- Generate temporary Skaffold config with your custom ports
+- Clean up temporary files after deployment
 
 ### Manual Kubernetes Deployment
 
@@ -181,6 +198,45 @@ helm install easm-rnd ./infra/helm/easm-rnd \
   --create-namespace \
   --values ./infra/helm/easm-rnd/values-dev.yaml
 ```
+
+## 🎯 CLI Commands Reference
+
+### Development
+```bash
+easm dev start              # Start development environment
+easm dev start --watch      # Start with auto-watch mode
+easm dev stop               # Stop all services
+easm dev logs               # View logs
+easm dev logs -f            # Follow logs
+easm dev shell api          # Shell into API container
+easm dev clean              # Clean temp files
+easm dev reset --confirm    # Reset everything
+```
+
+### Database
+```bash
+easm db migrate             # Run migrations
+easm db seed                # Seed database
+easm db shell               # Database shell
+```
+
+### Configuration
+```bash
+easm config init            # Initialize .env
+easm config validate        # Validate configuration
+easm config show            # Show current config
+easm config set DEBUG=True  # Set value
+```
+
+### Kubernetes
+```bash
+easm k8s start              # Start Minikube
+easm k8s status             # Check status
+easm k8s pods               # List pods
+easm k8s services           # List services
+```
+
+See `easm --help` or [CLI Documentation](cli/README.md) for all commands.
 
 ## 🌿 Git Branching Convention
 

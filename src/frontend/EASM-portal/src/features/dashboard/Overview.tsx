@@ -1,11 +1,12 @@
-import React from 'react';
-import { Box, Typography, Paper } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Paper, Select, MenuItem, FormControl, SelectChangeEvent } from '@mui/material';
 import {
   Language as DomainIcon,
   Security as CertIcon,
   Hub as ASNIcon,
   Public as IPIcon,
   ContactMail as ContactIcon,
+  CalendarToday as CalendarIcon,
 } from '@mui/icons-material';
 import { StatCard, InsightCard } from '../../shared/components';
 
@@ -32,13 +33,46 @@ interface InsightData {
 }
 
 const Overview: React.FC = () => {
+  // Date filter state
+  const [dateRange, setDateRange] = useState<string>('30');
+
+  // Get current date and format it
+  const currentDate = new Date();
+  const formattedCurrentDate = currentDate.toLocaleString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+    timeZoneName: 'short'
+  });
+
+  // Hardcoded last scan time (for now)
+  const lastScanDate = new Date(currentDate.getTime() - 2 * 60 * 60 * 1000); // 2 hours ago
+  const formattedLastScan = lastScanDate.toLocaleString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+    timeZoneName: 'short'
+  });
+
+  const handleDateRangeChange = (event: SelectChangeEvent<string>) => {
+    setDateRange(event.target.value);
+  };
+
   // Mock data - this would come from your API
   const assetData: AssetData[] = [
-    { icon: <DomainIcon />, title: 'Domains', value: '4.7K', lastDays: 30, change: 16 },
-    { icon: <CertIcon />, title: 'SSL/TLS Certificates', value: '6.6K', lastDays: 30, change: 546 },
-    { icon: <ASNIcon />, title: 'ASNs', value: '15', lastDays: 30, change: 0 },
-    { icon: <IPIcon />, title: 'IP Addresses', value: '119.9K', lastDays: 30, change: 103 },
-    { icon: <ContactIcon />, title: 'Contacts', value: '152', lastDays: 30, change: 7 },
+    { icon: <DomainIcon />, title: 'Domains', value: '4.7K', lastDays: parseInt(dateRange), change: 16 },
+    { icon: <CertIcon />, title: 'SSL/TLS Certificates', value: '6.6K', lastDays: parseInt(dateRange), change: 546 },
+    { icon: <ASNIcon />, title: 'ASNs', value: '15', lastDays: parseInt(dateRange), change: 0 },
+    { icon: <IPIcon />, title: 'IP Addresses', value: '119.9K', lastDays: parseInt(dateRange), change: 103 },
+    { icon: <ContactIcon />, title: 'Contacts', value: '152', lastDays: parseInt(dateRange), change: 7 },
   ];
 
   const insightsData: InsightData[] = [
@@ -88,15 +122,57 @@ const Overview: React.FC = () => {
 
   return (
     <Box>
-      {/* Header */}
+      {/* Header with Date Info and Filter */}
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+        <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
           Essentials
         </Typography>
+
+        {/* Current Date and Last Scan */}
+        <Box sx={{ display: 'flex', gap: 3, mb: 2, alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CalendarIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+            <Typography variant="body2" color="text.secondary">
+              Current: {formattedCurrentDate}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CalendarIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+            <Typography variant="body2" color="text.secondary">
+              Last Scan: {formattedLastScan}
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Actions and Date Filter */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="body2" color="text.secondary">
-            100/27/2025, 10:02:24 AM CDT
-          </Typography>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary' }}>
+              Time Range:
+            </Typography>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <Select
+                value={dateRange}
+                onChange={handleDateRangeChange}
+                sx={{
+                  fontSize: '0.875rem',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#e0e0e0',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#0078d4',
+                  },
+                }}
+              >
+                <MenuItem value="7">Last 7 Days</MenuItem>
+                <MenuItem value="14">Last 14 Days</MenuItem>
+                <MenuItem value="30">Last 30 Days</MenuItem>
+                <MenuItem value="60">Last 60 Days</MenuItem>
+                <MenuItem value="90">Last 90 Days</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Typography
               variant="body2"
@@ -126,9 +202,6 @@ const Overview: React.FC = () => {
       <Paper sx={{ p: 2, mb: 3 }}>
         <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
           Assets
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          10/27/2025, 10:02:24 AM CDT
         </Typography>
 
         <Box
@@ -165,9 +238,6 @@ const Overview: React.FC = () => {
       <Paper sx={{ p: 2 }}>
         <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
           Attack surface insights
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          10/26/2025, 5:39:41 AM CDT
         </Typography>
 
         <Box

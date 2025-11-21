@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "easm-cli"
+version = "0.1.0"
+description = "EASM CLI - Unified command-line interface for External Attack Surface Management"
+authors = ["EASM Team <team@secpod.vn>"]
+readme = "README.md"
+packages = [{include = "*.py"}, {include = "commands"}, {include = "utils"}]
+homepage = "https://github.com/SecPodVN/easm-rnd"
+repository = "https://github.com/SecPodVN/easm-rnd"
+keywords = ["easm", "security", "cli", "attack-surface"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Security",
+    "Topic :: System :: Systems Administration",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+python-dotenv = "^1.0.0"
+colorama = {version = "^0.4.6", markers = "sys_platform == 'win32'"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+black = "^23.0.0"
+ruff = "^0.1.0"
+
+[tool.poetry.scripts]
+easm = "cli:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312']
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+select = ["E", "F", "W", "I", "N", "UP"]
+ignore = ["E501"]

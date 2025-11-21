@@ -8,30 +8,38 @@ This project follows a modular monorepo architecture inspired by and customized 
 
 ```
 easm-platform/
-├── backend/             # Contain all backend application/lib
-│   ├── easm/            # Base Django application
-│   │   ├── apps/        # Django applications
-│   │   ├── config/      # Project configuration
-│   │   ├── pyproject.toml   # Poetry dependencies
-│   │   └── manage.py    # Manage command inside app
-│   ├── easm-cli/        # CLI tools and commands
-│   └── easm-core/       # Core, Shared libraries and utilities
-├── frontend/            # Contain all frontend application/lib
-│   ├── easm-portal-ui/  # Portal interface
-│   │   ├── src/
-│   │   ├── public/
-│   │   ├── package.json
-│   │   └── tsconfig.json
-│   ├── easm-admin-ui/   # Admin dashboard
-│   ├── easm-core/       # Shared core utilities
-│   └── easm-react/      # React components library
-├── infra/               # Kubernetes & deployment configs
-│   ├── helm/            # Helm charts
-│   ├── docker/          # Dockerfiles
-│   └── k8s/             # Kubernetes manifests
+├── src/                        # Source code directory
+│   ├── backend/                # Contain all backend application/lib
+│   │   ├── easm/               # Base Django application
+│   │   │   ├── apps/           # Django applications
+│   │   │   ├── config/         # Project configuration
+│   │   │   ├── pyproject.toml  # Poetry dependencies
+│   │   │   └── manage.py       # Manage command inside app
+│   │   └── easm-core/          # Core, Shared libraries and utilities
+│   ├── frontend/               # Contain all frontend application/lib
+│   │   ├── easm-web-portal/    # Portal interface
+│   │   │   ├── src/
+│   │   │   ├── public/
+│   │   │   ├── package.json
+│   │   │   └── tsconfig.json
+│   │   ├── easm-web-admin/     # Admin dashboard
+│   │   ├── easm-core/          # Shared core utilities
+│   │   └── easm-react/         # React components library
+│   ├── charts/                 # Helm charts for deployment
+│   │   ├── easm-api/           # Backend API Helm chart
+│   │   └── easm-web-portal/    # Web portal Helm chart
+│   └── cli/                    # CLI tools and commands
+│       └── easm-cli/           # Command-line interface for EASM platform
+├── infra/                      # Kubernetes & deployment configs
+│   ├── helm/                   # Helm charts
+│   ├── docker/                 # Dockerfiles
+│   └── k8s/                    # Kubernetes manifests
+├── docs/                       # Project documentation
+├── tests/                      # Integration and E2E tests
+├── tools/                      # Development tools and scripts
 ├── .github/
-│   └── workflows/       # GitHub Actions
-├── skaffold.yaml        # Skaffold configuration
+│   └── workflows/              # GitHub Actions
+├── skaffold.yaml               # Skaffold configuration
 └── README.md
 ```
 
@@ -45,7 +53,7 @@ easm-platform/
 ### Frontend App Structure
 
 ```
-src/frontend/
+frontend/
 ├── EASM-portal/                 # Main EASM Portal (User-facing)
 │   ├── src/
 │   │   ├── features/            # Domain-specific modules
@@ -115,30 +123,30 @@ cd easm-platform
 cp .env.example .env
 
 # 2. Start development environment (auto-detects mode)
-python cli/easm.py dev start
+python src/cli/easm.py dev start
 
 # 3. View logs
-python cli/easm.py dev logs -f
+python src/cli/easm.py dev logs -f
 
 # 4. Stop services
-python cli/easm.py dev stop
+python src/cli/easm.py dev stop
 ```
 
 **Install CLI globally:**
 
 ```bash
 # Windows PowerShell
-.\cli\install.ps1
+.\src\cli\install.ps1
 
 # Linux/macOS
-./cli/install.sh
+./src/cli/install.sh
 
 # After installation, use:
 easm dev start
 easm --help
 ```
 
-See [CLI Documentation](cli/README.md) for complete reference.
+See [CLI Documentation](src/cli/README.md) for complete reference.
 
 ### Environment Configuration
 
@@ -159,16 +167,16 @@ cp .env.example .env
 docker-compose up -d
 
 # Or use CLI
-python cli/easm.py dev start --mode compose
+python src/cli/easm.py dev start --mode compose
 
 # Backend setup
-cd backend
+cd src/backend
 poetry install
 poetry run python manage.py migrate
 poetry run python manage.py createsuperuser
 
 # Frontend setup (new terminal)
-cd frontend
+cd src/frontend
 pnpm install  # or yarn install
 pnpm dev      # or yarn dev
 ```
@@ -177,7 +185,7 @@ pnpm dev      # or yarn dev
 
 ```bash
 # Using CLI (automatically starts Minikube if needed)
-python cli/easm.py dev start --mode k8s
+python src/cli/easm.py dev start --mode k8s
 
 # Or use the interactive deployment script
 # PowerShell:
@@ -205,8 +213,8 @@ minikube service list
 
 ```bash
 # Build and push images
-docker build -t easm-backend:latest ./backend
-docker build -t easm-frontend:latest ./frontend
+docker build -t easm-backend:latest ./src/backend
+docker build -t easm-frontend:latest ./src/frontend
 
 # Deploy with Helm
 helm install easm-platform ./infra/helm/easm-platform \
@@ -307,8 +315,8 @@ git checkout develop
 git checkout -b release/v1.2.0
 
 # 2. Update version numbers
-# backend/pyproject.toml
-# frontend/package.json
+# src/backend/pyproject.toml
+# src/frontend/package.json
 # infra/helm/easm-platform/Chart.yaml
 
 # 3. Update CHANGELOG.md
@@ -352,12 +360,12 @@ helm history easm-platform -n easm-platform
 
 ```bash
 # Backend tests
-cd backend
+cd src/backend
 poetry run pytest
 poetry run pytest --cov=apps
 
 # Frontend tests
-cd frontend
+cd src/frontend
 pnpm test              # or yarn test
 pnpm test:coverage     # or yarn test:coverage
 

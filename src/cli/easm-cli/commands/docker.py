@@ -32,6 +32,6 @@ def register_commands(parser):
 
 def execute(args):
     """Execute docker command"""
-    from cli.utils.output import print_info
+    from utils.output import print_info
     print_info(f"Docker command: {args.subcommand} (not yet implemented)")
     return 0

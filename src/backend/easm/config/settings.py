@@ -34,9 +34,9 @@ INSTALLED_APPS = [
     'django_filters',
 
     # Local apps
-    'apps.api.apps.ApiConfig',
-    'apps.todos.apps.TodosConfig',
-    'apps.scanner.apps.ScannerConfig',
+    'easm.apps.api.apps.ApiConfig',
+    'easm.apps.todos.apps.TodosConfig',
+    'easm.apps.scanner.apps.ScannerConfig',
 ]
 
 MIDDLEWARE = [

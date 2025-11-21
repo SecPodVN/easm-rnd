@@ -39,7 +39,7 @@ def health_check(request):
 
     # Check MongoDB (for scanner service)
     try:
-        from apps.scanner.db import get_mongodb
+        from easm.apps.scanner.db import get_mongodb
         db = get_mongodb()
         if db is not None:
             # Ping MongoDB to verify connection

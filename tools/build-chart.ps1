@@ -204,29 +204,6 @@ function Get-ChartVersion {
     throw "Version not found in $ChartFile"
 }
 
-function Test-GitHubToken {
-    [CmdletBinding()]
-    param([Parameter(Mandatory=$true)][string]$Token)
-    
-    # Check token format
-    if ($Token -match '^ghp_[A-Za-z0-9]{36}$') {
-        Write-ColorMessage "Token format: Classic Personal Access Token (ghp_...)" -Type Info
-        return $true
-    } elseif ($Token -match '^github_pat_[A-Za-z0-9_]+$') {
-        Write-ColorMessage "Token format: Fine-grained Personal Access Token (github_pat_...)" -Type Info
-        Write-ColorMessage "Fine-grained tokens require specific repository permissions" -Type Warning
-        return $true
-    } elseif ($Token -match '^gho_[A-Za-z0-9]+$') {
-        Write-ColorMessage "Token format: OAuth token (gho_...)" -Type Warning
-        Write-ColorMessage "OAuth tokens may have limited package permissions" -Type Warning
-        return $true
-    } else {
-        Write-ColorMessage "Warning: Unrecognized token format" -Type Warning
-        Write-ColorMessage "Expected formats: ghp_... (classic) or github_pat_... (fine-grained)" -Type Info
-        return $false
-    }
-}
-
 function Invoke-HelmLogin {
     [CmdletBinding()]
     param(
@@ -235,35 +212,15 @@ function Invoke-HelmLogin {
         [Parameter(Mandatory=$true)][string]$HelmPath
     )
     try {
-        # Validate token format
-        $null = Test-GitHubToken -Token $Token
-        
-        # For GHCR, username can be anything (token is what matters)
-        # We'll use 'oauth2' or actual username if available
-        $username = if ($env:USER) { $env:USER } elseif ($env:USERNAME) { $env:USERNAME } else { 'oauth2' }
-        
-        Write-ColorMessage "Attempting login to $Registry as user: $username" -Type Info
-        
-        # Capture both stdout and stderr
-        $loginOutput = $Token | & $HelmPath registry login $Registry --username $username --password-stdin 2>&1
-        
+        $Token | & $HelmPath registry login $Registry --username $env:USERNAME --password-stdin 2>&1 | Out-Null
         if ($LASTEXITCODE -ne 0) {
-            # Show actual error from Helm
-            $errorMsg = $loginOutput -join "`n"
-            throw "Helm login failed: $errorMsg"
+            throw "Helm login returned exit code $LASTEXITCODE"
         }
-        
         Write-ColorMessage "Successfully logged in to $Registry" -Type Success
-        Write-ColorMessage "Note: Login success doesn't guarantee push permissions" -Type Warning
-        Write-Host "  Your token needs 'write:packages' scope to push charts" -ForegroundColor Gray
         return $true
     } catch {
         Write-ColorMessage "Failed to login to ${Registry}: $_" -Type Error
-        Write-ColorMessage "Troubleshooting tips:" -Type Info
-        Write-Host "  1. Verify your GitHub token is valid and not expired" -ForegroundColor Gray
-        Write-Host "  2. Token must have 'write:packages' and 'read:packages' scopes" -ForegroundColor Gray
-        Write-Host "  3. Get token from: https://github.com/settings/tokens" -ForegroundColor Gray
-        Write-Host "  4. For GHCR, token format should be: ghp_... or github_pat_..." -ForegroundColor Gray
+        Write-ColorMessage "Make sure your token has 'write:packages' scope" -Type Info
         return $false
     }
 }
@@ -290,42 +247,12 @@ function Invoke-ChartPush {
         [Parameter(Mandatory=$true)][string]$Owner,
         [Parameter(Mandatory=$true)][string]$HelmPath
     )
-    # GHCR requires lowercase repository names
-    $ownerLower = $Owner.ToLower()
-    $ociUrl = "oci://${Registry}/${ownerLower}"
-    
-    Write-ColorMessage "Pushing to: $ociUrl" -Type Info
-    
+    $ociUrl = "oci://${Registry}/${Owner}"
     $output = & $HelmPath push $Package $ociUrl 2>&1
     if ($LASTEXITCODE -eq 0) {
         return @{ Success = $true; Output = $output }
     }
-    
-    # Enhanced error handling for 403 Forbidden
-    $errorMsg = $output -join "`n"
-    if ($errorMsg -match '403 Forbidden') {
-        Write-ColorMessage "403 Forbidden - Token Permission Issue Detected" -Type Error
-        Write-Host ""
-        Write-Host "Your GitHub token is missing required permissions:" -ForegroundColor Yellow
-        Write-Host "  ✗ write:packages - Required to push packages" -ForegroundColor Red
-        Write-Host "  ✗ read:packages - Required to access packages" -ForegroundColor Red
-        Write-Host ""
-        Write-Host "Fix this issue:" -ForegroundColor Cyan
-        Write-Host "  1. Visit: https://github.com/settings/tokens" -ForegroundColor Gray
-        Write-Host "  2. Edit or regenerate your token" -ForegroundColor Gray
-        Write-Host "  3. Check these scopes:" -ForegroundColor Gray
-        Write-Host "     ☑ write:packages" -ForegroundColor Green
-        Write-Host "     ☑ read:packages" -ForegroundColor Green
-        Write-Host "     ☑ delete:packages (optional)" -ForegroundColor Gray
-        Write-Host "  4. For fine-grained tokens (github_pat_...):" -ForegroundColor Gray
-        Write-Host "     - Repository access: Select 'All repositories' or specific repos" -ForegroundColor Gray
-        Write-Host "     - Repository permissions → Packages: Read and Write" -ForegroundColor Gray
-        Write-Host "  5. Update GITHUB_TOKEN in .env file with new token" -ForegroundColor Gray
-        Write-Host "  6. Run the command again" -ForegroundColor Gray
-        Write-Host ""
-    }
-    
-    return @{ Success = $false; Error = $errorMsg }
+    return @{ Success = $false; Error = $output }
 }
 
 function Show-Summary {

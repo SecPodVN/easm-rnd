@@ -1,0 +1,154 @@
+name: Release Helm Chart to GHCR
+
+on:
+  # Trigger when PR is merged to main
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+    paths:
+      - 'src/charts/easm-api/**'
+      - 'src/charts/easm-frontend/**'
+      - '.github/workflows/release-chart.yml'
+
+  # Trigger on version tags (v1.0.0, v1.2.3, etc.)
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+
+  # Allow manual trigger with chart selection
+  workflow_dispatch:
+    inputs:
+      chart:
+        description: 'Chart to release (api, frontend, or all)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - api
+          - frontend
+          - all
+      force_release:
+        description: 'Force release even if no changes detected'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  REGISTRY: ghcr.io
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # Check if workflow should run (only for merged PRs, not closed without merge)
+  check-trigger:
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - name: Check trigger conditions
+        id: check
+        run: |
+          echo "should_run=true" >> $GITHUB_OUTPUT
+          echo "Workflow triggered by: ${{ github.event_name }}"
+
+  release-chart:
+    needs: check-trigger
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chart:
+          - name: easm-api
+            path: ./src/charts/easm-api
+          - name: easm-frontend
+            path: ./src/charts/easm-frontend
+    steps:
+      - name: Determine if chart should be released
+        id: should_release
+        run: |
+          SHOULD_RELEASE="false"
+
+          # Manual trigger - check chart selection
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            if [ "${{ inputs.chart }}" == "all" ] || [ "${{ inputs.chart }}" == "${{ matrix.chart.name }}" ] || [ "${{ inputs.chart }}" == "$(echo ${{ matrix.chart.name }} | sed 's/easm-//')" ]; then
+              SHOULD_RELEASE="true"
+            fi
+          # Tag trigger - release all charts
+          elif [ "${{ github.event_name }}" == "push" ] && [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            SHOULD_RELEASE="true"
+          # PR merged - check if chart files changed
+          elif [ "${{ github.event_name }}" == "pull_request" ]; then
+            SHOULD_RELEASE="true"
+          fi
+
+          echo "should_release=${SHOULD_RELEASE}" >> $GITHUB_OUTPUT
+          echo "Chart: ${{ matrix.chart.name }} - Should release: ${SHOULD_RELEASE}"
+
+      - name: Checkout code
+        if: steps.should_release.outputs.should_release == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        if: steps.should_release.outputs.should_release == 'true'
+        uses: azure/setup-helm@v4
+        with:
+          version: '3.19.0'
+
+      - name: Log in to GitHub Container Registry
+        if: steps.should_release.outputs.should_release == 'true'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
+
+      - name: Extract chart version
+        if: steps.should_release.outputs.should_release == 'true'
+        id: chart_version
+        run: |
+          CHART_VERSION=$(grep '^version:' ${{ matrix.chart.path }}/Chart.yaml | awk '{print $2}')
+          echo "version=${CHART_VERSION}" >> $GITHUB_OUTPUT
+          echo "Chart version: ${CHART_VERSION}"
+
+      - name: Package Helm chart
+        if: steps.should_release.outputs.should_release == 'true'
+        run: |
+          helm package ${{ matrix.chart.path }} --destination .
+
+      - name: Push Helm chart to GHCR
+        if: steps.should_release.outputs.should_release == 'true'
+        run: |
+          CHART_VERSION="${{ steps.chart_version.outputs.version }}"
+          CHART_PACKAGE="${{ matrix.chart.name }}-${CHART_VERSION}.tgz"
+
+          helm push ${CHART_PACKAGE} oci://${{ env.REGISTRY }}/${{ github.repository_owner }}
+
+      - name: Upload chart package as artifact
+        if: steps.should_release.outputs.should_release == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: helm-chart-${{ matrix.chart.name }}-${{ steps.chart_version.outputs.version }}
+          path: ${{ matrix.chart.name }}-${{ steps.chart_version.outputs.version }}.tgz
+          retention-days: 30
+
+      - name: Chart release summary
+        if: steps.should_release.outputs.should_release == 'true'
+        run: |
+          echo "### Helm Chart Released 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Chart Name:** ${{ matrix.chart.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ steps.chart_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Registry:** ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.chart.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Installation:**" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "helm pull oci://${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.chart.name }} --version ${{ steps.chart_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "helm install ${{ matrix.chart.name }} oci://${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.chart.name }} --version ${{ steps.chart_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

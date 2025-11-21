@@ -6,7 +6,14 @@ import {
   Button,
   Popover,
   TextField,
-  ButtonGroup
+  ButtonGroup,
+  Card,
+  CardContent,
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
 } from '@mui/material';
 import {
   Language as DomainIcon,
@@ -16,6 +23,11 @@ import {
   ContactMail as ContactIcon,
   CalendarToday as CalendarIcon,
   DateRange as DateRangeIcon,
+  TrendingUp as TrendingUpIcon,
+  Error as ErrorIcon,
+  Warning as WarningIcon,
+  Info as InfoIcon,
+  CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import { StatCard, InsightCard } from '../../shared/components';
 
@@ -352,76 +364,388 @@ const Overview: React.FC = () => {
       </Box>
 
       {/* Assets Section */}
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-          Assets
-        </Typography>
-
-        <Box
-          sx={{
-            display: 'flex',
-            gap: 2,
-            overflowX: 'auto',
-            pb: 2,
-            '&::-webkit-scrollbar': {
-              height: 8,
-            },
-            '&::-webkit-scrollbar-track': {
-              backgroundColor: '#f1f1f1',
-              borderRadius: 4,
-            },
-            '&::-webkit-scrollbar-thumb': {
-              backgroundColor: '#888',
-              borderRadius: 4,
-              '&:hover': {
-                backgroundColor: '#555',
-              },
-            },
-          }}
-        >
-          {assetData.map((asset, index) => (
-            <Box key={index} sx={{ flexShrink: 0 }}>
-              <StatCard {...asset} />
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, 1fr)',
+            md: 'repeat(3, 1fr)',
+            lg: 'repeat(4, 1fr)',
+          },
+          gap: 2,
+          mb: 3,
+        }}
+      >
+        {/* Total Assets Widget */}
+        <Card>
+          <CardContent>
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              Total Assets
+            </Typography>
+            <Typography variant="h3" sx={{ fontWeight: 600, color: '#0078d4', mb: 1 }}>
+              131.5K
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <TrendingUpIcon sx={{ fontSize: 16, color: '#107c10' }} />
+              <Typography variant="caption" sx={{ color: '#107c10' }}>
+                +1,243 ({dateRange}d)
+              </Typography>
             </Box>
-          ))}
-        </Box>
-      </Paper>
+          </CardContent>
+        </Card>
 
-      {/* Attack Surface Insights Section */}
-      <Paper sx={{ p: 2 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-          Attack surface insights
-        </Typography>
-
-        <Box
-          sx={{
-            display: 'flex',
-            gap: 3,
-            overflowX: 'auto',
-            pb: 2,
-            '&::-webkit-scrollbar': {
-              height: 8,
-            },
-            '&::-webkit-scrollbar-track': {
-              backgroundColor: '#f1f1f1',
-              borderRadius: 4,
-            },
-            '&::-webkit-scrollbar-thumb': {
-              backgroundColor: '#888',
-              borderRadius: 4,
-              '&:hover': {
-                backgroundColor: '#555',
-              },
-            },
-          }}
-        >
-          {insightsData.map((insight, index) => (
-            <Box key={index} sx={{ flexShrink: 0 }}>
-              <InsightCard {...insight} />
+        {/* Total Issues Widget */}
+        <Card>
+          <CardContent>
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              Total Issues
+            </Typography>
+            <Typography variant="h3" sx={{ fontWeight: 600, color: '#d13438', mb: 1 }}>
+              18.1K
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <TrendingUpIcon sx={{ fontSize: 16, color: '#d13438' }} />
+              <Typography variant="caption" sx={{ color: '#d13438' }}>
+                +356 ({dateRange}d)
+              </Typography>
             </Box>
-          ))}
-        </Box>
-      </Paper>
+          </CardContent>
+        </Card>
+
+        {/* Scoring Widget */}
+        <Card>
+          <CardContent>
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              Security Score
+            </Typography>
+            <Typography variant="h3" sx={{ fontWeight: 600, color: '#ff8c00', mb: 1 }}>
+              72/100
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              SecPod's Rules
+            </Typography>
+          </CardContent>
+        </Card>
+
+        {/* New Assets Widget */}
+        <Card>
+          <CardContent>
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              New Assets
+            </Typography>
+            <Typography variant="h3" sx={{ fontWeight: 600, color: '#0078d4', mb: 1 }}>
+              243
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Last {dateRange} days
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
+
+      {/* Top Issues and New Items Row */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', lg: 'repeat(2, 1fr)' },
+          gap: 2,
+          mb: 3,
+        }}
+      >
+        {/* Top N Issues Widget */}
+        <Card sx={{ height: '100%' }}>
+          <CardContent>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+              Top Issues to Resolve
+            </Typography>
+            <List dense>
+              <ListItem sx={{ px: 0 }}>
+                <ErrorIcon sx={{ color: '#d13438', mr: 1, fontSize: 20 }} />
+                <ListItemText
+                  primary="CVE-2023-21709 - Microsoft Exchange Server"
+                  secondary="16 assets affected"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                  secondaryTypographyProps={{ variant: 'caption' }}
+                />
+                <Chip label="High" size="small" sx={{ bgcolor: '#d13438', color: 'white' }} />
+              </ListItem>
+              <Divider />
+              <ListItem sx={{ px: 0 }}>
+                <ErrorIcon sx={{ color: '#d13438', mr: 1, fontSize: 20 }} />
+                <ListItemText
+                  primary="CVE-2023-28310 & CVE-2023-32031 - Exchange"
+                  secondary="16 assets affected"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                  secondaryTypographyProps={{ variant: 'caption' }}
+                />
+                <Chip label="High" size="small" sx={{ bgcolor: '#d13438', color: 'white' }} />
+              </ListItem>
+              <Divider />
+              <ListItem sx={{ px: 0 }}>
+                <WarningIcon sx={{ color: '#ff8c00', mr: 1, fontSize: 20 }} />
+                <ListItemText
+                  primary="Hosts with Expired SSL Certificates"
+                  secondary="2.1K assets affected"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                  secondaryTypographyProps={{ variant: 'caption' }}
+                />
+                <Chip label="Medium" size="small" sx={{ bgcolor: '#ff8c00', color: 'white' }} />
+              </ListItem>
+              <Divider />
+              <ListItem sx={{ px: 0 }}>
+                <InfoIcon sx={{ color: '#ffc107', mr: 1, fontSize: 20 }} />
+                <ListItemText
+                  primary="Deprecated Tech - OpenSSL"
+                  secondary="6.2K assets affected"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                  secondaryTypographyProps={{ variant: 'caption' }}
+                />
+                <Chip label="Low" size="small" sx={{ bgcolor: '#ffc107', color: 'white' }} />
+              </ListItem>
+            </List>
+          </CardContent>
+        </Card>
+
+        {/* New Items Panel */}
+        <Card sx={{ height: '100%' }}>
+          <CardContent>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+              New Items (Last {dateRange}d)
+            </Typography>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: 2,
+              }}
+            >
+              {/* New Assets breakdown */}
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Assets
+                </Typography>
+                <Box sx={{ mb: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography variant="body2">Domains</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>+16</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography variant="body2">IPs</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>+103</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography variant="body2">Certificates</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>+546</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body2">Contacts</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>+7</Typography>
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* New Issues breakdown */}
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Issues
+                </Typography>
+                <Box sx={{ mb: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography variant="body2" sx={{ color: '#d13438' }}>High</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#d13438' }}>+12</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography variant="body2" sx={{ color: '#ff8c00' }}>Medium</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#ff8c00' }}>+89</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography variant="body2" sx={{ color: '#ffc107' }}>Low</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#ffc107' }}>+255</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body2" sx={{ color: '#107c10' }}>Info</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#107c10' }}>+87</Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
+
+      {/* Map View Widget */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+            Geographic Distribution
+          </Typography>
+          <Box
+            sx={{
+              height: 300,
+              bgcolor: '#f5f5f5',
+              borderRadius: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Map visualization will be displayed here
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Summary by Types */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
+          gap: 2,
+        }}
+      >
+        {/* Assets Summary */}
+        <Card>
+          <CardContent>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+              Assets by Type
+            </Typography>
+            <List dense>
+              <ListItem sx={{ px: 0, py: 0.5 }}>
+                <DomainIcon sx={{ fontSize: 18, mr: 1, color: 'text.secondary' }} />
+                <ListItemText
+                  primary="Domains"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                />
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>4.7K</Typography>
+              </ListItem>
+              <ListItem sx={{ px: 0, py: 0.5 }}>
+                <IPIcon sx={{ fontSize: 18, mr: 1, color: 'text.secondary' }} />
+                <ListItemText
+                  primary="IP Addresses"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                />
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>119.9K</Typography>
+              </ListItem>
+              <ListItem sx={{ px: 0, py: 0.5 }}>
+                <CertIcon sx={{ fontSize: 18, mr: 1, color: 'text.secondary' }} />
+                <ListItemText
+                  primary="Certificates"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                />
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>6.6K</Typography>
+              </ListItem>
+              <ListItem sx={{ px: 0, py: 0.5 }}>
+                <ASNIcon sx={{ fontSize: 18, mr: 1, color: 'text.secondary' }} />
+                <ListItemText
+                  primary="ASNs"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                />
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>15</Typography>
+              </ListItem>
+              <ListItem sx={{ px: 0, py: 0.5 }}>
+                <ContactIcon sx={{ fontSize: 18, mr: 1, color: 'text.secondary' }} />
+                <ListItemText
+                  primary="Contacts"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                />
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>152</Typography>
+              </ListItem>
+            </List>
+          </CardContent>
+        </Card>
+
+        {/* Issues Summary */}
+        <Card>
+          <CardContent>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+              Issues by Severity
+            </Typography>
+            <List dense>
+              <ListItem sx={{ px: 0, py: 0.5 }}>
+                <ErrorIcon sx={{ fontSize: 18, mr: 1, color: '#d13438' }} />
+                <ListItemText
+                  primary="High"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                />
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#d13438' }}>68</Typography>
+              </ListItem>
+              <ListItem sx={{ px: 0, py: 0.5 }}>
+                <WarningIcon sx={{ fontSize: 18, mr: 1, color: '#ff8c00' }} />
+                <ListItemText
+                  primary="Medium"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                />
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#ff8c00' }}>5.1K</Typography>
+              </ListItem>
+              <ListItem sx={{ px: 0, py: 0.5 }}>
+                <InfoIcon sx={{ fontSize: 18, mr: 1, color: '#ffc107' }} />
+                <ListItemText
+                  primary="Low"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                />
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#ffc107' }}>13K</Typography>
+              </ListItem>
+              <ListItem sx={{ px: 0, py: 0.5 }}>
+                <CheckCircleIcon sx={{ fontSize: 18, mr: 1, color: '#107c10' }} />
+                <ListItemText
+                  primary="Info"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                />
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#107c10' }}>2.3K</Typography>
+              </ListItem>
+            </List>
+          </CardContent>
+        </Card>
+
+        {/* Vulnerability Summary */}
+        <Card>
+          <CardContent>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+              Top Vulnerabilities
+            </Typography>
+            <List dense>
+              <ListItem sx={{ px: 0, py: 0.5 }}>
+                <ListItemText
+                  primary="CVE-2023-*"
+                  secondary="Current year vulnerabilities"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                  secondaryTypographyProps={{ variant: 'caption' }}
+                />
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>1.2K</Typography>
+              </ListItem>
+              <ListItem sx={{ px: 0, py: 0.5 }}>
+                <ListItemText
+                  primary="CVE-2022-*"
+                  secondary="Last year vulnerabilities"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                  secondaryTypographyProps={{ variant: 'caption' }}
+                />
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>3.4K</Typography>
+              </ListItem>
+              <ListItem sx={{ px: 0, py: 0.5 }}>
+                <ListItemText
+                  primary="Expired Certs"
+                  secondary="Certificate issues"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                  secondaryTypographyProps={{ variant: 'caption' }}
+                />
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>5.1K</Typography>
+              </ListItem>
+              <ListItem sx={{ px: 0, py: 0.5 }}>
+                <ListItemText
+                  primary="Deprecated Tech"
+                  secondary="Old software versions"
+                  primaryTypographyProps={{ variant: 'body2' }}
+                  secondaryTypographyProps={{ variant: 'caption' }}
+                />
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>9.3K</Typography>
+              </ListItem>
+            </List>
+          </CardContent>
+        </Card>
+      </Box>
     </Box>
   );
 };

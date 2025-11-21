@@ -1,5 +1,5 @@
 """
-Scanner API Views - ViewSets for scanner operations
+Scanner API Views - All scanner-related ViewSets
 """
 from rest_framework import viewsets, status
 from rest_framework.decorators import action, api_view, permission_classes
@@ -9,7 +9,6 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 from easm.apps.scanner.models import Resource, Rule, Finding
 from easm.apps.scanner.engine import ScanEngine
-
 from .serializers import (
     ResourceSerializer, ResourceUploadSerializer, ResourceListSerializer,
     RuleSerializer, RuleUploadSerializer, FindingSerializer,
@@ -261,7 +260,7 @@ class FindingViewSet(viewsets.ViewSet):
 
 
 @extend_schema(tags=['Scanner'])
-class ScannerViewSet(viewsets.ViewSet):
+class ScanViewSet(viewsets.ViewSet):
     """
     ViewSet for scanning operations.
 

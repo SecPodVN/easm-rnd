@@ -1,5 +1,5 @@
 """
-REST API URL Configuration - Centralized API routing (Todos and Scanner)
+REST API URL Configuration - Centralized API routing (controls all apps)
 """
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
@@ -10,19 +10,9 @@ from .views import api_root
 # Import todos views
 from .todos.views import TodoViewSet
 
-# Import scanner views
-from .scanner.views import (
-    scanner_health, ResourceViewSet, RuleViewSet,
-    FindingViewSet, ScannerViewSet
-)
-
 # Central API router
 router = DefaultRouter()
 router.register(r'todos', TodoViewSet, basename='todo')
-router.register(r'scanner/resources', ResourceViewSet, basename='scanner-resource')
-router.register(r'scanner/rules', RuleViewSet, basename='scanner-rule')
-router.register(r'scanner/findings', FindingViewSet, basename='scanner-finding')
-router.register(r'scanner/scan', ScannerViewSet, basename='scanner-scan')
 
 app_name = 'api'
 
@@ -30,9 +20,9 @@ urlpatterns = [
     # API root endpoint
     path('', api_root, name='api-root'),
 
-    # Scanner health check
-    path('scanner/healthStatus', scanner_health, name='scanner-health'),
-
-    # Router URLs
+    # Todos router URLs
     path('', include(router.urls)),
+
+    # Scanner app URLs (delegated to scanner API module for sub-routes)
+    path('scanner/', include('easm.apps.api.scanner.urls')),
 ]

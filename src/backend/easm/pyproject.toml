@@ -1,27 +1,27 @@
 [tool.poetry]
 name = "easm-api"
 version = "1.0.0-dev"
-description = "EASM Django REST API"
+description = "EASM REST API"
 authors = ["Thinh Huynh-Doan <thinh.huynh@secpod.com>"]
 readme = "README.md"
 package-mode = false
 
-# Updated: 2025-10-27 - Added MongoDB support - Python 3.12 for pymongo compatibility
+# Updated: 2025-11-21 - Python 3.14, Django 5.2 LTS, Redis 8+ compatibility
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.14"
 django = "^5.2"
 djangorestframework = "^3.15"
 djangorestframework-simplejwt = "^5.3"
 psycopg2-binary = "^2.9"
-redis = "^5.0"
+redis = "^5.2"
 django-redis = "^5.4"
-django-cors-headers = "^4.3"
+django-cors-headers = "^4.6"
 python-decouple = "^3.8"
-gunicorn = "^21.2"
-drf-spectacular = "^0.27"
-django-filter = "^23.5"
-pymongo = "^4.6"
-dnspython = "^2.4"
+gunicorn = "^23.0"
+drf-spectacular = "^0.28"
+django-filter = "^24.3"
+pymongo = "^4.10"
+dnspython = "^2.7"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.1"

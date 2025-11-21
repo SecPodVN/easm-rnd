@@ -1,7 +1,7 @@
-# FROM python:3.12-slim
-FROM python:3.13
-# Force rebuild - Updated 2025-10-27 for MongoDB support
-ARG REBUILD=2025-10-27-22:00
+# Python 3.14 - Latest stable version
+FROM python:3.14-slim
+# Force rebuild - Updated 2025-11-21 for Python 3.14, Django 5.2 LTS, Redis 8+
+ARG REBUILD=2025-11-21-10:50
 
 # Security: Add labels for metadata
 LABEL maintainer="thinh.huynh@secpod.com" \

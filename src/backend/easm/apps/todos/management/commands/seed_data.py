@@ -3,7 +3,7 @@ Django management command to seed database with sample data
 """
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from apps.todos.models import Todo
+from easm.apps.todos.models import Todo
 from django.utils import timezone
 from datetime import timedelta
 import random
@@ -45,11 +45,11 @@ class Command(BaseCommand):
         # Create users
         self.stdout.write(self.style.MIGRATE_HEADING('Creating users...'))
         users = []
-        
+
         for i in range(1, num_users + 1):
             username = f'user{i}'
             email = f'user{i}@example.com'
-            
+
             user, created = User.objects.get_or_create(
                 username=username,
                 defaults={
@@ -58,7 +58,7 @@ class Command(BaseCommand):
                     'last_name': f'User{i}'
                 }
             )
-            
+
             if created:
                 user.set_password('password123')
                 user.save()
@@ -69,7 +69,7 @@ class Command(BaseCommand):
                 self.stdout.write(
                     self.style.WARNING(f'⚠ User {username} already exists')
                 )
-            
+
             users.append(user)
 
         # Create superuser if not exists
@@ -136,11 +136,11 @@ class Command(BaseCommand):
                 description = random.choice(todo_descriptions)
                 status = random.choice(statuses)
                 priority = random.choice(priorities)
-                
+
                 # Random due date (between now and 30 days from now)
                 days_ahead = random.randint(1, 30)
                 due_date = timezone.now() + timedelta(days=days_ahead)
-                
+
                 # Set completed_at if status is completed
                 completed_at = None
                 if status == 'completed':
@@ -168,12 +168,12 @@ class Command(BaseCommand):
         self.stdout.write(f'  • Total users: {len(users)}')
         self.stdout.write(f'  • Total todos: {total_todos}')
         self.stdout.write(f'  • Todos per user: {todos_per_user}')
-        
+
         self.stdout.write('\n' + self.style.MIGRATE_HEADING('Test Credentials:'))
         self.stdout.write('  • Superuser: admin / admin123')
         for i in range(1, num_users + 1):
             self.stdout.write(f'  • User{i}: user{i} / password123')
-        
+
         self.stdout.write('\n' + self.style.MIGRATE_HEADING('API Endpoints:'))
         self.stdout.write('  • Token: POST /api/token/')
         self.stdout.write('  • Todos: GET/POST /api/todos/')

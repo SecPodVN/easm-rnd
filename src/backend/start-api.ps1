@@ -46,6 +46,7 @@ while ($attempt -lt $maxAttempts) {
 
 # Run migrations
 Write-Host "Running database migrations..." -ForegroundColor Yellow
+Set-Location easm
 python manage.py migrate --noinput
 
 # Collect static files

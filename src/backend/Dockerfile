@@ -45,11 +45,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install Poetry
 RUN pip install "poetry==$POETRY_VERSION"
 
-# Copy poetry files
-COPY pyproject.toml poetry.lock* ./
+# Copy poetry files from easm directory
+COPY easm/pyproject.toml easm/poetry.lock* ./easm/
 
 # Generate lock file and install dependencies with verbose output
-RUN echo "=== Running poetry lock ===" && \
+RUN cd easm && \
+    echo "=== Running poetry lock ===" && \
     poetry lock -vvv && \
     echo "=== Running poetry install ===" && \
     poetry install --no-root --without dev -vvv && \

@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 
-from apps.todos.models import Todo
+from easm.apps.todos.models import Todo
 from .serializers import TodoSerializer, TodoCreateUpdateSerializer
 
 

@@ -3,7 +3,7 @@ Clear all seed data from database
 """
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from apps.todos.models import Todo
+from easm.apps.todos.models import Todo
 
 
 class Command(BaseCommand):
@@ -30,7 +30,7 @@ class Command(BaseCommand):
                 msg = 'This will delete ALL users and todos. Continue? [y/N] '
             else:
                 msg = 'This will delete all non-superuser users and todos. Continue? [y/N] '
-            
+
             confirm = input(msg)
             if confirm.lower() != 'y':
                 self.stdout.write(self.style.WARNING('Operation cancelled'))

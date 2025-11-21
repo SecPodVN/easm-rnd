@@ -2,7 +2,7 @@
 REST API Filters - Custom filter classes
 """
 from django_filters import rest_framework as filters
-from apps.todos.models import Todo
+from easm.apps.todos.models import Todo
 
 
 class TodoFilter(filters.FilterSet):
@@ -18,11 +18,11 @@ class TodoFilter(filters.FilterSet):
     due_after = filters.DateTimeFilter(field_name='due_date', lookup_expr='gte')
     due_before = filters.DateTimeFilter(field_name='due_date', lookup_expr='lte')
     is_overdue = filters.BooleanFilter(method='filter_overdue')
-    
+
     class Meta:
         model = Todo
         fields = ['status', 'priority', 'title', 'description']
-    
+
     def filter_overdue(self, queryset, name, value):
         """
         Filter overdue todos

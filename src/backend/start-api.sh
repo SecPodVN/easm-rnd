@@ -51,15 +51,15 @@ fi
 
 # Run migrations
 echo "Running database migrations..."
-python manage.py migrate --noinput
+cd /app/easm && python manage.py migrate --noinput
 
 # Collect static files
 echo "Collecting static files..."
-python manage.py collectstatic --noinput
+cd /app/easm && python manage.py collectstatic --noinput
 
 # Create superuser if it doesn't exist
 echo "Creating superuser..."
-python manage.py shell << END
+cd /app/easm && python manage.py shell << END
 from django.contrib.auth import get_user_model
 User = get_user_model()
 if not User.objects.filter(username='admin').exists():
@@ -71,7 +71,7 @@ END
 
 # Start Gunicorn
 echo "Starting Gunicorn..."
-exec gunicorn config.wsgi:application \
+cd /app/easm && exec gunicorn config.wsgi:application \
     --bind 0.0.0.0:8000 \
     --workers ${GUNICORN_WORKERS:-4} \
     --reload \

@@ -3,7 +3,7 @@ Todo API Serializers
 """
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from apps.todos.models import Todo
+from easm.apps.todos.models import Todo
 
 
 class UserSerializer(serializers.ModelSerializer):

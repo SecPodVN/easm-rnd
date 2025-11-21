@@ -1,5 +1,5 @@
 """
-Scanner API Serializers
+Scanner API Serializers - All scanner-related serializers
 """
 from rest_framework import serializers
 

@@ -11,6 +11,73 @@
                 "panel": "shared"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "PowerShell: Analyze Script",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "Invoke-ScriptAnalyzer -Path '${file}' -Settings '.vscode/PSScriptAnalyzerSettings.psd1' -Recurse"
+            ],
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "PowerShell: Format Current File",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "Invoke-Formatter -ScriptDefinition (Get-Content '${file}' -Raw) -Settings @{Rules=@{PSPlaceOpenBrace=@{Enable=$true;OnSameLine=$true}}}"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "PowerShell: Test Syntax",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "$errors = $null; $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content '${file}' -Raw), [ref]$errors); if ($errors) { $errors | ForEach-Object { Write-Host \"Error: $($_.Message) at line $($_.Token.StartLine)\" -ForegroundColor Red } } else { Write-Host 'No syntax errors found.' -ForegroundColor Green }"
+            ],
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "PowerShell: Run Current Script",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-File",
+                "${file}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
         }
     ]
 }

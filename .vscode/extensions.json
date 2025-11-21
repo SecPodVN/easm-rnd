@@ -20,6 +20,9 @@
     "timonwong.shellcheck",
     "mads-hartmann.bash-ide-vscode",
 
+    // PowerShell
+    "ms-vscode.powershell",
+
     // Docker & Kubernetes
     "ms-azuretools.vscode-docker",
     "ms-kubernetes-tools.vscode-kubernetes-tools",

@@ -85,6 +85,28 @@
       "sourceMapPathOverrides": {
         "webpack:///src/*": "${webRoot}/*"
       }
+    },
+    {
+      "name": "PowerShell: Launch Current Script",
+      "type": "PowerShell",
+      "request": "launch",
+      "script": "${file}",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "PowerShell: Interactive Session",
+      "type": "PowerShell",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "createTemporaryIntegratedConsole": false
+    },
+    {
+      "name": "PowerShell: Launch build-chart.ps1",
+      "type": "PowerShell",
+      "request": "launch",
+      "script": "${workspaceFolder}/tools/build-chart.ps1",
+      "args": [],
+      "cwd": "${workspaceFolder}"
     }
   ],
   "compounds": [

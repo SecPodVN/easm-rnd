@@ -7,6 +7,7 @@ import { SeedManagement } from './features/discovery';
 import { AssetInventory } from './features/inventory';
 import { VulnerabilityManagement } from './features/vulnerabilities';
 import { ReportBuilder } from './features/reports';
+import { Settings } from './features/settings';
 import theme from './theme';
 
 function App() {
@@ -26,6 +27,8 @@ function App() {
         return <ReportBuilder />;
       case 'jobs':
         return <div>Job Management - Coming Soon</div>;
+      case 'settings':
+        return <Settings />;
       default:
         return <Overview />;
     }

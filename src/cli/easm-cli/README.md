@@ -17,7 +17,7 @@ A unified command-line interface for managing the EASM (External Attack Surface 
 
 ```bash
 # From project root
-python cli/easm.py <command>
+python src/cli/easm-src/cli/easm-cli/easm.py <command>
 
 # Windows
 python cli\easm.py <command>
@@ -115,12 +115,12 @@ function easm { python D:\Personal\EASM\easm-rnd\cli\easm.py $args }
 
 ```bash
 # Bash/Zsh: Add to ~/.bashrc or ~/.zshrc
-alias easm='python ~/easm-rnd/cli/easm.py'
+alias easm='python ~/easm-rnd/src/cli/easm-cli/easm.py'
 ```
 
 ## 📚 Command Reference
 
-> **Note:** Replace `python cli/easm.py` with `easm` if you've installed globally.
+> **Note:** Replace `python src/cli/easm-src/cli/easm-cli/easm.py` with `easm` if you've installed globally.
 
 ### Development Commands (`dev`)
 
@@ -620,10 +620,10 @@ function easm {
 python --version
 
 # Try running directly
-python cli/easm.py --version
+python src/cli/easm-src/cli/easm-cli/easm.py --version
 
 # Check file exists
-ls cli/easm.py  # Linux/macOS
+ls src/cli/easm-cli/easm.py  # Linux/macOS
 dir cli\easm.py # Windows
 ```
 

@@ -4,11 +4,11 @@ Development commands
 import subprocess
 import sys
 from pathlib import Path
-from cli.utils.output import (
+from utils.output import (
     print_info, print_success, print_error,
     print_header, print_warning
 )
-from cli.utils.env import load_env_file, get_project_root
+from utils.env import load_env_file, get_project_root
 
 
 def register_commands(parser):
@@ -287,8 +287,10 @@ def reset(args):
     print_header("Resetting to Clean State")
 
     if not args.confirm:
-        from cli.utils.output import confirm
-        if not confirm("This will stop all services and clean data. Continue?"):
+        from utils.output import confirm
+        if not confirm(
+            "This will stop all services and clean data. Continue?"
+        ):
             print_info("Cancelled")
             return 0
 

@@ -6,12 +6,12 @@ import sys
 import argparse
 from pathlib import Path
 
-# Add project root to path
-PROJECT_ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
+# Add CLI directory to path for imports
+CLI_DIR = Path(__file__).parent
+sys.path.insert(0, str(CLI_DIR))
 
-from cli.commands import dev, deploy, db, scan, k8s, docker, config
-from cli.utils.output import print_banner, print_error, print_success
+from commands import dev, deploy, db, scan, k8s, docker, config
+from utils.output import print_banner, print_error, print_success
 
 
 VERSION = "0.1.0"

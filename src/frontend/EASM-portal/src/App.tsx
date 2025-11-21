@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Provider } from 'react-redux';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import DashboardLayout from './components/DashboardLayout';
@@ -9,6 +10,7 @@ import { VulnerabilityManagement } from './features/vulnerabilities';
 import { ReportBuilder } from './features/reports';
 import { Settings } from './features/settings';
 import theme from './theme';
+import { store } from './store';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('overview');
@@ -33,14 +35,16 @@ function App() {
         return <Overview />;
     }
   };
-
+// For Redux
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <DashboardLayout onNavigate={setCurrentPage} currentPage={currentPage}>
-        {renderPage()}
-      </DashboardLayout>
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <DashboardLayout onNavigate={setCurrentPage} currentPage={currentPage}>
+          {renderPage()}
+        </DashboardLayout>
+      </ThemeProvider>
+    </Provider>
   );
 }
 

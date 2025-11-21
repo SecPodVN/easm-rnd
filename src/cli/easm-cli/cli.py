@@ -4,17 +4,12 @@ EASM CLI - Unified command-line interface for EASM project
 """
 import sys
 import argparse
-from pathlib import Path
-
-# Add CLI directory to path for imports
-CLI_DIR = Path(__file__).parent
-sys.path.insert(0, str(CLI_DIR))
 
 from commands import dev, deploy, db, scan, k8s, docker, config
-from utils.output import print_banner, print_error, print_success
+from utils.output import print_banner, print_error
 
 
-VERSION = "0.1.0"
+__version__ = "0.1.0"
 
 
 def create_parser():
@@ -31,11 +26,11 @@ Examples:
   easm scan list              List all scans
   easm k8s status             Check Kubernetes status
 
-For more information: https://github.com/your-org/easm-rnd
+For more information: https://github.com/SecPodVN/easm-rnd
         """
     )
 
-    parser.add_argument('--version', action='version', version=f'%(prog)s {VERSION}')
+    parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     parser.add_argument('--verbose', '-v', action='store_true', help='Verbose output')
     parser.add_argument('--quiet', '-q', action='store_true', help='Quiet mode')
 

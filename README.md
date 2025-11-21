@@ -112,41 +112,19 @@ frontend/
 
 ## 🏃 Getting Started
 
-### Quick Start with CLI (Recommended)
+### Quick Start with CLI
 
-The easiest way to manage this project is using the unified CLI:
+# 2. Install CLI
+pipx install src/cli/easm-cli
 
-```bash
-# 1. Clone and setup
-git clone <repository-url> your-path-to/easm-platform
-cd easm-platform
-cp .env.example .env
-
-# 2. Start development environment (auto-detects mode)
-python src/cli/easm.py dev start
-
-# 3. View logs
-python src/cli/easm.py dev logs -f
-
-# 4. Stop services
-python src/cli/easm.py dev stop
-```
-
-**Install CLI globally:**
-
-```bash
-# Windows PowerShell
-.\src\cli\install.ps1
-
-# Linux/macOS
-./src/cli/install.sh
-
-# After installation, use:
+# 3. Start development
 easm dev start
-easm --help
+
+# 4. Stop
+easm dev stop
 ```
 
-See [CLI Documentation](src/cli/README.md) for complete reference.
+**For complete CLI documentation, installation options, and command reference, see [CLI README](src/cli/easm-cli/README.md)**
 
 ### Environment Configuration
 
@@ -223,44 +201,7 @@ helm install easm-platform ./infra/helm/easm-platform \
   --values ./infra/helm/easm-platform/values-dev.yaml
 ```
 
-## 🎯 CLI Commands Reference
 
-### Development
-```bash
-easm dev start              # Start development environment
-easm dev start --watch      # Start with auto-watch mode
-easm dev stop               # Stop all services
-easm dev logs               # View logs
-easm dev logs -f            # Follow logs
-easm dev shell api          # Shell into API container
-easm dev clean              # Clean temp files
-easm dev reset --confirm    # Reset everything
-```
-
-### Database
-```bash
-easm db migrate             # Run migrations
-easm db seed                # Seed database
-easm db shell               # Database shell
-```
-
-### Configuration
-```bash
-easm config init            # Initialize .env
-easm config validate        # Validate configuration
-easm config show            # Show current config
-easm config set DEBUG=True  # Set value
-```
-
-### Kubernetes
-```bash
-easm k8s start              # Start Minikube
-easm k8s status             # Check status
-easm k8s pods               # List pods
-easm k8s services           # List services
-```
-
-See `easm --help` or [CLI Documentation](cli/README.md) for all commands.
 
 ## 🌿 Git Workflow
 

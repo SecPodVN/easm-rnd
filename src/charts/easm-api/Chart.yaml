@@ -1,6 +1,6 @@
 apiVersion: v2
 name: easm-api
-description: A Helm chart for EASM Django REST API
+description: A Helm chart for EASM REST API
 type: application
 version: 0.1.0
-appVersion: "1.0"
+appVersion: "1.0.0"

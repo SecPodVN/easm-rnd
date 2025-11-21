@@ -98,12 +98,12 @@ frontend/
 | **Infra**       | Minikube   | 1.35+   | Local       | Local Kubernetes cluster for development and testing           |
 | **Infra**       | Skaffold   | 2.16+   | Local, Dev  | Command-line tool for continuous development on Kubernetes     |
 | **Infra**       | Helm       | 3.19+   | All         | Package manager for Kubernetes applications                    |
-| **Backend**     | Python     | 3.13+   | All         | Python runtime for backend services                            |
-| **Backend**     | Django     | 5.2+    | All         | High-level Python web framework for rapid development          |
+| **Backend**     | Python     | 3.14+   | All         | Python runtime for backend services                            |
+| **Backend**     | Django     | 5.2+    | All         | High-level Python web framework (LTS)                          |
 | **Backend**     | Poetry     | 2.2+    | All         | Python dependency management and packaging tool                |
 | **Backend**     | PostgreSQL | 18+     | All         | Advanced open-source relational database                       |
 | **Backend**     | MongoDB    | 8+      | All         | NoSQL document database for flexible data storage              |
-| **Backend**     | Redis      | 7.4+    | All         | In-memory data structure store for caching and sessions        |
+| **Backend**     | Redis      | 8+      | All         | In-memory data structure store for caching and sessions        |
 | **Frontend**    | Node.js    | 22+     | All         | JavaScript runtime environment                                 |
 | **Frontend**    | React      | 19+     | All         | Component-based JavaScript library for building user interfaces|
 | **Frontend**    | TypeScript | 5.7+    | All         | Typed superset of JavaScript for enhanced code quality         |

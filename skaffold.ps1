@@ -58,10 +58,10 @@ if (-not $k8sRunning) {
     if ($minikubeAvailable) {
         Write-Host "[*] Attempting to start Minikube with Docker driver..." -ForegroundColor Cyan
         Write-Host "[*] This may take a few minutes..." -ForegroundColor Yellow
-        
+
         # Start minikube and wait for it to be ready
         minikube start --driver=docker
-        
+
         if ($LASTEXITCODE -ne 0) {
             Write-Host ""
             Write-Host "[ERROR] Failed to start Minikube" -ForegroundColor Red
@@ -72,13 +72,13 @@ if (-not $k8sRunning) {
             Write-Host "  - Kind: kind create cluster"
             exit 1
         }
-        
+
         # Wait for kubectl to be able to connect
         Write-Host "[*] Waiting for Kubernetes to be ready..." -ForegroundColor Yellow
         $maxRetries = 30
         $retryCount = 0
         $kubectlReady = $false
-        
+
         while (-not $kubectlReady -and $retryCount -lt $maxRetries) {
             $null = kubectl cluster-info 2>&1
             if ($LASTEXITCODE -eq 0) {
@@ -91,7 +91,7 @@ if (-not $k8sRunning) {
                 Write-Host "." -NoNewline -ForegroundColor Gray
             }
         }
-        
+
         if (-not $kubectlReady) {
             Write-Host ""
             Write-Host "[ERROR] Kubernetes cluster did not become ready in time" -ForegroundColor Red
@@ -114,7 +114,13 @@ if (-not $k8sRunning) {
 Write-Host ""
 
 # Add Bitnami repo if not already added
-$helmRepos = helm repo list 2>&1 | Out-String
+try {
+    $helmReposList = helm repo list 2>&1
+    $helmRepos = $helmReposList | Out-String
+} catch {
+    $helmRepos = ""
+}
+
 if (-not $helmRepos.Contains("bitnami")) {
     Write-Host "[*] Adding Bitnami Helm repository..." -ForegroundColor Yellow
     helm repo add bitnami https://charts.bitnami.com/bitnami

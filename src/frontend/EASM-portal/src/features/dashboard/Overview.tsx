@@ -1,11 +1,21 @@
-import React from 'react';
-import { Box, Typography, Paper } from '@mui/material';
+import React, { useState } from 'react';
+import {
+  Box,
+  Typography,
+  Paper,
+  Button,
+  Popover,
+  TextField,
+  ButtonGroup
+} from '@mui/material';
 import {
   Language as DomainIcon,
   Security as CertIcon,
   Hub as ASNIcon,
   Public as IPIcon,
   ContactMail as ContactIcon,
+  CalendarToday as CalendarIcon,
+  DateRange as DateRangeIcon,
 } from '@mui/icons-material';
 import { StatCard, InsightCard } from '../../shared/components';
 
@@ -32,13 +42,82 @@ interface InsightData {
 }
 
 const Overview: React.FC = () => {
+  // Date filter state
+  const [dateRange, setDateRange] = useState<number>(30);
+  const [customDateAnchor, setCustomDateAnchor] = useState<HTMLButtonElement | null>(null);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  const [isCustomRange, setIsCustomRange] = useState<boolean>(false);
+
+  // Get current date and format it
+  const currentDate = new Date();
+  const formattedCurrentDate = currentDate.toLocaleString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+    timeZoneName: 'short'
+  });
+
+  // Hardcoded last scan time (for now)
+  const lastScanDate = new Date(currentDate.getTime() - 2 * 60 * 60 * 1000); // 2 hours ago
+  const formattedLastScan = lastScanDate.toLocaleString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+    timeZoneName: 'short'
+  });
+
+  const handleQuickRangeClick = (days: number) => {
+    setDateRange(days);
+    setIsCustomRange(false);
+    setStartDate('');
+    setEndDate('');
+  };
+
+  const handleCustomDateClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setCustomDateAnchor(event.currentTarget);
+  };
+
+  const handleCustomDateClose = () => {
+    setCustomDateAnchor(null);
+  };
+
+  const handleApplyCustomRange = () => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      setDateRange(diffDays);
+      setIsCustomRange(true);
+      handleCustomDateClose();
+    }
+  };
+
+  const customDateOpen = Boolean(customDateAnchor);
+
+  const getDateRangeLabel = () => {
+    if (isCustomRange && startDate && endDate) {
+      return `${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}`;
+    }
+    return `Last ${dateRange} Days`;
+  };
+
   // Mock data - this would come from your API
   const assetData: AssetData[] = [
-    { icon: <DomainIcon />, title: 'Domains', value: '4.7K', lastDays: 30, change: 16 },
-    { icon: <CertIcon />, title: 'SSL/TLS Certificates', value: '6.6K', lastDays: 30, change: 546 },
-    { icon: <ASNIcon />, title: 'ASNs', value: '15', lastDays: 30, change: 0 },
-    { icon: <IPIcon />, title: 'IP Addresses', value: '119.9K', lastDays: 30, change: 103 },
-    { icon: <ContactIcon />, title: 'Contacts', value: '152', lastDays: 30, change: 7 },
+    { icon: <DomainIcon />, title: 'Domains', value: '4.7K', lastDays: dateRange, change: 16 },
+    { icon: <CertIcon />, title: 'SSL/TLS Certificates', value: '6.6K', lastDays: dateRange, change: 546 },
+    { icon: <ASNIcon />, title: 'ASNs', value: '15', lastDays: dateRange, change: 0 },
+    { icon: <IPIcon />, title: 'IP Addresses', value: '119.9K', lastDays: dateRange, change: 103 },
+    { icon: <ContactIcon />, title: 'Contacts', value: '152', lastDays: dateRange, change: 7 },
   ];
 
   const insightsData: InsightData[] = [
@@ -88,15 +167,165 @@ const Overview: React.FC = () => {
 
   return (
     <Box>
-      {/* Header */}
+      {/* Header with Date Info and Filter */}
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+        <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
           Essentials
         </Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="body2" color="text.secondary">
-            100/27/2025, 10:02:24 AM CDT
-          </Typography>
+
+        {/* Current Date and Last Scan */}
+        <Box sx={{ display: 'flex', gap: 3, mb: 2, alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CalendarIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+            <Typography variant="body2" color="text.secondary">
+              Current: {formattedCurrentDate}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CalendarIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+            <Typography variant="body2" color="text.secondary">
+              Last Scan: {formattedLastScan}
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Actions and Date Filter */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+            <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary', mr: 1 }}>
+              Time Range:
+            </Typography>
+
+            {/* Quick Date Range Buttons */}
+            <ButtonGroup variant="outlined" size="small">
+              <Button
+                onClick={() => handleQuickRangeClick(7)}
+                variant={dateRange === 7 && !isCustomRange ? 'contained' : 'outlined'}
+                sx={{
+                  textTransform: 'none',
+                  fontSize: '0.813rem',
+                  minWidth: '60px',
+                }}
+              >
+                7d
+              </Button>
+              <Button
+                onClick={() => handleQuickRangeClick(14)}
+                variant={dateRange === 14 && !isCustomRange ? 'contained' : 'outlined'}
+                sx={{
+                  textTransform: 'none',
+                  fontSize: '0.813rem',
+                  minWidth: '60px',
+                }}
+              >
+                14d
+              </Button>
+              <Button
+                onClick={() => handleQuickRangeClick(30)}
+                variant={dateRange === 30 && !isCustomRange ? 'contained' : 'outlined'}
+                sx={{
+                  textTransform: 'none',
+                  fontSize: '0.813rem',
+                  minWidth: '60px',
+                }}
+              >
+                30d
+              </Button>
+              <Button
+                onClick={() => handleQuickRangeClick(60)}
+                variant={dateRange === 60 && !isCustomRange ? 'contained' : 'outlined'}
+                sx={{
+                  textTransform: 'none',
+                  fontSize: '0.813rem',
+                  minWidth: '60px',
+                }}
+              >
+                60d
+              </Button>
+            </ButtonGroup>
+
+            {/* Custom Date Range Button */}
+            <Button
+              onClick={handleCustomDateClick}
+              variant={isCustomRange ? 'contained' : 'outlined'}
+              size="small"
+              startIcon={<DateRangeIcon />}
+              sx={{
+                textTransform: 'none',
+                fontSize: '0.813rem',
+                ml: 1,
+              }}
+            >
+              Custom
+            </Button>
+
+            {/* Custom Date Range Popover */}
+            <Popover
+              open={customDateOpen}
+              anchorEl={customDateAnchor}
+              onClose={handleCustomDateClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+            >
+              <Box sx={{ p: 2, minWidth: 300 }}>
+                <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+                  Select Custom Date Range
+                </Typography>
+                <TextField
+                  label="Start Date"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  fullWidth
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ mb: 2 }}
+                />
+                <TextField
+                  label="End Date"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  fullWidth
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ mb: 2 }}
+                />
+                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                  <Button
+                    onClick={handleCustomDateClose}
+                    size="small"
+                    sx={{ textTransform: 'none' }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleApplyCustomRange}
+                    variant="contained"
+                    size="small"
+                    disabled={!startDate || !endDate}
+                    sx={{ textTransform: 'none' }}
+                  >
+                    Apply
+                  </Button>
+                </Box>
+              </Box>
+            </Popover>
+
+            {/* Display current range */}
+            {isCustomRange && (
+              <Typography variant="caption" sx={{ color: 'text.secondary', ml: 1 }}>
+                ({getDateRangeLabel()})
+              </Typography>
+            )}
+          </Box>
+
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Typography
               variant="body2"
@@ -126,9 +355,6 @@ const Overview: React.FC = () => {
       <Paper sx={{ p: 2, mb: 3 }}>
         <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
           Assets
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          10/27/2025, 10:02:24 AM CDT
         </Typography>
 
         <Box
@@ -165,9 +391,6 @@ const Overview: React.FC = () => {
       <Paper sx={{ p: 2 }}>
         <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
           Attack surface insights
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          10/26/2025, 5:39:41 AM CDT
         </Typography>
 
         <Box

@@ -266,3 +266,133 @@ poetry run python manage.py makemigrations myapp
 
 **Last Updated**: November 2025
 **Quick reference only - see confluence/ for complete guide**
+
+# Recommended Project Structure for EASM
+
+
+src/backend/easm/
+├── config/                         # Project configuration
+│   ├── settings/
+│   │   ├── base.py                 # Base settings
+│   │   ├── development.py          # Dev settings
+│   │   ├── production.py           # Prod settings
+│   │   └── testing.py              # Test settings
+│   ├── celery.py                   # Celery configuration
+│   ├── urls.py                     # Root URL config
+│   └── wsgi.py
+│
+├── apps/
+│   │
+│   ├── core/                       # 🔧 Shared utilities
+│   │   ├── models.py               # Base models
+│   │   ├── exceptions.py           # Custom exceptions
+│   │   ├── validators.py           # Common validators
+│   │   ├── utils.py                # Helper functions
+│   │   └── middleware.py           # Custom middleware
+│   │
+│   ├── authentication/             # 🔐 Auth & Users
+│   │   ├── models.py               # User, Team, Organization
+│   │   ├── services.py             # Auth logic
+│   │   └── permissions.py          # Custom permissions
+│   │
+│   ├── asset_discovery/            # 🔍 Asset Discovery Domain
+│   │   ├── models.py               # Scan, Asset, Target
+│   │   ├── services.py             # Orchestration logic
+│   │   ├── tasks.py                # Celery workers
+│   │   ├── engines/                # 🎯 SCANNING ENGINES
+│   │   │   ├── __init__.py
+│   │   │   ├── base.py             # Base scanner interface
+│   │   │   ├── passive/            # Passive scanners
+│   │   │   │   ├── amass.py
+│   │   │   │   ├── subfinder.py
+│   │   │   │   ├── ct_logs.py
+│   │   │   │   └── dns_enum.py
+│   │   │   ├── active/             # Active scanners
+│   │   │   │   ├── nmap.py
+│   │   │   │   ├── masscan.py
+│   │   │   │   └── port_scanner.py
+│   │   │   ├── parsers/            # Result parsers
+│   │   │   │   ├── amass_parser.py
+│   │   │   │   ├── nmap_parser.py
+│   │   │   │   └── json_parser.py
+│   │   │   └── factory.py          # Scanner factory
+│   │   ├── repositories.py         # Data access patterns
+│   │   └── utils.py                # Domain utilities
+│   │
+│   ├── vulnerability_scanning/     # 🐛 Vuln Scanning Domain
+│   │   ├── models.py               # Vulnerability, CVE
+│   │   ├── services.py
+│   │   ├── tasks.py
+│   │   ├── engines/
+│   │   │   ├── nuclei.py
+│   │   │   ├── nikto.py
+│   │   │   ├── burp_api.py
+│   │   │   └── custom_checks.py
+│   │   └── utils.py
+│   │
+│   ├── risk_assessment/            # ⚠️ Risk Assessment Domain
+│   │   ├── models.py               # Risk, Finding, Issue
+│   │   ├── services.py
+│   │   ├── engines/
+│   │   │   ├── risk_calculator.py  # Risk scoring
+│   │   │   ├── cvss_engine.py      # CVSS calculations
+│   │   │   └── prioritizer.py      # Prioritization logic
+│   │   └── utils.py
+│   │
+│   ├── reporting/                  # 📊 Reporting Domain
+│   │   ├── models.py               # Report, Dashboard
+│   │   ├── services.py
+│   │   ├── engines/
+│   │   │   ├── pdf_generator.py
+│   │   │   ├── excel_exporter.py
+│   │   │   └── chart_builder.py
+│   │   └── templates/              # Report templates
+│   │
+│   ├── integrations/               # 🔌 Third-party Integrations
+│   │   ├── shodan/
+│   │   │   ├── client.py
+│   │   │   └── parser.py
+│   │   ├── virustotal/
+│   │   ├── aws/
+│   │   ├── azure/
+│   │   └── gcp/
+│   │
+│   └── api/                        # 🌐 API Layer (Presentation)
+│       ├── urls.py                 # Central routing
+│       ├── views.py                # Common views
+│       ├── permissions.py          # API permissions
+│       ├── pagination.py           # Custom pagination
+│       ├── filters.py              # Common filters
+│       │
+│       ├── asset_discovery/        # Asset Discovery API
+│       │   ├── serializers.py
+│       │   ├── views.py
+│       │   └── urls.py
+│       │
+│       ├── vulnerability_scanning/ # Vuln Scanning API
+│       │   ├── serializers.py
+│       │   ├── views.py
+│       │   └── urls.py
+│       │
+│       ├── risk_assessment/        # Risk Assessment API
+│       │   ├── serializers.py
+│       │   ├── views.py
+│       │   └── urls.py
+│       │
+│       └── reporting/              # Reporting API
+│           ├── serializers.py
+│           ├── views.py
+│           └── urls.py
+│
+├── common/                         # Shared code
+│   ├── decorators.py
+│   ├── enums.py
+│   └── constants.py
+│
+└── tests/                          # Tests mirror src structure
+    ├── unit/
+    │   ├── test_engines/
+    │   ├── test_services/
+    │   └── test_models/
+    └── integration/
+        └── test_api/

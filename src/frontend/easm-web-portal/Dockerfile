@@ -3,25 +3,28 @@
 # Stage 1: Build the React app
 FROM node:18-alpine AS builder
 
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@10.23.0 --activate
+
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json ./
+COPY package.json ./
 
 # Install dependencies
-RUN npm ci --legacy-peer-deps
+RUN pnpm install
 
 # Copy source code
 COPY . .
 
 # Build the app for production
-RUN npm run build
+RUN pnpm run build
 
 # Stage 2: Serve with nginx
 FROM nginx:alpine
 
-# Copy built files from builder stage
-COPY --from=builder /app/build /usr/share/nginx/html
+# Copy built files from builder stage (Vite outputs to dist/)
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy custom nginx config (optional)
 COPY nginx.conf /etc/nginx/conf.d/default.conf

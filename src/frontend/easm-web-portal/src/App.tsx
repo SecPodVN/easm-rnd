@@ -1,47 +1,28 @@
-import React, { useState } from 'react';
-import { Provider } from 'react-redux';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import DashboardLayout from './components/DashboardLayout';
-import { Overview } from './features/dashboard';
-import { SeedManagement } from './features/discovery';
-import { AssetInventory } from './features/inventory';
-import { VulnerabilityManagement } from './features/vulnerabilities';
-import { ReportBuilder } from './features/reports';
-import { Settings } from './features/settings';
-import theme from './theme';
-import { store } from './store';
+import { BrowserRouter, useRoutes } from "react-router-dom";
+import { Provider } from "react-redux";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import DashboardLayout from "./components/DashboardLayout";
+import routes from "./routes";
+import theme from "./theme";
+import { store } from "./store";
+
+// Routes wrapper component
+const AppRoutes = () => {
+  const routing = useRoutes(routes);
+  return routing;
+};
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('overview');
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'overview':
-        return <Overview />;
-      case 'seed-config':
-        return <SeedManagement />;
-      case 'asset-list':
-        return <AssetInventory />;
-      case 'vulnerabilities':
-        return <VulnerabilityManagement />;
-      case 'reports':
-        return <ReportBuilder />;
-      case 'jobs':
-        return <div>Job Management - Coming Soon</div>;
-      case 'settings':
-        return <Settings />;
-      default:
-        return <Overview />;
-    }
-  };
-// For Redux
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <DashboardLayout onNavigate={setCurrentPage} currentPage={currentPage}>
-          {renderPage()}
-        </DashboardLayout>
+        <BrowserRouter>
+          <DashboardLayout>
+            <AppRoutes />
+          </DashboardLayout>
+        </BrowserRouter>
       </ThemeProvider>
     </Provider>
   );

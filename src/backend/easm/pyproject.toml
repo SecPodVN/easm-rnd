@@ -6,9 +6,9 @@ authors = ["Thinh Huynh-Doan <thinh.huynh@secpod.com>"]
 readme = "README.md"
 package-mode = false
 
-# Updated: 2025-11-21 - Python 3.14, Django 5.2 LTS, Redis 8+ compatibility
+# Updated: 2025-11-24 - Python 3.13, Django 5.2 LTS, Redis 8+ compatibility
 [tool.poetry.dependencies]
-python = "^3.14"
+python = "^3.13"
 django = "^5.2"
 djangorestframework = "^3.15"
 djangorestframework-simplejwt = "^5.3"

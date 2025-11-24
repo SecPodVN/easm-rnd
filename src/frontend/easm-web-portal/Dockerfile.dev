@@ -1,19 +1,22 @@
 # Development Dockerfile with hot-reload
 FROM node:18-alpine
 
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@10.23.0 --activate
+
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json ./
+COPY package.json ./
 
 # Install dependencies
-RUN npm install --legacy-peer-deps
+RUN pnpm install
 
 # Copy source code
 COPY . .
 
-# Expose port 3000
+# Expose port 3000 (Vite dev server)
 EXPOSE 3000
 
-# Start development server
-CMD ["npm", "start"]
+# Start Vite development server with host flag to allow external connections
+CMD ["pnpm", "run", "dev", "--host", "0.0.0.0", "--port", "3000"]

@@ -38,9 +38,9 @@ easm-platform/
 │   │       └── (utilities, helpers, common code)
 │   │
 │   ├── frontend/                       # Frontend Monorepo
-│   │   ├── EASM-portal/                # 🌐 User Portal App
-│   │   ├── EASM-admin/                 # 👨‍💼 Admin Dashboard App
-│   │   └── EASM-ui-core/               # 🎨 Shared UI Library
+│   │   ├── easm-web-portal/                # 🌐 User Portal App
+│   │   ├── easm-web-admin/                 # 👨‍💼 Admin Dashboard App
+│   │   └── easm-react/               # 🎨 Shared UI Library
 │   │
 │   └── cli/                            # CLI Tools
 │       └── easm-cli/                   # Unified CLI
@@ -55,8 +55,8 @@ easm-platform/
 | **Django Project**   | A collection of settings and apps    | `src/backend/easm/`            |
 | **Django App**       | A module with specific functionality | `src/backend/easm/apps/todos/` |
 | **Backend Library**  | Reusable Python code across projects | `src/backend/easm-core/`       |
-| **Frontend App**     | Independent React application        | `src/frontend/EASM-portal/`    |
-| **Frontend Library** | Shared React components              | `src/frontend/EASM-ui-core/`   |
+| **Frontend App**     | Independent React application        | `src/frontend/easm-web-portal/`    |
+| **Frontend Library** | Shared React components              | `src/frontend/easm-react/`   |
 
 ---
 
@@ -88,7 +88,7 @@ easm-platform/
 
 Special Cases:
 ├─ Completely independent service? → CREATE NEW DJANGO PROJECT
-├─ Reusable across projects? → ADD TO easm-core/ OR EASM-ui-core/
+├─ Reusable across projects? → ADD TO easm-core/ OR easm-react/
 └─ Needs different tech stack? → CREATE MICROSERVICE
 ```
 
@@ -276,15 +276,15 @@ easm-core/
 1. **Distinct User Interface & Experience**
 
    ```
-   EASM-portal/    → End users (security teams)
-   EASM-admin/     → System administrators
+   easm-web-portal/    → End users (security teams)
+   easm-web-admin/     → System administrators
    EASM-public/    → Public-facing marketing site
    ```
 
 2. **Different Authentication/Authorization**
 
    ```
-   EASM-portal/    → JWT authenticated users
+   easm-web-portal/    → JWT authenticated users
    EASM-public/    → No authentication
    EASM-partner/   → OAuth for partners
    ```
@@ -299,7 +299,7 @@ easm-core/
 
 4. **Different Tech Stack Requirements**
    ```
-   EASM-portal/    → React 19 + TypeScript
+   easm-web-portal/    → React 19 + TypeScript
    EASM-mobile/    → React Native
    EASM-embed/     → Vanilla JS widget
    ```
@@ -307,7 +307,7 @@ easm-core/
 ### ❌ DON'T Create a New Frontend App When:
 
 1. **Just a New Page/Feature** → Add to existing app
-2. **Shared Components** → Add to `EASM-ui-core/`
+2. **Shared Components** → Add to `easm-react/`
 3. **Different Styling** → Use theme configuration
 4. **Route-based Sections** → Use React Router
 
@@ -419,7 +419,7 @@ src/backend/
 
 **Requirement:** Real-time monitoring dashboard with WebSockets
 
-**Decision:** Add to existing `EASM-portal/` as new feature
+**Decision:** Add to existing `easm-web-portal/` as new feature
 
 **Why?**
 
@@ -431,7 +431,7 @@ src/backend/
 **Structure:**
 
 ```
-src/frontend/EASM-portal/src/
+src/frontend/easm-web-portal/src/
 └── features/
     └── monitoring/               # NEW FEATURE
         ├── MonitoringDashboard.tsx
@@ -456,8 +456,8 @@ src/frontend/EASM-portal/src/
 
 ```
 src/frontend/
-├── EASM-portal/                  # Internal users
-├── EASM-admin/                   # Administrators
+├── easm-web-portal/                  # Internal users
+├── easm-web-admin/                   # Administrators
 └── EASM-partner/                 # NEW APP - External partners
     ├── src/
     │   ├── features/
@@ -574,7 +574,7 @@ cd EASM-partner
 npm install
 
 # 4. Install shared UI library
-npm install ../EASM-ui-core
+npm install ../easm-react
 
 # 5. Install common dependencies
 npm install @mui/material @emotion/react @emotion/styled
@@ -666,8 +666,8 @@ poetry add ../easm-integrations
 | **Django App**       | Lowercase, plural  | `todos`, `vulnerabilities`, `reports` |
 | **Django Project**   | `easm-<purpose>`   | `easm-reporting`, `easm-gateway`      |
 | **Backend Library**  | `easm-<name>`      | `easm-core`, `easm-integrations`      |
-| **Frontend App**     | `EASM-<purpose>`   | `EASM-portal`, `EASM-admin`           |
-| **Frontend Library** | `EASM-<name>-core` | `EASM-ui-core`, `EASM-charts-core`    |
+| **Frontend App**     | `EASM-<purpose>`   | `easm-web-portal`, `easm-web-admin`           |
+| **Frontend Library** | `EASM-<name>-core` | `easm-react`, `EASM-charts-core`    |
 
 ### Organization Principles
 
@@ -822,3 +822,4 @@ Before creating a new project, app, or library, ask yourself:
 **Last Updated**: November 2025
 **Version**: 1.0.0
 **Maintained By**: EASM Platform Development Team
+

@@ -54,7 +54,7 @@ easm-platform/
 
 ```
 frontend/
-├── EASM-portal/                 # Main EASM Portal (User-facing)
+├── easm-web-portal/             # Main EASM Portal (User-facing)
 │   ├── src/
 │   │   ├── features/            # Domain-specific modules
 │   │   ├── shared/
@@ -64,7 +64,7 @@ frontend/
 │   ├── .gitignore
 │   └── README.md
 │
-├── EASM-admin/                  # Admin Portal (Administrative interface)
+├── easm-web-admin/              # Admin Portal (Administrative interface)
 │   ├── src/
 │   │   ├── features/            # Admin-specific features
 │   │   └── shared/
@@ -74,7 +74,7 @@ frontend/
 │   ├── .gitignore
 │   └── README.md                # 🚧 Under development
 │
-└── EASM-ui-core/                # Shared UI Library
+└── easm-react/                  # Shared UI Library
     ├── src/
     │   ├── components/          # Shared components across apps
     │   ├── utils/               # Utility functions
@@ -87,7 +87,7 @@ frontend/
     └── README.md
 ```
 
-**Note:** Each app (EASM-portal, EASM-admin) has its own `shared/` directory for app-specific shared components. The `EASM-ui-core` package contains components and utilities shared across all EASM applications.
+**Note:** Each app (easm-web-portal, easm-web-admin) has its own `shared/` directory for app-specific shared components. The `easm-react` package contains components and utilities shared across all EASM applications.
 
 ## 🚀 Tech Stack
 
@@ -192,7 +192,7 @@ minikube service list
 ```bash
 # Build and push images
 docker build -t easm-backend:latest ./src/backend
-docker build -t easm-frontend:latest ./src/frontend
+docker build -t easm-web-portal:latest ./src/frontend
 
 # Deploy with Helm
 helm install easm-platform ./infra/helm/easm-platform \

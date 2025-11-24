@@ -43,7 +43,7 @@ urlpatterns = [
     path('api/token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/register/', register, name='token_register'),
 
-    # API endpoints - Centralized REST API (api app controls todos and scanner)
+    # API endpoints - Centralized REST API
     path('api/', include('easm.apps.api.urls')),
 
     # API Documentation

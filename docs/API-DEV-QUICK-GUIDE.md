@@ -299,24 +299,6 @@ src/backend/easm/
 │   │   ├── models.py               # Scan, Asset, Target
 │   │   ├── services.py             # Orchestration logic
 │   │   ├── tasks.py                # Celery workers
-│   │   ├── engines/                # 🎯 SCANNING ENGINES
-│   │   │   ├── __init__.py
-│   │   │   ├── base.py             # Base scanner interface
-│   │   │   ├── passive/            # Passive scanners
-│   │   │   │   ├── amass.py
-│   │   │   │   ├── subfinder.py
-│   │   │   │   ├── ct_logs.py
-│   │   │   │   └── dns_enum.py
-│   │   │   ├── active/             # Active scanners
-│   │   │   │   ├── nmap.py
-│   │   │   │   ├── masscan.py
-│   │   │   │   └── port_scanner.py
-│   │   │   ├── parsers/            # Result parsers
-│   │   │   │   ├── amass_parser.py
-│   │   │   │   ├── nmap_parser.py
-│   │   │   │   └── json_parser.py
-│   │   │   └── factory.py          # Scanner factory
-│   │   ├── repositories.py         # Data access patterns
 │   │   └── utils.py                # Domain utilities
 │   │
 │   ├── vulnerability_scanning/     # 🐛 Vuln Scanning Domain

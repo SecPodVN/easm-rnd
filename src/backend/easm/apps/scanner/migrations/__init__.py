@@ -1,1 +1,0 @@
-"""Scanner app migrations package."""

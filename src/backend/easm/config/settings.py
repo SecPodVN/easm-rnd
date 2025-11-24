@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     # Local apps
     'easm.apps.api.apps.ApiConfig',
     'easm.apps.todos.apps.TodosConfig',
-    'easm.apps.scanner.apps.ScannerConfig',
 ]
 
 MIDDLEWARE = [
@@ -178,7 +177,6 @@ SPECTACULAR_SETTINGS = {
     'TAGS': [
         {'name': 'Authentication', 'description': 'Authentication endpoints (JWT tokens)'},
         {'name': 'Todos', 'description': 'Todo management endpoints'},
-        {'name': 'Scanner', 'description': 'Security scanner endpoints'},
     ],
     'SCHEMA_COERCE_PATH_PK_SUFFIX': True,
     'COMPONENT_SPLIT_REQUEST': True,

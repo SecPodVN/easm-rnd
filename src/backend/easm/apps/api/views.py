@@ -113,12 +113,6 @@ def api_root(request):
                 'my_todos': '/api/todos/my_todos/',
                 'statistics': '/api/todos/statistics/',
             },
-            'scanner': {
-                'resources': '/api/scanner/resources/',
-                'rules': '/api/scanner/rules/',
-                'findings': '/api/scanner/findings/',
-                'scan': '/api/scanner/scan/',
-            },
             'docs': {
                 'swagger': '/api/docs/',
                 'redoc': '/api/redoc/',

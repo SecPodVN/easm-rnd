@@ -143,7 +143,7 @@ deploy:
 # These default ports are used ONLY when running "skaffold dev" directly
 portForward:
   - resourceType: service
-    resourceName: easm-frontend
+    resourceName: easm-frontend-easm-web-portal
     namespace: "{{.K8S_NAMESPACE}}"
     port: 80
     localPort: 3000 # Override with skaffold.ps1/sh or CLI flags

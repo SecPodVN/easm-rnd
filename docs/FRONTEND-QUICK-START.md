@@ -15,7 +15,7 @@ Extra notes: Rebuilding images in skaffold takes very long, if applicable just u
 ## 1. Run the Frontend
 
 ```powershell
-cd src/frontend/EASM-portal
+cd src/frontend/easm-web-portal
 npm install
 npm start
 ```

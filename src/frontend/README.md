@@ -8,7 +8,7 @@ The frontend is organized into multiple applications, each serving a specific pu
 
 ### 📱 Applications
 
-#### **EASM-portal** (Main User Portal)
+#### **easm-web-portal** (Main User Portal)
 The primary user-facing application for External Attack Surface Management.
 
 **Features:**
@@ -23,7 +23,7 @@ The primary user-facing application for External Attack Surface Management.
 
 ---
 
-#### **EASM-admin** (Administrative Portal)
+#### **easm-web-admin** (Administrative Portal)
 Administrative interface for platform management and configuration.
 
 **Features:** (Planned)
@@ -38,7 +38,7 @@ Administrative interface for platform management and configuration.
 
 ---
 
-#### **EASM-ui-core** (Shared UI Library)
+#### **easm-react** (Shared UI Library)
 Shared component library and utilities used across all EASM applications.
 
 **Contents:**
@@ -55,20 +55,20 @@ Shared component library and utilities used across all EASM applications.
 
 ```
 frontend/
-├── EASM-portal/          # Main user portal
+├── easm-web-portal/      # Main user portal
 │   ├── src/
 │   │   ├── features/     # Feature modules
 │   │   ├── shared/       # Portal-specific shared code
 │   │   └── components/   # Portal components
 │   └── package.json
 │
-├── EASM-admin/           # Admin portal
+├── easm-web-admin/       # Admin portal
 │   ├── src/
 │   │   ├── features/     # Admin features
 │   │   └── shared/       # Admin-specific shared code
 │   └── package.json
 │
-└── EASM-ui-core/         # Shared UI library
+└── easm-react/           # Shared UI library
     ├── src/
     │   ├── components/   # Shared components
     │   ├── utils/        # Utilities
@@ -79,26 +79,26 @@ frontend/
 
 ## Development Workflow
 
-### Working on EASM-portal
+### Working on easm-web-portal
 
 ```bash
-cd EASM-portal
+cd easm-web-portal
 npm install
 npm start
 ```
 
-### Working on EASM-admin
+### Working on easm-web-admin
 
 ```bash
-cd EASM-admin
+cd easm-web-admin
 npm install
 npm start
 ```
 
-### Working on EASM-ui-core
+### Working on easm-react
 
 ```bash
-cd EASM-ui-core
+cd easm-react
 npm install
 npm run dev  # Watch mode for development
 ```
@@ -106,17 +106,17 @@ npm run dev  # Watch mode for development
 ## Shared Components Strategy
 
 ### App-Specific Shared Components
-Each application (EASM-portal, EASM-admin) has its own `shared/` directory for components that are:
+Each application (easm-web-portal, easm-web-admin) has its own `shared/` directory for components that are:
 - Specific to that application's domain
 - Used across multiple features within that app
 - Not needed by other EASM applications
 
 Example:
-- `EASM-portal/src/shared/components/` - Components specific to portal features
-- `EASM-admin/src/shared/components/` - Components specific to admin features
+- `easm-web-portal/src/shared/components/` - Components specific to portal features
+- `easm-web-admin/src/shared/components/` - Components specific to admin features
 
 ### Cross-Application Shared Components
-Components used by multiple applications should be placed in `EASM-ui-core`:
+Components used by multiple applications should be placed in `easm-react`:
 - Generic UI components (buttons, cards, modals)
 - Common utilities and helpers
 - Shared custom hooks
@@ -129,7 +129,7 @@ Components used by multiple applications should be placed in `EASM-ui-core`:
 - Component has application-specific logic or styling
 - Component relates to a specific domain concept
 
-**Use `EASM-ui-core`:**
+**Use `easm-react`:**
 - Component is or could be used by multiple applications
 - Component is purely presentational
 - Utility function has no application-specific dependencies
@@ -139,11 +139,11 @@ Components used by multiple applications should be placed in `EASM-ui-core`:
 
 Each application manages its own dependencies independently:
 
-- `EASM-portal/package.json` - Portal dependencies
-- `EASM-admin/package.json` - Admin dependencies
-- `EASM-ui-core/package.json` - Shared library dependencies
+- `easm-web-portal/package.json` - Portal dependencies
+- `easm-web-admin/package.json` - Admin dependencies
+- `easm-react/package.json` - Shared library dependencies
 
-Applications can reference `EASM-ui-core` using:
+Applications can reference `easm-react` using:
 
 ```json
 {

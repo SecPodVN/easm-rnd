@@ -12,9 +12,9 @@ The EASM Platform is built using modern, production-ready technologies across mu
 ┌─────────────────────────────────────────────────────────────────┐
 │                 FRONTEND LAYER (Monorepo)                        │
 │  src/frontend/                                                   │
-│  ├── EASM-portal/    (React 19 + TypeScript 5.7)               │
-│  ├── EASM-admin/     (React 19 + TypeScript 5.7)               │
-│  └── EASM-ui-core/   (Shared UI Library)                        │
+│  ├── easm-web-portal/    (React 19 + TypeScript 5.7)               │
+│  ├── easm-web-admin/     (React 19 + TypeScript 5.7)               │
+│  └── easm-react/   (Shared UI Library)                        │
 │                                                                  │
 │  Material-UI 7 + Recharts + Vite 6                             │
 └────────────────────┬────────────────────────────────────────────┘
@@ -59,9 +59,9 @@ easm-platform/
 │   │   └── easm-core/          # Shared backend libraries
 │   │
 │   ├── frontend/               # Frontend monorepo
-│   │   ├── EASM-portal/        # User-facing portal
-│   │   ├── EASM-admin/         # Admin dashboard (under development)
-│   │   └── EASM-ui-core/       # Shared React components
+│   │   ├── easm-web-portal/        # User-facing portal
+│   │   ├── easm-web-admin/         # Admin dashboard (under development)
+│   │   └── easm-react/       # Shared React components
 │   │
 │   ├── charts/                 # Helm charts for deployment
 │   │   ├── easm-api/           # Backend API chart
@@ -797,3 +797,4 @@ Response (JSON)
 ---
 
 **Note**: This technology stack is continuously evolving. For the most up-to-date information, refer to the project's `pyproject.toml`, `package.json`, and `requirements.txt` files.
+

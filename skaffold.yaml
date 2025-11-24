@@ -10,7 +10,7 @@ build:
       docker:
         dockerfile: Dockerfile
     - image: easm-frontend
-      context: src/frontend/EASM-portal
+      context: src/frontend/easm-web-portal
       docker:
         dockerfile: Dockerfile
   local:
@@ -120,7 +120,7 @@ deploy:
 
       # EASM Frontend from local Helm chart
       - name: easm-frontend
-        chartPath: src/charts/easm-frontend
+        chartPath: src/charts/easm-web-portal
         namespace: "{{.K8S_NAMESPACE}}"
         createNamespace: true
         setValueTemplates:
@@ -143,7 +143,7 @@ deploy:
 # These default ports are used ONLY when running "skaffold dev" directly
 portForward:
   - resourceType: service
-    resourceName: easm-frontend
+    resourceName: easm-frontend-easm-web-portal
     namespace: "{{.K8S_NAMESPACE}}"
     port: 80
     localPort: 3000 # Override with skaffold.ps1/sh or CLI flags

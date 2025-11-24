@@ -15,7 +15,7 @@ from drf_spectacular.views import (
 from drf_spectacular.utils import extend_schema
 
 from .health import health_check, readiness_check, liveness_check
-from easm.apps.api.views import register
+from easm.apps.authentication.views import register
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -44,7 +44,7 @@ urlpatterns = [
     path('api/token/register/', register, name='token_register'),
 
     # API endpoints - Centralized REST API
-    path('api/', include('easm.apps.api.urls')),
+    path('api/todos/', include('easm.apps.todos.api.urls')),
 
     # API Documentation
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'django_filters',
 
     # Local apps
-    'easm.apps.api.apps.ApiConfig',
+    'easm.apps.authentication.apps.AuthenticationConfig',
     'easm.apps.todos.apps.TodosConfig',
 ]
 

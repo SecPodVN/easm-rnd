@@ -1,7 +1,6 @@
 from django.apps import AppConfig
 
 
-class ApiConfig(AppConfig):
+class AuthenticationConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'easm.apps.api'
-    verbose_name = 'REST API'
+    name = 'easm.apps.authentication'

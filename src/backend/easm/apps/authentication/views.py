@@ -1,5 +1,5 @@
 """
-REST API Views - Authentication and API Root
+Authentication Views
 """
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -73,50 +73,3 @@ def register(request):
             'user': user_data
         }, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@extend_schema(
-    summary="API Root",
-    description="Provides information about available API endpoints.",
-    responses={200: {
-        'type': 'object',
-        'properties': {
-            'message': {'type': 'string'},
-            'version': {'type': 'string'},
-            'endpoints': {'type': 'object'}
-        }
-    }},
-    tags=['API Info']
-)
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def api_root(request):
-    """
-    API Root endpoint - provides information about available endpoints
-    """
-    return Response({
-        'message': 'EASM REST API',
-        'version': '1.0.0',
-        'endpoints': {
-            'auth': {
-                'register': '/api/token/register/',
-                'token_obtain': '/api/token/',
-                'token_refresh': '/api/token/refresh/',
-            },
-            'todos': {
-                'list': '/api/todos/',
-                'create': '/api/todos/',
-                'retrieve': '/api/todos/{id}/',
-                'update': '/api/todos/{id}/',
-                'delete': '/api/todos/{id}/',
-                'complete': '/api/todos/{id}/complete/',
-                'my_todos': '/api/todos/my_todos/',
-                'statistics': '/api/todos/statistics/',
-            },
-            'docs': {
-                'swagger': '/api/docs/',
-                'redoc': '/api/redoc/',
-                'schema': '/api/schema/',
-            }
-        }
-    })

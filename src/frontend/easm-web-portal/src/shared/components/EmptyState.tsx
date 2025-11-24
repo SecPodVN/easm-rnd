@@ -1,6 +1,5 @@
-import React from 'react';
-import { Box, Typography, Button } from '@mui/material';
-import { Inbox as InboxIcon } from '@mui/icons-material';
+import { Box, Typography, Button } from "@mui/material";
+import { Inbox as InboxIcon } from "@mui/icons-material";
 
 interface EmptyStateProps {
   icon?: React.ReactNode;
@@ -11,7 +10,7 @@ interface EmptyStateProps {
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({
-  icon = <InboxIcon sx={{ fontSize: 64, color: 'text.disabled' }} />,
+  icon = <InboxIcon sx={{ fontSize: 64, color: "text.disabled" }} />,
   title,
   description,
   actionLabel,
@@ -20,12 +19,12 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
         py: 8,
-        textAlign: 'center',
+        textAlign: "center",
       }}
     >
       <Box sx={{ mb: 2 }}>{icon}</Box>

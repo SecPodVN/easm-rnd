@@ -1,13 +1,16 @@
 # Development Dockerfile with hot-reload
 FROM node:18-alpine
 
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@10.23.0 --activate
+
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json ./
+COPY package.json ./
 
 # Install dependencies
-RUN npm install --legacy-peer-deps
+RUN pnpm install
 
 # Copy source code
 COPY . .
@@ -16,4 +19,4 @@ COPY . .
 EXPOSE 3000
 
 # Start development server
-CMD ["npm", "start"]
+CMD ["pnpm", "start"]

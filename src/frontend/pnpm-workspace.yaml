@@ -1,0 +1,4 @@
+packages:
+  - 'easm-web-portal'
+  - 'easm-web-admin'
+  - 'easm-react'

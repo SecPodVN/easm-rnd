@@ -1,0 +1,70 @@
+---
+# ArgoCD AppProject for EASM Platform
+# Defines a logical grouping of applications with specific policies
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: easm-platform
+  namespace: argocd
+spec:
+  description: EASM Platform - External Attack Surface Management
+
+  # Source repositories that applications in this project can pull from
+  sourceRepos:
+    - https://github.com/SecPodVN/easm-rnd.git
+    - '*'  # Allow all repos (restrict in production)
+
+  # Destination clusters and namespaces
+  destinations:
+    - namespace: 'easm-platform'
+      server: https://kubernetes.default.svc
+    - namespace: 'easm-*'  # Allow any namespace starting with easm-
+      server: https://kubernetes.default.svc
+
+  # Cluster resource whitelist (what types of cluster-scoped resources can be created)
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRole
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRoleBinding
+
+  # Namespace resource whitelist (what types of namespaced resources can be created)
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  # Roles for project-level access control
+  roles:
+    # Developer role - can view and sync applications
+    - name: developer
+      description: Developer access to EASM applications
+      policies:
+        - p, proj:easm-platform:developer, applications, get, easm-platform/*, allow
+        - p, proj:easm-platform:developer, applications, sync, easm-platform/*, allow
+      groups:
+        - easm-developers
+
+    # Admin role - full access to project
+    - name: admin
+      description: Admin access to EASM applications
+      policies:
+        - p, proj:easm-platform:admin, applications, *, easm-platform/*, allow
+      groups:
+        - easm-admins
+
+  # Sync windows - define when sync operations are allowed
+  syncWindows:
+    # Allow sync anytime for development
+    - kind: allow
+      schedule: '* * * * *'
+      duration: 24h
+      applications:
+        - '*'
+      namespaces:
+        - easm-platform
+
+  # Orphaned resources monitoring
+  orphanedResources:
+    warn: true

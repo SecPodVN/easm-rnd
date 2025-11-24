@@ -1,0 +1,149 @@
+---
+# ArgoCD Application for EASM API
+# This manifest deploys the EASM API backend using the Helm chart in the repository
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: easm-api
+  namespace: argocd
+  # Finalizer ensures proper cleanup
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  # Project the application belongs to
+  project: default
+
+  # Source configuration - GHCR OCI Helm chart
+  source:
+    # OCI Helm chart in GitHub Container Registry
+    chart: easm-api
+    repoURL: oci://ghcr.io/secpodvn/charts
+
+    # Target revision (chart version)
+    # This will be automatically updated by GitHub Actions
+    targetRevision: 0.1.0-latest
+
+    # Helm-specific configuration
+    helm:
+      # Release name (optional, defaults to application name)
+      releaseName: easm-api
+
+      # Additional Helm values (override chart defaults)
+      values: |
+        # Image configuration
+        image:
+          repository: ghcr.io/secpodvn/easm-rnd/easm-api
+          tag: latest
+          pullPolicy: Always
+
+        # Image pull secrets for private registry
+        imagePullSecrets:
+          - name: ghcr-secret
+
+        # Replica count
+        replicaCount: 1
+
+        # Service configuration
+        service:
+          type: ClusterIP
+          port: 8000
+
+        # Ingress configuration
+        ingress:
+          enabled: true
+          className: nginx
+          hosts:
+            - host: easm-api.local
+              paths:
+                - path: /
+                  pathType: Prefix
+
+        # Resource limits
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+
+        # PostgreSQL configuration
+        postgresql:
+          enabled: true
+          deploy: false  # Use external PostgreSQL
+          host: postgres-postgresql
+          port: 5432
+          database: easm_db
+          username: easm_user
+          password: easm_password
+
+        # Redis configuration
+        redis:
+          enabled: true
+          deploy: false  # Use external Redis
+          host: redis-master
+          port: 6379
+
+        # MongoDB configuration
+        mongodb:
+          enabled: true
+          deploy: false  # Use external MongoDB
+          host: mongodb
+          port: 27017
+          database: easm_db
+          username: easm_user
+          password: easm_password
+
+        # Django configuration
+        django:
+          secretKey: "change-this-to-a-random-secret-key-in-production"
+          allowedHosts: "*"
+          debug: true  # Set to false in production
+
+  # Destination cluster and namespace
+  destination:
+    # Cluster URL (in-cluster URL for MicroK8s)
+    server: https://kubernetes.default.svc
+
+    # Target namespace
+    namespace: easm-platform
+
+  # Sync policy configuration
+  syncPolicy:
+    # Automatically sync when changes are detected in Git
+    automated:
+      # Prune resources that are no longer defined in Git
+      prune: true
+
+      # Allow automatic self-healing when resources drift from desired state
+      selfHeal: true
+
+      # Allow empty resources (useful during initial setup)
+      allowEmpty: false
+
+    # Sync options
+    syncOptions:
+      # Create namespace if it doesn't exist
+      - CreateNamespace=true
+
+      # Validate resources before applying
+      - Validate=true
+
+      # Use server-side apply
+      - ServerSideApply=true
+
+    # Retry configuration for failed syncs
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+  # Health assessment configuration
+  # ArgoCD will monitor these resources for health status
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas

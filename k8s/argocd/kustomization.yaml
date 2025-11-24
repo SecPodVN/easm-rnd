@@ -1,0 +1,28 @@
+---
+# Kustomization file for EASM Platform ArgoCD Applications
+# This allows deploying all ArgoCD resources with a single command:
+# kubectl apply -k k8s/argocd/
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Namespace where ArgoCD applications will be created
+namespace: argocd
+
+# Resources to deploy
+resources:
+  # AppProject definition
+  - easm-project.yaml
+
+  # Applications
+  - easm-api-application.yaml
+  - easm-frontend-application.yaml
+
+# Common labels applied to all resources
+commonLabels:
+  app.kubernetes.io/part-of: easm-platform
+  managed-by: argocd
+
+# Common annotations
+commonAnnotations:
+  argocd.argoproj.io/managed-by: argocd

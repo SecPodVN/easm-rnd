@@ -112,6 +112,12 @@ frontend/
 
 ## 🏃 Getting Started
 
+### 🚀 CI/CD Pipeline (Automated Deployment)
+
+**Complete automation: GitHub Actions → Proxmox → MicroK8s → ArgoCD**
+
+📖 **[Complete Pipeline Setup Guide](tools/README.md)** - Full documentation for CI/CD pipeline setup, manual operations, and troubleshooting
+
 ### Quick Start with CLI
 
 # 2. Install CLI

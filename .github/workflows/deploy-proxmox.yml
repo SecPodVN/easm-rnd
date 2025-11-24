@@ -1,0 +1,562 @@
+name: EASM Platform - CI/CD DevSecOps Pipeline
+
+on:
+  push:
+    branches: [ main, feature/cli-dev ]
+    paths:
+      - 'src/backend/**'
+      - 'src/frontend/**'
+      - 'src/charts/**'
+      - 'k8s/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+
+env:
+  # Container Registry (GitHub Container Registry)
+  REGISTRY: ghcr.io
+  REGISTRY_OWNER: secpodvn
+
+  # Image names
+  API_IMAGE: ghcr.io/${{ github.repository }}/easm-api
+  FRONTEND_IMAGE: ghcr.io/${{ github.repository }}/easm-frontend
+
+  # Helm charts
+  API_CHART_NAME: easm-api
+  FRONTEND_CHART_NAME: easm-frontend
+
+  # Proxmox VM configuration
+  PROXMOX_NODE: pve
+  VM_ID: 900
+  VM_NAME: easm-k8s-dev
+  TEMPLATE_ID: 9000  # Cloud-init template ID
+
+jobs:
+  # ========================================
+  # Security Scanning
+  # ========================================
+  security-scan:
+    name: Security & Vulnerability Scanning
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Trivy vulnerability scanner (Filesystem)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          exit-code: '0'  # Don't fail on vulnerabilities, just report
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Trivy vulnerability scan (Backend)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: 'src/backend'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+
+      - name: Trivy vulnerability scan (Frontend)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: 'src/frontend/EASM-portal'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+
+  # ========================================
+  # Build and Push Docker Images
+  # ========================================
+  build-api:
+    name: Build & Push API Image
+    runs-on: ubuntu-latest
+    needs: security-scan
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    outputs:
+      image-tag: ${{ steps.meta.outputs.version }}
+      image-digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.API_IMAGE }}
+          tags: |
+            type=sha,prefix={{branch}}-,format=short
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push API Docker image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./src/backend
+          file: ./src/backend/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.API_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.API_IMAGE }}:buildcache,mode=max
+
+      - name: Scan API image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.API_IMAGE }}:${{ steps.meta.outputs.version }}
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+
+  build-frontend:
+    name: Build & Push Frontend Image
+    runs-on: ubuntu-latest
+    needs: security-scan
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    outputs:
+      image-tag: ${{ steps.meta.outputs.version }}
+      image-digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.FRONTEND_IMAGE }}
+          tags: |
+            type=sha,prefix={{branch}}-,format=short
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Frontend Docker image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./src/frontend/EASM-portal
+          file: ./src/frontend/EASM-portal/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.FRONTEND_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.FRONTEND_IMAGE }}:buildcache,mode=max
+
+      - name: Scan Frontend image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.FRONTEND_IMAGE }}:${{ steps.meta.outputs.version }}
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+
+  # ========================================
+  # Package and Push Helm Charts
+  # ========================================
+  package-charts:
+    name: Package & Push Helm Charts
+    runs-on: ubuntu-latest
+    needs: [build-api, build-frontend]
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: 'v3.14.0'
+
+      - name: Log in to GitHub Container Registry
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
+
+      - name: Update chart versions
+        run: |
+          # Update API chart
+          sed -i "s/version:.*/version: 0.1.0-${{ github.sha }}/" src/charts/${{ env.API_CHART_NAME }}/Chart.yaml
+          sed -i "s/appVersion:.*/appVersion: ${{ github.sha }}/" src/charts/${{ env.API_CHART_NAME }}/Chart.yaml
+
+          # Update Frontend chart
+          sed -i "s/version:.*/version: 0.1.0-${{ github.sha }}/" src/charts/${{ env.FRONTEND_CHART_NAME }}/Chart.yaml
+          sed -i "s/appVersion:.*/appVersion: ${{ github.sha }}/" src/charts/${{ env.FRONTEND_CHART_NAME }}/Chart.yaml
+
+      - name: Package Helm charts
+        run: |
+          helm package src/charts/${{ env.API_CHART_NAME }}
+          helm package src/charts/${{ env.FRONTEND_CHART_NAME }}
+
+      - name: Push Helm charts to GHCR
+        run: |
+          helm push ${{ env.API_CHART_NAME }}-0.1.0-${{ github.sha }}.tgz oci://${{ env.REGISTRY }}/${{ env.REGISTRY_OWNER }}/charts
+          helm push ${{ env.FRONTEND_CHART_NAME }}-0.1.0-${{ github.sha }}.tgz oci://${{ env.REGISTRY }}/${{ env.REGISTRY_OWNER }}/charts
+
+  # ========================================
+  # Proxmox VM Management
+  # ========================================
+  provision-vm:
+    name: Provision Proxmox VM
+    runs-on: ubuntu-latest
+    needs: package-charts
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+
+    outputs:
+      vm-ip: ${{ steps.get-ip.outputs.ip }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if VM exists
+        id: vm_check
+        run: |
+          EXISTS=$(curl -k -s \
+            -H "Authorization: PVEAPIToken=${{ secrets.PROXMOX_TOKEN_ID }}=${{ secrets.PROXMOX_TOKEN_SECRET }}" \
+            "https://${{ secrets.PROXMOX_HOST }}/api2/json/nodes/${{ env.PROXMOX_NODE }}/qemu" \
+            | jq -r '.data[]? | select(.vmid==${{ env.VM_ID }}) | .vmid' || echo "")
+
+          if [ -z "$EXISTS" ]; then
+            echo "exists=false" >> $GITHUB_OUTPUT
+          else
+            echo "exists=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create VM from template
+        if: steps.vm_check.outputs.exists == 'false'
+        run: |
+          echo "Creating VM ${{ env.VM_ID }} from template ${{ env.TEMPLATE_ID }}..."
+
+          # Clone template
+          curl -k -X POST \
+            -H "Authorization: PVEAPIToken=${{ secrets.PROXMOX_TOKEN_ID }}=${{ secrets.PROXMOX_TOKEN_SECRET }}" \
+            -d "newid=${{ env.VM_ID }}" \
+            -d "name=${{ env.VM_NAME }}" \
+            -d "full=1" \
+            "https://${{ secrets.PROXMOX_HOST }}/api2/json/nodes/${{ env.PROXMOX_NODE }}/qemu/${{ env.TEMPLATE_ID }}/clone"
+
+          sleep 10
+
+      - name: Configure VM
+        if: steps.vm_check.outputs.exists == 'false'
+        run: |
+          # Resize disk
+          curl -k -X PUT \
+            -H "Authorization: PVEAPIToken=${{ secrets.PROXMOX_TOKEN_ID }}=${{ secrets.PROXMOX_TOKEN_SECRET }}" \
+            -d "disk=scsi0" \
+            -d "size=+50G" \
+            "https://${{ secrets.PROXMOX_HOST }}/api2/json/nodes/${{ env.PROXMOX_NODE }}/qemu/${{ env.VM_ID }}/resize"
+
+          # Update CPU and memory
+          curl -k -X PUT \
+            -H "Authorization: PVEAPIToken=${{ secrets.PROXMOX_TOKEN_ID }}=${{ secrets.PROXMOX_TOKEN_SECRET }}" \
+            -d "cores=6" \
+            -d "memory=16384" \
+            "https://${{ secrets.PROXMOX_HOST }}/api2/json/nodes/${{ env.PROXMOX_NODE }}/qemu/${{ env.VM_ID }}/config"
+
+      - name: Start VM
+        run: |
+          # Check VM status
+          STATUS=$(curl -k -s \
+            -H "Authorization: PVEAPIToken=${{ secrets.PROXMOX_TOKEN_ID }}=${{ secrets.PROXMOX_TOKEN_SECRET }}" \
+            "https://${{ secrets.PROXMOX_HOST }}/api2/json/nodes/${{ env.PROXMOX_NODE }}/qemu/${{ env.VM_ID }}/status/current" \
+            | jq -r '.data.status')
+
+          if [ "$STATUS" != "running" ]; then
+            echo "Starting VM..."
+            curl -k -X POST \
+              -H "Authorization: PVEAPIToken=${{ secrets.PROXMOX_TOKEN_ID }}=${{ secrets.PROXMOX_TOKEN_SECRET }}" \
+              "https://${{ secrets.PROXMOX_HOST }}/api2/json/nodes/${{ env.PROXMOX_NODE }}/qemu/${{ env.VM_ID }}/status/start"
+
+            # Wait for VM to start
+            sleep 60
+          fi
+
+      - name: Get VM IP address
+        id: get-ip
+        run: |
+          # Wait for cloud-init and get IP
+          for i in {1..30}; do
+            IP=$(curl -k -s \
+              -H "Authorization: PVEAPIToken=${{ secrets.PROXMOX_TOKEN_ID }}=${{ secrets.PROXMOX_TOKEN_SECRET }}" \
+              "https://${{ secrets.PROXMOX_HOST }}/api2/json/nodes/${{ env.PROXMOX_NODE }}/qemu/${{ env.VM_ID }}/agent/network-get-interfaces" \
+              | jq -r '.data.result[] | select(.name=="eth0" or .name=="ens18") | ."ip-addresses"[] | select(.["ip-address-type"]=="ipv4") | .["ip-address"]' \
+              | head -n1)
+
+            if [ -n "$IP" ] && [ "$IP" != "127.0.0.1" ]; then
+              echo "ip=$IP" >> $GITHUB_OUTPUT
+              echo "VM IP: $IP"
+              break
+            fi
+
+            echo "Waiting for VM to get IP address... ($i/30)"
+            sleep 10
+          done
+
+  # ========================================
+  # Deploy with Ansible
+  # ========================================
+  deploy:
+    name: Deploy to Proxmox VM
+    runs-on: ubuntu-latest
+    needs: [provision-vm, build-api, build-frontend]
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ needs.provision-vm.outputs.vm-ip }} >> ~/.ssh/known_hosts || true
+
+      - name: Create Ansible inventory
+        run: |
+          cat > ansible/inventory.yml <<EOF
+          all:
+            hosts:
+              easm-vm:
+                ansible_host: ${{ needs.provision-vm.outputs.vm-ip }}
+                ansible_user: easm-admin
+                ansible_ssh_private_key_file: ~/.ssh/id_rsa
+                ansible_python_interpreter: /usr/bin/python3
+            vars:
+              api_image_tag: ${{ needs.build-api.outputs.image-tag }}
+              frontend_image_tag: ${{ needs.build-frontend.outputs.image-tag }}
+              helm_chart_version: 0.1.0-${{ github.sha }}
+          EOF
+
+      - name: Run Ansible playbook
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: ansible/playbook.yml
+          inventory: ansible/inventory.yml
+          requirements: ansible/requirements.yml
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          options: |
+            --extra-vars "registry=${{ env.REGISTRY }} registry_owner=${{ env.REGISTRY_OWNER }} github_token=${{ secrets.GITHUB_TOKEN }} github_actor=${{ github.actor }} github_branch=${{ github.ref_name }}"
+
+  # ========================================
+  # Update ArgoCD Applications
+  # ========================================
+  update-argocd:
+    name: Update ArgoCD Applications
+    runs-on: ubuntu-latest
+    needs: [deploy, build-api, build-frontend]
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Update ArgoCD application manifests
+        run: |
+          CHART_VERSION="0.1.0-${{ github.sha }}"
+
+          # Update API application - chart version and image tag
+          sed -i "s|targetRevision:.*|targetRevision: ${CHART_VERSION}|" k8s/argocd/easm-api-application.yaml
+          sed -i "s|tag:.*|tag: ${{ needs.build-api.outputs.image-tag }}|" k8s/argocd/easm-api-application.yaml
+
+          # Update Frontend application - chart version and image tag
+          sed -i "s|targetRevision:.*|targetRevision: ${CHART_VERSION}|" k8s/argocd/easm-frontend-application.yaml
+          sed -i "s|tag:.*|tag: ${{ needs.build-frontend.outputs.image-tag }}|" k8s/argocd/easm-frontend-application.yaml
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+          git add k8s/argocd/*.yaml
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update ArgoCD manifests - chart v0.1.0-${{ github.sha }} [skip ci]"
+            git push
+          fi
+
+  # ========================================
+  # Notifications
+  # ========================================
+  notify-success:
+    name: Notify Success
+    runs-on: ubuntu-latest
+    needs: [deploy, update-argocd]
+    if: success() && (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main')
+
+    steps:
+      - name: Send success notification to Microsoft Teams
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ secrets.MS_TEAMS_WEBHOOK }}
+          method: POST
+          contentType: application/json
+          data: |
+            {
+              "@type": "MessageCard",
+              "@context": "https://schema.org/extensions",
+              "themeColor": "28a745",
+              "title": "✅ EASM Platform Deployment Successful",
+              "summary": "Deployment completed successfully",
+              "sections": [{
+                "activityTitle": "Deployment Details",
+                "facts": [
+                  {
+                    "name": "Repository",
+                    "value": "${{ github.repository }}"
+                  },
+                  {
+                    "name": "Branch",
+                    "value": "${{ github.ref_name }}"
+                  },
+                  {
+                    "name": "Commit",
+                    "value": "${{ github.sha }}"
+                  },
+                  {
+                    "name": "Triggered by",
+                    "value": "${{ github.actor }}"
+                  },
+                  {
+                    "name": "API Image",
+                    "value": "${{ needs.build-api.outputs.image-tag }}"
+                  },
+                  {
+                    "name": "Frontend Image",
+                    "value": "${{ needs.build-frontend.outputs.image-tag }}"
+                  }
+                ],
+                "markdown": true
+              }],
+              "potentialAction": [{
+                "@type": "OpenUri",
+                "name": "View Workflow Run",
+                "targets": [{
+                  "os": "default",
+                  "uri": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                }]
+              }]
+            }
+
+  notify-failure:
+    name: Notify Failure
+    runs-on: ubuntu-latest
+    needs: [security-scan, build-api, build-frontend, package-charts, provision-vm, deploy]
+    if: failure() && (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main')
+
+    steps:
+      - name: Send failure notification to Microsoft Teams
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ secrets.MS_TEAMS_WEBHOOK }}
+          method: POST
+          contentType: application/json
+          data: |
+            {
+              "@type": "MessageCard",
+              "@context": "https://schema.org/extensions",
+              "themeColor": "dc3545",
+              "title": "❌ EASM Platform Deployment Failed",
+              "summary": "Deployment encountered errors",
+              "sections": [{
+                "activityTitle": "Failure Details",
+                "facts": [
+                  {
+                    "name": "Repository",
+                    "value": "${{ github.repository }}"
+                  },
+                  {
+                    "name": "Branch",
+                    "value": "${{ github.ref_name }}"
+                  },
+                  {
+                    "name": "Commit",
+                    "value": "${{ github.sha }}"
+                  },
+                  {
+                    "name": "Triggered by",
+                    "value": "${{ github.actor }}"
+                  }
+                ],
+                "markdown": true
+              }],
+              "potentialAction": [{
+                "@type": "OpenUri",
+                "name": "View Workflow Run",
+                "targets": [{
+                  "os": "default",
+                  "uri": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                }]
+              }]
+            }

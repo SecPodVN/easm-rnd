@@ -1,0 +1,406 @@
+---
+# Ansible playbook to setup MicroK8s and deploy EASM platform
+# This is called by GitHub Actions after VM provisioning
+
+- name: Setup EASM Platform on Proxmox VM
+  hosts: easm-vm
+  become: yes
+  gather_facts: yes
+
+  vars:
+    # These are passed from GitHub Actions
+    registry: "{{ registry | default('ghcr.io') }}"
+    registry_owner: "{{ registry_owner | default('secpodvn') }}"
+    api_image_tag: "{{ api_image_tag | default('latest') }}"
+    frontend_image_tag: "{{ frontend_image_tag | default('latest') }}"
+    helm_chart_version: "{{ helm_chart_version | default('0.1.0') }}"
+
+    # ArgoCD configuration
+    argocd_namespace: argocd
+    app_namespace: easm-platform
+
+    # MicroK8s configuration
+    metallb_ip_range: "192.168.1.200-192.168.1.210"
+
+  tasks:
+    # ==========================================
+    # System Setup
+    # ==========================================
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - curl
+          - wget
+          - git
+          - jq
+          - ca-certificates
+          - gnupg
+          - lsb-release
+          - apt-transport-https
+          - software-properties-common
+          - net-tools
+          - vim
+          - htop
+          - unzip
+          - snapd
+        state: present
+
+    - name: Ensure snapd is running
+      systemd:
+        name: snapd.socket
+        state: started
+        enabled: yes
+
+    - name: Create snap symlink
+      file:
+        src: /var/lib/snapd/snap
+        dest: /snap
+        state: link
+      ignore_errors: yes
+
+    # ==========================================
+    # MicroK8s Installation
+    # ==========================================
+    - name: Check if MicroK8s is installed
+      command: snap list microk8s
+      register: microk8s_check
+      failed_when: false
+      changed_when: false
+
+    - name: Install MicroK8s
+      command: snap install microk8s --classic --channel=1.32/stable
+      when: microk8s_check.rc != 0
+
+    - name: Add user to microk8s group
+      user:
+        name: "{{ ansible_user }}"
+        groups: microk8s
+        append: yes
+
+    - name: Wait for MicroK8s to be ready
+      command: microk8s status --wait-ready
+      changed_when: false
+
+    # ==========================================
+    # Enable MicroK8s Add-ons
+    # ==========================================
+    - name: Enable MicroK8s DNS
+      command: microk8s enable dns
+      changed_when: false
+
+    - name: Enable MicroK8s storage
+      command: microk8s enable storage
+      changed_when: false
+
+    - name: Enable MicroK8s ingress
+      command: microk8s enable ingress
+      changed_when: false
+
+    - name: Enable MicroK8s registry
+      command: microk8s enable registry
+      changed_when: false
+
+    - name: Enable MicroK8s helm3
+      command: microk8s enable helm3
+      changed_when: false
+
+    - name: Enable MetalLB
+      command: "microk8s enable metallb:{{ metallb_ip_range }}"
+      changed_when: false
+
+    - name: Enable metrics-server (optional)
+      command: microk8s enable metrics-server
+      changed_when: false
+      ignore_errors: yes
+
+    # ==========================================
+    # Setup kubectl and helm
+    # ==========================================
+    - name: Create .kube directory
+      file:
+        path: "/home/{{ ansible_user }}/.kube"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Export kubeconfig
+      shell: microk8s config > /home/{{ ansible_user }}/.kube/config
+      args:
+        creates: /home/{{ ansible_user }}/.kube/config
+
+    - name: Set kubeconfig ownership
+      file:
+        path: "/home/{{ ansible_user }}/.kube/config"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600'
+
+    - name: Install kubectl via snap
+      command: snap install kubectl --classic
+      when: microk8s_check.rc != 0
+      ignore_errors: yes
+
+    # ==========================================
+    # ArgoCD Installation
+    # ==========================================
+    - name: Create ArgoCD namespace
+      command: microk8s kubectl create namespace {{ argocd_namespace }}
+      register: create_ns
+      failed_when: create_ns.rc != 0 and 'already exists' not in create_ns.stderr
+      changed_when: create_ns.rc == 0
+
+    - name: Install ArgoCD
+      command: >
+        microk8s kubectl apply -n {{ argocd_namespace }}
+        -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+      changed_when: false
+
+    - name: Wait for ArgoCD pods to be ready
+      command: >
+        microk8s kubectl wait --for=condition=ready pod --all
+        -n {{ argocd_namespace }} --timeout=600s
+      changed_when: false
+      ignore_errors: yes
+
+    # ==========================================
+    # ArgoCD Ingress
+    # ==========================================
+    - name: Create ArgoCD ingress
+      command: |
+        microk8s kubectl apply -f - <<EOF
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        metadata:
+          name: argocd-server-ingress
+          namespace: {{ argocd_namespace }}
+          annotations:
+            nginx.ingress.kubernetes.io/ssl-redirect: "false"
+            nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+        spec:
+          ingressClassName: nginx
+          rules:
+          - host: argocd.local
+            http:
+              paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: argocd-server
+                    port:
+                      number: 443
+        EOF
+      args:
+        executable: /bin/bash
+      changed_when: false
+
+    # ==========================================
+    # ArgoCD CLI Installation
+    # ==========================================
+    - name: Download ArgoCD CLI
+      get_url:
+        url: https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        dest: /tmp/argocd-linux-amd64
+        mode: '0755'
+
+    - name: Install ArgoCD CLI
+      copy:
+        src: /tmp/argocd-linux-amd64
+        dest: /usr/local/bin/argocd
+        mode: '0755'
+        remote_src: yes
+
+    # ==========================================
+    # Docker Installation
+    # ==========================================
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+
+    - name: Add user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    # ==========================================
+    # Clone Repository
+    # ==========================================
+    - name: Clone EASM repository
+      git:
+        repo: https://github.com/SecPodVN/easm-rnd.git
+        dest: "/home/{{ ansible_user }}/easm-rnd"
+        version: "{{ github_branch | default('main') }}"
+        force: yes
+      become_user: "{{ ansible_user }}"
+
+    # ==========================================
+    # Login to Registry
+    # ==========================================
+    - name: Login to GitHub Container Registry
+      command: >
+        echo "{{ github_token }}" |
+        docker login {{ registry }} -u {{ github_actor }} --password-stdin
+      when: github_token is defined
+      no_log: true
+      changed_when: false
+
+    # ==========================================
+    # Create Kubernetes Image Pull Secret
+    # ==========================================
+    - name: Create namespace for EASM platform
+      command: microk8s kubectl create namespace {{ app_namespace }}
+      register: create_app_ns
+      failed_when: create_app_ns.rc != 0 and 'already exists' not in create_app_ns.stderr
+      changed_when: create_app_ns.rc == 0
+
+    - name: Create image pull secret for GHCR
+      shell: |
+        microk8s kubectl create secret docker-registry ghcr-secret \
+          --docker-server={{ registry }} \
+          --docker-username={{ github_actor }} \
+          --docker-password={{ github_token }} \
+          -n {{ app_namespace }} --dry-run=client -o yaml | microk8s kubectl apply -f -
+      when: github_token is defined
+      no_log: true
+      changed_when: false
+
+    - name: Create image pull secret for ArgoCD namespace
+      shell: |
+        microk8s kubectl create secret docker-registry ghcr-secret \
+          --docker-server={{ registry }} \
+          --docker-username={{ github_actor }} \
+          --docker-password={{ github_token }} \
+          -n {{ argocd_namespace }} --dry-run=client -o yaml | microk8s kubectl apply -f -
+      when: github_token is defined
+      no_log: true
+      changed_when: false
+
+    # ==========================================
+    # Deploy with ArgoCD
+    # ==========================================
+    - name: Configure ArgoCD repository credentials for GHCR OCI charts
+      shell: |
+        argocd login argocd-server.{{ argocd_namespace }}.svc.cluster.local \
+          --core --grpc-web --insecure
+        argocd repo add {{ registry }}/{{ registry_owner }}/charts \
+          --type helm \
+          --name ghcr-charts \
+          --enable-oci \
+          --username {{ github_actor }} \
+          --password {{ github_token }}
+      environment:
+        KUBECONFIG: /home/{{ ansible_user }}/.kube/config
+      when: github_token is defined
+      no_log: true
+      changed_when: false
+      ignore_errors: true
+      become_user: "{{ ansible_user }}"
+
+    - name: Apply ArgoCD applications
+      command: >
+        microk8s kubectl apply -k /home/{{ ansible_user }}/easm-rnd/k8s/argocd/
+      changed_when: false
+      become_user: "{{ ansible_user }}"
+
+    # ==========================================
+    # Deploy Databases
+    # ==========================================
+    - name: Add Bitnami Helm repository
+      command: microk8s helm3 repo add bitnami https://charts.bitnami.com/bitnami
+      changed_when: false
+      become_user: "{{ ansible_user }}"
+
+    - name: Update Helm repositories
+      command: microk8s helm3 repo update
+      changed_when: false
+      become_user: "{{ ansible_user }}"
+
+    - name: Deploy PostgreSQL
+      command: >
+        microk8s helm3 upgrade --install postgres bitnami/postgresql
+        --namespace {{ app_namespace }}
+        --create-namespace
+        --set auth.username=easm_user
+        --set auth.password=easm_password
+        --set auth.database=easm_db
+        --set primary.persistence.size=5Gi
+        --wait
+      changed_when: false
+      become_user: "{{ ansible_user }}"
+
+    - name: Deploy Redis
+      command: >
+        microk8s helm3 upgrade --install redis bitnami/redis
+        --namespace {{ app_namespace }}
+        --set auth.enabled=false
+        --set master.persistence.size=2Gi
+        --wait
+      changed_when: false
+      become_user: "{{ ansible_user }}"
+
+    - name: Deploy MongoDB
+      command: >
+        microk8s helm3 upgrade --install mongodb bitnami/mongodb
+        --namespace {{ app_namespace }}
+        --set auth.rootUser=root
+        --set auth.rootPassword=easm_password
+        --set auth.username=easm_user
+        --set auth.password=easm_password
+        --set auth.database=easm_db
+        --set persistence.size=5Gi
+        --wait
+      changed_when: false
+      become_user: "{{ ansible_user }}"
+
+    - name: Wait for application namespace
+      command: >
+        microk8s kubectl wait --for=condition=ready pod --all
+        -n {{ app_namespace }} --timeout=600s
+      changed_when: false
+      ignore_errors: yes
+
+    # ==========================================
+    # Verification
+    # ==========================================
+    - name: Get ArgoCD admin password
+      shell: >
+        microk8s kubectl -n {{ argocd_namespace }} get secret argocd-initial-admin-secret
+        -o jsonpath="{.data.password}" | base64 -d
+      register: argocd_password
+      changed_when: false
+
+    - name: Display deployment information
+      debug:
+        msg:
+          - "EASM Platform deployment complete!"
+          - "ArgoCD UI: http://argocd.local"
+          - "ArgoCD admin password: {{ argocd_password.stdout }}"
+          - "EASM Frontend: http://easm-frontend.local"
+          - "EASM API: http://easm-api.local"
+          - ""
+          - "Add to /etc/hosts on your workstation:"
+          - "{{ ansible_default_ipv4.address }}  argocd.local easm-frontend.local easm-api.local"

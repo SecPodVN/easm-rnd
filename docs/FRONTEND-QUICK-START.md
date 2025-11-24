@@ -3,6 +3,7 @@
 **Date: November 21, 2025**
 
 ---
+
 - API Service: how to call app and resuable code
 - API Parser : snakecase to cammel or Pascal case
 - react router
@@ -10,7 +11,6 @@
 - react validator, form input
 
 Extra notes: Rebuilding images in skaffold takes very long, if applicable just use npm start (might need to install react-scripts with `npm install react-scripts
-
 
 ## 1. Run the Frontend
 
@@ -22,7 +22,7 @@ npm start
 
 Opens `http://localhost:3000`. Edit files → see changes instantly.
 
-**Stack:** React 19 + TypeScript + Material-UI + Redux Toolkit + RTK Query
+**Stack:** React 19 + TypeScript + Material-UI + Redux Toolkit + RTK Query + React Router v7
 
 ---
 
@@ -81,15 +81,25 @@ src/
 │   └── services/
 │       └── api.ts               # ✅ ALL API endpoints
 │
+├── routes/
+│   └── index.tsx                # ✅ Route configuration
+│
 ├── components/
 │   └── DashboardLayout.tsx      # Main layout + sidebar
 │
-└── App.tsx                      # ✅ Add routes here
+└── App.tsx                      # Router setup
 ```
 
 **Data Flow:**
+
 ```
 Component → RTK Query Hook → API → Backend → Cache → Component Updates
+```
+
+**Routing:**
+
+```
+URL → React Router → Route Match → Component Render
 ```
 
 ---
@@ -101,9 +111,9 @@ Component → RTK Query Hook → API → Backend → Cache → Component Updates
 #### Step 1: Create Component (`src/features/notes/NotesList.tsx`)
 
 ```typescript
-import { Box, Button } from '@mui/material';
-import { PageHeader, LoadingState } from '../../shared/components';
-import { useGetNotesQuery } from '../../store/services/api';
+import { Box, Button } from "@mui/material";
+import { PageHeader, LoadingState } from "../../shared/components";
+import { useGetNotesQuery } from "../../store/services/api";
 
 export const NotesList = () => {
   const { data, isLoading } = useGetNotesQuery();
@@ -113,7 +123,7 @@ export const NotesList = () => {
   return (
     <Box sx={{ p: 3 }}>
       <PageHeader title="Notes" />
-      {data?.map(note => (
+      {data?.map((note) => (
         <div key={note.id}>{note.title}</div>
       ))}
     </Box>
@@ -150,22 +160,35 @@ createNote: builder.mutation<Note, { title: string; content: string }>({
 export const { useGetNotesQuery, useCreateNoteMutation } = easmApi;
 ```
 
-#### Step 3: Add Route (`src/App.tsx`)
+#### Step 3: Add Route (`src/routes/index.tsx`)
 
 ```typescript
-case 'notes':
-  return <NotesList />;
+import { NotesList } from "../features/notes";
+
+export const routes: RouteObject[] = [
+  // ...existing routes
+  {
+    path: "/notes",
+    element: <NotesList />,
+  },
+  // ...
+];
 ```
 
 #### Step 4: Add to Sidebar (`src/components/DashboardLayout.tsx`)
 
 ```typescript
-{
-  id: 'notes',
-  label: 'Notes',
-  icon: <NotesIcon />,
-  path: 'notes'
-}
+import { useLocation, NavLink } from "react-router-dom";
+
+const location = useLocation();
+const isActive = (path: string) => location.pathname === path;
+
+<ListItemButton component={NavLink} to="/notes" selected={isActive("/notes")}>
+  <ListItemIcon>
+    <NotesIcon />
+  </ListItemIcon>
+  <ListItemText primary="Notes" />
+</ListItemButton>;
 ```
 
 ---
@@ -176,7 +199,7 @@ case 'notes':
 
 ```javascript
 // Test API call
-const response = await fetch('http://localhost:3000/api/notes/');
+const response = await fetch("http://localhost:3000/api/notes/");
 const data = await response.json();
 console.log(data);
 
@@ -184,7 +207,7 @@ console.log(data);
 console.log(store.getState());
 
 // Check cached data
-console.log(localStorage.getItem('token'));
+console.log(localStorage.getItem("token"));
 ```
 
 ### Using React DevTools
@@ -199,15 +222,15 @@ console.log(localStorage.getItem('token'));
 ```typescript
 // Log hook data
 const { data, isLoading, error } = useGetNotesQuery();
-console.log('Notes:', { data, isLoading, error });
+console.log("Notes:", { data, isLoading, error });
 
 // Log Redux state
-const filters = useAppSelector(state => state.filters);
-console.log('Filters:', filters);
+const filters = useAppSelector((state) => state.filters);
+console.log("Filters:", filters);
 
 // Log mutations
 const [create, { isLoading, error }] = useCreateNoteMutation();
-console.log('Create state:', { isLoading, error });
+console.log("Create state:", { isLoading, error });
 ```
 
 ---
@@ -223,7 +246,7 @@ if (isLoading) return <LoadingState />;
 if (error) return <div>Error: {error.message}</div>;
 if (!data?.length) return <EmptyState title="No items" />;
 
-return data.map(item => <div key={item.id}>{item.name}</div>);
+return data.map((item) => <div key={item.id}>{item.name}</div>);
 ```
 
 ### ✅ Create/Update
@@ -234,10 +257,10 @@ const [create, { isLoading }] = useCreateItemMutation();
 const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    await create({ name: 'Item' }).unwrap();
-    alert('Created!');
+    await create({ name: "Item" }).unwrap();
+    alert("Created!");
   } catch (err) {
-    alert('Error: ' + err.data.message);
+    alert("Error: " + err.data.message);
   }
 };
 ```
@@ -245,44 +268,46 @@ const handleSubmit = async (e) => {
 ### ✅ Form
 
 ```typescript
-const [value, setValue] = useState('');
+const [value, setValue] = useState("");
 
 <form onSubmit={handleSubmit}>
-  <TextField
-    value={value}
-    onChange={e => setValue(e.target.value)}
-  />
+  <TextField value={value} onChange={(e) => setValue(e.target.value)} />
   <Button type="submit" disabled={isLoading}>
-    {isLoading ? 'Saving...' : 'Save'}
+    {isLoading ? "Saving..." : "Save"}
   </Button>
-</form>
+</form>;
 ```
 
 ### ✅ List with Search
 
 ```typescript
-const [search, setSearch] = useState('');
+const [search, setSearch] = useState("");
 const { data } = useGetItemsQuery({ search });
 
 <>
   <SearchBar value={search} onChange={setSearch} />
-  {data?.map(item => <ItemCard key={item.id} item={item} />)}
-</>
+  {data?.map((item) => (
+    <ItemCard key={item.id} item={item} />
+  ))}
+</>;
 ```
 
 ### ✅ Polling (Auto-refresh)
 
 ```typescript
-const { data } = useGetAssetsQuery({}, {
-  pollingInterval: 30000,  // Refresh every 30s
-});
+const { data } = useGetAssetsQuery(
+  {},
+  {
+    pollingInterval: 30000, // Refresh every 30s
+  }
+);
 ```
 
 ### ✅ Conditional Fetch
 
 ```typescript
 const { data } = useGetAssetByIdQuery(id, {
-  skip: !id,  // Don't fetch if no ID
+  skip: !id, // Don't fetch if no ID
 });
 ```
 
@@ -292,9 +317,9 @@ const { data } = useGetAssetByIdQuery(id, {
 
 ### When to Use Redux vs RTK Query
 
-| Use Case | Solution |
-|----------|----------|
-| ✅ Server data (API) | RTK Query |
+| Use Case                      | Solution     |
+| ----------------------------- | ------------ |
+| ✅ Server data (API)          | RTK Query    |
 | ✅ Client state (filters, UI) | Redux Slices |
 
 ### Available Slices
@@ -303,41 +328,41 @@ const { data } = useGetAssetByIdQuery(id, {
 
 ```typescript
 // Actions
-dispatch(setDateRange(30));           // Last 30 days
-dispatch(setSeverity(['high']));      // High severity only
-dispatch(setAssetTypes(['domain']));  // Domains only
+dispatch(setDateRange(30)); // Last 30 days
+dispatch(setSeverity(["high"])); // High severity only
+dispatch(setAssetTypes(["domain"])); // Domains only
 
 // Selector
-const filters = useAppSelector(state => state.filters);
+const filters = useAppSelector((state) => state.filters);
 ```
 
 #### 🟦 UI Slice (`store/slices/uiSlice.ts`)
 
 ```typescript
 // Actions
-dispatch(toggleSidebar());                  // Show/hide sidebar
-dispatch(openModal('delete-confirm'));      // Open modal
-dispatch(closeModal());                     // Close modal
-dispatch(toggleAssetSelection('asset-1'));  // Select asset
+dispatch(toggleSidebar()); // Show/hide sidebar
+dispatch(openModal("delete-confirm")); // Open modal
+dispatch(closeModal()); // Close modal
+dispatch(toggleAssetSelection("asset-1")); // Select asset
 
 // Selectors
-const { sidebarOpen, selectedAssets } = useAppSelector(state => state.ui);
+const { sidebarOpen, selectedAssets } = useAppSelector((state) => state.ui);
 ```
 
 ### Example: Using Filters
 
 **FilterBar.tsx** - Set filters
+
 ```typescript
 const dispatch = useAppDispatch();
 
-<DatePicker
-  onChange={(days) => dispatch(setDateRange(days))}
-/>
+<DatePicker onChange={(days) => dispatch(setDateRange(days))} />;
 ```
 
 **IssueList.tsx** - Use filters in API call
+
 ```typescript
-const { dateRange, severity } = useAppSelector(state => state.filters);
+const { dateRange, severity } = useAppSelector((state) => state.filters);
 const { data } = useGetIssuesQuery({ dateRange, severity });
 ```
 
@@ -392,26 +417,31 @@ import { Box, Button, Typography, TextField } from '@mui/material';
 ## 8. Benefits of This Structure
 
 ### 1. ✅ Type Safety
+
 - TypeScript catches errors at compile time
 - Auto-complete in IDE
 - Fewer runtime errors
 
 ### 2. ✅ Automatic Caching
+
 - RTK Query caches API responses
 - Reduces unnecessary network calls
 - Automatic background refetching
 
 ### 3. ✅ Predictable State
+
 - Redux provides single source of truth
 - Time-travel debugging
 - Easy to track state changes
 
 ### 4. ✅ Code Reusability
+
 - Shared components across features
 - DRY principle
 - Consistent UI/UX
 
 ### 5. ✅ Developer Experience
+
 - Hot reload for instant feedback
 - React DevTools integration
 - Redux DevTools integration
@@ -437,12 +467,14 @@ npm install
 ### ⚠️ API not working
 
 **Check backend:**
+
 ```powershell
 # Backend should be running at port 8000
 curl http://localhost:8000/api/docs/
 ```
 
 **Debug steps:**
+
 1. Check browser console for errors
 2. Check Network tab in DevTools
 3. Verify token: `console.log(localStorage.getItem('token'))`
@@ -458,21 +490,22 @@ curl http://localhost:8000/api/docs/
 
 ## Quick Reference
 
-| What | Where |
-|------|-------|
-| ✅ Add feature | `src/features/my-feature/` |
-| ✅ Add API endpoint | `src/store/services/api.ts` |
-| ✅ Add route | `src/App.tsx` |
-| ✅ Add to sidebar | `src/components/DashboardLayout.tsx` |
-| ✅ Shared components | `src/shared/components/` |
-| ✅ Redux state | `src/store/slices/` |
+| What                 | Where                                              |
+| -------------------- | -------------------------------------------------- |
+| ✅ Add feature       | `src/features/my-feature/`                         |
+| ✅ Add API endpoint  | `src/store/services/api.ts`                        |
+| ✅ Add route         | `src/routes/index.tsx`                             |
+| ✅ Add to sidebar    | `src/components/DashboardLayout.tsx` (use NavLink) |
+| ✅ Shared components | `src/shared/components/`                           |
+| ✅ Redux state       | `src/store/slices/`                                |
 
 **Common imports:**
+
 ```typescript
-import { Box, Button, Typography } from '@mui/material';
-import { PageHeader, StatCard } from '../../shared/components';
-import { useGetItemsQuery } from '../../store/services/api';
-import { useAppDispatch, useAppSelector } from '../../store';
+import { Box, Button, Typography } from "@mui/material";
+import { PageHeader, StatCard } from "../../shared/components";
+import { useGetItemsQuery } from "../../store/services/api";
+import { useAppDispatch, useAppSelector } from "../../store";
 ```
 
 ---
@@ -480,23 +513,25 @@ import { useAppDispatch, useAppSelector } from '../../store';
 ## Support
 
 For questions or issues:
+
 1. Check browser console for errors
 2. Review this guide
 3. Check existing feature code for examples
 4. Ask in #easm-frontend Slack
 
-  if (isLoading) return <LoadingState />;
+if (isLoading) return <LoadingState />;
 
-  return (
-    <Box sx={{ p: 3 }}>
-      <PageHeader title="Notes" />
-      {data?.map(note => (
-        <div key={note.id}>{note.title}</div>
-      ))}
-    </Box>
-  );
+return (
+<Box sx={{ p: 3 }}>
+<PageHeader title="Notes" />
+{data?.map(note => (
+<div key={note.id}>{note.title}</div>
+))}
+</Box>
+);
 };
-```
+
+````
 
 ### Step 2: Add API Endpoint
 
@@ -527,7 +562,7 @@ createNote: builder.mutation<Note, { title: string; content: string }>({
 
 // Export hooks
 export const { useGetNotesQuery, useCreateNoteMutation } = easmApi;
-```
+````
 
 ### Step 3: Add Route
 
@@ -556,6 +591,7 @@ In `src/components/DashboardLayout.tsx`:
 ## 4. Common Patterns
 
 ### Fetch Data
+
 ```typescript
 const { data, isLoading, error } = useGetItemsQuery({ search, filter });
 
@@ -563,48 +599,50 @@ if (isLoading) return <LoadingState />;
 if (error) return <div>Error</div>;
 if (!data?.length) return <EmptyState title="No items" />;
 
-return data.map(item => <div key={item.id}>{item.name}</div>);
+return data.map((item) => <div key={item.id}>{item.name}</div>);
 ```
 
 ### Create/Update
+
 ```typescript
 const [create, { isLoading }] = useCreateItemMutation();
 
 const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    await create({ name: 'Item' }).unwrap();
-    alert('Created!');
+    await create({ name: "Item" }).unwrap();
+    alert("Created!");
   } catch (err) {
-    alert('Error: ' + err.data.message);
+    alert("Error: " + err.data.message);
   }
 };
 ```
 
 ### Form
+
 ```typescript
-const [value, setValue] = useState('');
+const [value, setValue] = useState("");
 
 <form onSubmit={handleSubmit}>
-  <TextField
-    value={value}
-    onChange={e => setValue(e.target.value)}
-  />
+  <TextField value={value} onChange={(e) => setValue(e.target.value)} />
   <Button type="submit" disabled={isLoading}>
     Save
   </Button>
-</form>
+</form>;
 ```
 
 ### List with Search
+
 ```typescript
-const [search, setSearch] = useState('');
+const [search, setSearch] = useState("");
 const { data } = useGetItemsQuery({ search });
 
 <>
   <SearchBar value={search} onChange={setSearch} />
-  {data?.map(item => <ItemCard key={item.id} item={item} />)}
-</>
+  {data?.map((item) => (
+    <ItemCard key={item.id} item={item} />
+  ))}
+</>;
 ```
 
 ---
@@ -619,42 +657,44 @@ const { data } = useGetItemsQuery({ search });
 ### Available Slices
 
 **Filters Slice** (`store/slices/filtersSlice.ts`):
+
 ```typescript
 // Actions
-dispatch(setDateRange(30));           // Filter by last 30 days
-dispatch(setSeverity(['high']));      // Filter by severity
-dispatch(setAssetTypes(['domain']));  // Filter by asset type
+dispatch(setDateRange(30)); // Filter by last 30 days
+dispatch(setSeverity(["high"])); // Filter by severity
+dispatch(setAssetTypes(["domain"])); // Filter by asset type
 
 // Selector
-const filters = useAppSelector(state => state.filters);
+const filters = useAppSelector((state) => state.filters);
 ```
 
 **UI Slice** (`store/slices/uiSlice.ts`):
+
 ```typescript
 // Actions
-dispatch(toggleSidebar());                  // Show/hide sidebar
-dispatch(openModal('delete-confirm'));      // Open modal
-dispatch(closeModal());                     // Close modal
-dispatch(toggleAssetSelection('asset-1'));  // Select/deselect asset
+dispatch(toggleSidebar()); // Show/hide sidebar
+dispatch(openModal("delete-confirm")); // Open modal
+dispatch(closeModal()); // Close modal
+dispatch(toggleAssetSelection("asset-1")); // Select/deselect asset
 
 // Selectors
-const { sidebarOpen, selectedAssets } = useAppSelector(state => state.ui);
+const { sidebarOpen, selectedAssets } = useAppSelector((state) => state.ui);
 ```
 
 ### Example: Using Filters
 
 **FilterBar.tsx** - Set filters
+
 ```typescript
 const dispatch = useAppDispatch();
 
-<DatePicker
-  onChange={(days) => dispatch(setDateRange(days))}
-/>
+<DatePicker onChange={(days) => dispatch(setDateRange(days))} />;
 ```
 
 **IssueList.tsx** - Use filters in API call
+
 ```typescript
-const { dateRange, severity } = useAppSelector(state => state.filters);
+const { dateRange, severity } = useAppSelector((state) => state.filters);
 const { data } = useGetIssuesQuery({ dateRange, severity });
 ```
 
@@ -709,26 +749,31 @@ import { Box, Button, Typography, TextField } from '@mui/material';
 ## 8. Benefits of This Structure
 
 ### 1. ✅ Type Safety
+
 - TypeScript catches errors at compile time
 - Auto-complete in IDE
 - Fewer runtime errors
 
 ### 2. ✅ Automatic Caching
+
 - RTK Query caches API responses
 - Reduces unnecessary network calls
 - Automatic background refetching
 
 ### 3. ✅ Predictable State
+
 - Redux provides single source of truth
 - Time-travel debugging
 - Easy to track state changes
 
 ### 4. ✅ Code Reusability
+
 - Shared components across features
 - DRY principle
 - Consistent UI/UX
 
 ### 5. ✅ Developer Experience
+
 - Hot reload for instant feedback
 - React DevTools integration
 - Redux DevTools integration
@@ -738,12 +783,14 @@ import { Box, Button, Typography, TextField } from '@mui/material';
 ## 9. Troubleshooting
 
 **Port 3000 in use:**
+
 ```powershell
 netstat -ano | findstr :3000
 taskkill /PID <PID> /F
 ```
 
 **Module not found:**
+
 ```powershell
 Remove-Item -Recurse node_modules
 npm install
@@ -752,12 +799,14 @@ npm install
 ### ⚠️ API not working
 
 **Check backend:**
+
 ```powershell
 # Backend should be running at port 8000
 curl http://localhost:8000/api/docs/
 ```
 
 **Debug steps:**
+
 1. Check browser console for errors
 2. Check Network tab in DevTools
 3. Verify token: `console.log(localStorage.getItem('token'))`
@@ -773,19 +822,38 @@ curl http://localhost:8000/api/docs/
 
 ## Quick Reference
 
-| What | Where |
-|------|-------|
-| Add feature | `src/features/my-feature/` |
-| Add API endpoint | `src/store/services/api.ts` |
-| Add route | `src/App.tsx` |
-| Add to sidebar | `src/components/DashboardLayout.tsx` |
-| Shared components | `src/shared/components/` |
-| Redux state | `src/store/slices/` |
+| What              | Where                                              |
+| ----------------- | -------------------------------------------------- |
+| Add feature       | `src/features/my-feature/`                         |
+| Add API endpoint  | `src/store/services/api.ts`                        |
+| Add route         | `src/routes/index.tsx`                             |
+| Add to sidebar    | `src/components/DashboardLayout.tsx` (use NavLink) |
+| Shared components | `src/shared/components/`                           |
+| Redux state       | `src/store/slices/`                                |
 
 **Common imports:**
+
 ```typescript
-import { Box, Button, Typography } from '@mui/material';
-import { PageHeader, StatCard } from '../../shared/components';
-import { useGetItemsQuery } from '../../store/services/api';
-import { useAppDispatch, useAppSelector } from '../../store';
+import { Box, Button, Typography } from "@mui/material";
+import { PageHeader, StatCard } from "../../shared/components";
+import { useGetItemsQuery } from "../../store/services/api";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { useNavigate, useLocation, NavLink } from "react-router-dom";
 ```
+
+**React Router patterns:**
+
+```typescript
+// Navigate programmatically
+const navigate = useNavigate();
+navigate("/dashboard");
+
+// Check current route
+const location = useLocation();
+const isActive = location.pathname === "/dashboard";
+
+// Link component
+<NavLink to="/dashboard">Dashboard</NavLink>;
+```
+
+**For detailed routing info, see:** `docs/REACT-ROUTER-MIGRATION.md`

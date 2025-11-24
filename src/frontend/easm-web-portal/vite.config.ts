@@ -19,6 +19,7 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    host: true, // Allow external connections (needed for Docker)
     open: true,
     proxy: {
       // Proxy API requests to Django backend
@@ -30,7 +31,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "build",
+    outDir: "dist", // Vite default output directory
     sourcemap: true,
     // Optimize chunk size
     rollupOptions: {

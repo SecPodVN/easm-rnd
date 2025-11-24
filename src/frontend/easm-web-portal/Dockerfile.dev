@@ -15,8 +15,8 @@ RUN pnpm install
 # Copy source code
 COPY . .
 
-# Expose port 3000
+# Expose port 3000 (Vite dev server)
 EXPOSE 3000
 
-# Start development server
-CMD ["pnpm", "start"]
+# Start Vite development server with host flag to allow external connections
+CMD ["pnpm", "run", "dev", "--host", "0.0.0.0", "--port", "3000"]

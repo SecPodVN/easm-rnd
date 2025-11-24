@@ -43,15 +43,11 @@ easm-platform/
         │   │   ├── api/              # 🎯 CENTRAL API HUB
         │   │   │   ├── urls.py      # ⭐ Register all API routes HERE
         │   │   │   ├── views.py     # Authentication views
-        │   │   │   ├── todos/       # Todo API endpoints
-        │   │   │   │   ├── views.py
-        │   │   │   │   └── serializers.py
-        │   │   │   └── scanner/     # Scanner API endpoints
+        │   │   │   └── todos/       # Todo API endpoints
+        │   │   │       ├── views.py
+        │   │   │       └── serializers.py
         │   │   │
-        │   │   ├── todos/           # 📦 Todo domain (models & logic)
-        │   │   │   └── models.py
-        │   │   │
-        │   │   └── scanner/         # 📦 Scanner domain (MongoDB)
+        │   │   └── todos/           # 📦 Todo domain (models & logic)
         │   │       └── models.py
         │   │
         │   └── manage.py
@@ -248,8 +244,6 @@ Base URL: `http://localhost:8000/api/`
 | `/api/token/register/`    | POST                    | Register new user      | auth    |
 | `/api/todos/`             | GET, POST               | List/Create todos      | todos   |
 | `/api/todos/{id}/`        | GET, PUT, PATCH, DELETE | Todo detail            | todos   |
-| `/api/scanner/resources/` | GET, POST               | Scanner resources      | scanner |
-| `/api/scanner/rules/`     | GET, POST               | Scanner rules          | scanner |
 
 ---
 

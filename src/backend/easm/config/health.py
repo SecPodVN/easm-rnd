@@ -37,21 +37,6 @@ def health_check(request):
         health_status['status'] = 'unhealthy'
         overall_status = 503
 
-    # Check MongoDB (for scanner service)
-    try:
-        from easm.apps.scanner.db import get_mongodb
-        db = get_mongodb()
-        if db is not None:
-            # Ping MongoDB to verify connection
-            db.client.admin.command('ping')
-            health_status['components']['mongodb'] = 'healthy'
-        else:
-            health_status['components']['mongodb'] = 'not configured'
-    except Exception as e:
-        health_status['components']['mongodb'] = f'unhealthy: {str(e)}'
-        health_status['status'] = 'unhealthy'
-        overall_status = 503
-
     return JsonResponse(health_status, status=overall_status)
 
 

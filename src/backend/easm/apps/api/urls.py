@@ -22,7 +22,4 @@ urlpatterns = [
 
     # Todos router URLs
     path('', include(router.urls)),
-
-    # Scanner app URLs (delegated to scanner API module for sub-routes)
-    path('scanner/', include('easm.apps.api.scanner.urls')),
 ]

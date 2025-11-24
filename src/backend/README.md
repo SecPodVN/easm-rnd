@@ -9,7 +9,6 @@ backend/
 ├── easm/                      # Base Django application
 │   ├── apps/                  # Django applications
 │   │   ├── api/               # REST API endpoints
-│   │   ├── scanner/           # Security scanner
 │   │   └── todos/             # Todo management
 │   ├── config/                # Django project configuration
 │   │   ├── settings.py        # Django settings

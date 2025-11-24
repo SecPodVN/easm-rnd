@@ -3,6 +3,14 @@
 **Date: November 21, 2025**
 
 ---
+- API Service: how to call app and resuable code
+- API Parser : snakecase to cammel or Pascal case
+- react router
+- State management: redux, recoil, zustandmobx, scope of stayte: compoent, page
+- react validator, form input
+
+Extra notes: Rebuilding images in skaffold takes very long, if applicable just use npm start (might need to install react-scripts with `npm install react-scripts
+
 
 ## 1. Run the Frontend
 

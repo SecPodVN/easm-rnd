@@ -14,7 +14,6 @@ import { store } from './store';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('overview');
-
   const renderPage = () => {
     switch (currentPage) {
       case 'overview':

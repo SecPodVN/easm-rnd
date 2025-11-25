@@ -7,8 +7,20 @@ from typing import Dict, Optional
 
 
 def get_project_root() -> Path:
-    """Get project root directory"""
-    return Path(__file__).parent.parent.parent
+    """
+    Find project root by searching upward for .git directory.
+    This allows the CLI to work from any directory within the project.
+    """
+    current = Path.cwd()
+
+    # Search upward for project markers (.git directory)
+    for parent in [current] + list(current.parents):
+        if (parent / ".git").exists():
+            return parent
+
+    # Fallback: calculate from file location (5 levels up)
+    # src/cli/easm-cli/utils/env.py -> project root
+    return Path(__file__).parent.parent.parent.parent.parent
 
 
 def load_env_file(env_file: Optional[Path] = None) -> Dict[str, str]:
@@ -67,7 +79,7 @@ def validate_env(required_vars: list) -> bool:
             missing.append(var)
 
     if missing:
-        from cli.utils.output import print_error
+        from easm_cli.utils.output import print_error
         print_error(f"Missing required environment variables: {', '.join(missing)}")
         return False
 

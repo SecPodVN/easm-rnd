@@ -49,16 +49,16 @@ spec:
         env:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        # Use /health/ endpoint with trailing slash to avoid redirects
+        # Use /api/health/ endpoint with trailing slash to avoid redirects
         livenessProbe:
           httpGet:
-            path: /health/
+            path: /api/health/
             port: {{ .Values.service.targetPort }}
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
-            path: /health/
+            path: /api/health/
             port: {{ .Values.service.targetPort }}
           initialDelaySeconds: 10
           periodSeconds: 5

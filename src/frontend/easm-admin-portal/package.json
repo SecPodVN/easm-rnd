@@ -5,7 +5,7 @@
   "private": true,
   "packageManager": "pnpm@10.23.0",
   "dependencies": {
-    "@easm/ui-core": "file:../EASM-ui-core",
+    "@easm/ui-core": "workspace:*",
     "@mui/material": "^5.15.0",
     "@mui/icons-material": "^5.15.0",
     "react": "^18.3.1",

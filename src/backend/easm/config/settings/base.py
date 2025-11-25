@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'easm.auth',
 
     # Local apps - API Layer (Presentation)
-    'easm.api',
+    'easm.apps.api',
 
     # Local apps - Domain Apps
     'easm.example',

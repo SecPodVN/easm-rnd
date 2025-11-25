@@ -8,7 +8,7 @@ on:
       - main
     paths:
       - 'src/charts/easm-api/**'
-      - 'src/charts/easm-web-portal/**'
+      - 'src/charts/easm-user-portal/**'
       - '.github/workflows/release-chart.yml'
 
   # Trigger on version tags (v1.0.0, v1.2.3, etc.)
@@ -67,8 +67,8 @@ jobs:
         chart:
           - name: easm-api
             path: ./src/charts/easm-api
-          - name: easm-web-portal
-            path: ./src/charts/easm-web-portal
+          - name: easm-user-portal
+            path: ./src/charts/easm-user-portal
     steps:
       - name: Determine if chart should be released
         id: should_release

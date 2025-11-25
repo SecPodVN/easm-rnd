@@ -12,44 +12,44 @@ easm-platform/
 │   ├── backend/                # Django backend applications and libraries
 │   │   ├── easm/               # Main Django project (domain-driven design)
 │   │   │   ├── apps/           # 📦 All Django Applications
-│   │   │   │   ├── sample/     # 📚 Sample/Template App - FOLLOW THIS STRUCTURE ⭐
-│   │   │   │   │   ├── __init__.py
-│   │   │   │   │   ├── apps.py     # App configuration
-│   │   │   │   │   ├── models.py   # Database models
-│   │   │   │   │   ├── serializers.py # DRF serializers
-│   │   │   │   │   ├── views.py    # ViewSets and views
-│   │   │   │   │   ├── urls.py     # URL patterns
-│   │   │   │   │   ├── admin.py    # Django admin config
-│   │   │   │   │   ├── filters.py  # Custom filters for querysets
-│   │   │   │   │   ├── permissions.py # Custom permissions
-│   │   │   │   │   ├── services/   # 💼 Business logic layer
-│   │   │   │   │   │   ├── __init__.py
-│   │   │   │   │   │   └── sample_service.py # Service classes
-│   │   │   │   │   ├── tasks/      # 📋 Celery async tasks
-│   │   │   │   │   │   ├── __init__.py
-│   │   │   │   │   │   └── sample_tasks.py
-│   │   │   │   │   ├── utils/      # 🛠️ Domain-specific utilities
-│   │   │   │   │   │   ├── __init__.py
-│   │   │   │   │   │   └── helpers.py
-│   │   │   │   │   ├── management/ # Django management commands
-│   │   │   │   │   │   ├── __init__.py
-│   │   │   │   │   │   └── commands/
-│   │   │   │   │   │       ├── __init__.py
-│   │   │   │   │   │       └── seed_sample.py
-│   │   │   │   │   ├── migrations/ # Database migrations
-│   │   │   │   │   │   └── __init__.py
-│   │   │   │   │   ├── tests/      # Unit and integration tests
-│   │   │   │   │   │   ├── __init__.py
-│   │   │   │   │   │   ├── test_models.py
-│   │   │   │   │   │   ├── test_views.py
-│   │   │   │   │   │   └── test_services.py
-│   │   │   │   │   └── README.md   # 📖 Documentation for creating new apps
 │   │   │   │   ├── api/        # 🎨 API Layer - REST endpoints (Presentation)
-│   │   │   │   ├── asset/      # 📊 Asset Discovery Domain
-│   │   │   │   ├── auth/       # 🔐  Authentication (to be migrated)
+│   │   │   │   ├── asset/      # � Asset Discovery Domain
+│   │   │   │   ├── authentication/ # 🔐 Legacy Authentication (to be migrated)
 │   │   │   │   ├── core/       # 🏗️ Core Infrastructure
 │   │   │   │   └── example/    # 📚 Example Domain (legacy)
-│   │   │   ├── asset/          # � Asset Domain - models, services, tasks
+│   │   │   ├── sample/         # 📚 Sample/Template App - FOLLOW THIS STRUCTURE
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── apps.py     # App configuration
+│   │   │   │   ├── models.py   # Database models
+│   │   │   │   ├── serializers.py # DRF serializers
+│   │   │   │   ├── views.py    # ViewSets and views
+│   │   │   │   ├── urls.py     # URL patterns
+│   │   │   │   ├── admin.py    # Django admin config
+│   │   │   │   ├── filters.py  # Custom filters for querysets
+│   │   │   │   ├── permissions.py # Custom permissions
+│   │   │   │   ├── services/   # � Business logic layer
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   └── sample_service.py # Service classes
+│   │   │   │   ├── tasks/      # 📋 Celery async tasks
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   └── sample_tasks.py
+│   │   │   │   ├── utils/      # 🛠️ Domain-specific utilities
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   └── helpers.py
+│   │   │   │   ├── management/ # Django management commands
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   └── commands/
+│   │   │   │   │       ├── __init__.py
+│   │   │   │   │       └── seed_sample.py
+│   │   │   │   ├── migrations/ # Database migrations
+│   │   │   │   │   └── __init__.py
+│   │   │   │   ├── tests/      # Unit and integration tests
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   ├── test_models.py
+│   │   │   │   │   ├── test_views.py
+│   │   │   │   │   └── test_services.py
+│   │   │   │   └── README.md   # 📖 Documentation for creating new apps
+│   │   │   ├── asset/          # � Asset Discovery Domain - models, services, tasks
 │   │   │   ├── auth/           # 🔐 Authentication Domain - user management
 │   │   │   ├── core/           # 🏗️ Core Infrastructure - base models, permissions
 │   │   │   ├── common/         # 🛠️ Common Utilities - helpers, validators
@@ -70,8 +70,8 @@ easm-platform/
 │   │   ├── easm-core/          # Shared TypeScript utilities and types
 │   │   └── easm-react/         # 🧩 Shared React component library
 │   ├── charts/                 # Helm charts for Kubernetes deployment
-│   │   ├── easm-api/           # Backend API Helm chart
-│   │   └── easm-user-portal/   # User portal Helm chart
+│   │   ├── api/                # Backend API Helm chart
+│   │   └── user-portal/        # User portal Helm chart
 │   └── cli/                    # Command-line tools and utilities
 │       └── easm-cli/           # CLI for development and deployment automation
 ├── infra/                      # Infrastructure as Code (IaC)
@@ -96,9 +96,22 @@ easm-platform/
 
 **Key Design Principles:**
 - **Modularity**: Each component (backend/frontend modules) is independently maintainable
-- **Separation**: Clear boundaries between core application, CLI tools, and shared libraries
+- **Separation**: Clear boundaries between Django apps, configuration, and shared utilities
 - **Scalability**: Easy to add new modules or services without affecting existing ones
-- **Reusability**: Shared libraries (`easm-lib`, `easm-core`, `easm-react`) promote code reuse
+- **Reusability**: Shared libraries (`easm-core`, `easm-react`) and common utilities promote code reuse
+- **Django Apps Organization**: All domain applications reside under `easm/apps/` for clear namespace separation
+- **Template-First**: The `sample` app serves as a reference implementation for creating new Django apps
+
+**📚 Sample App Structure:**
+The `easm/sample/` folder demonstrates the recommended structure for all new Django applications:
+- **Core Files**: `models.py`, `serializers.py`, `views.py`, `urls.py`, `admin.py`, `apps.py`
+- **Advanced Features**: `filters.py`, `permissions.py` for custom DRF functionality
+- **Business Logic**: `services/` directory for domain-specific business logic (service layer pattern)
+- **Async Tasks**: `tasks/` directory for Celery background tasks
+- **Utilities**: `utils/` for domain-specific helper functions
+- **Management**: `management/commands/` for custom Django management commands
+- **Testing**: Dedicated `tests/` directory with organized test files
+- **Documentation**: `README.md` with guidelines for creating new apps following this pattern
 
 
 ### Frontend App Structure

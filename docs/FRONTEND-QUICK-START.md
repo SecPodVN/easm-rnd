@@ -9,7 +9,7 @@
 ### Local Development (Fast)
 
 ```powershell
-cd src/frontend/easm-web-portal
+cd src/frontend/easm-user-portal
 pnpm install --ignore-workspace
 pnpm run dev
 ```
@@ -36,7 +36,7 @@ Opens `http://localhost:3000`. Edit files → see changes instantly with Vite HM
 #### After Installing/Updating Packages:
 
 ```powershell
-cd src/frontend/easm-web-portal
+cd src/frontend/easm-user-portal
 
 # Install or update packages
 pnpm add <package-name>
@@ -62,8 +62,8 @@ pnpm install --frozen-lockfile --ignore-workspace
 #### Always Commit Both Files Together:
 
 ```powershell
-git add src/frontend/easm-web-portal/package.json
-git add src/frontend/easm-web-portal/pnpm-lock.yaml
+git add src/frontend/easm-user-portal/package.json
+git add src/frontend/easm-user-portal/pnpm-lock.yaml
 git commit -m "chore(frontend): update dependencies"
 ```
 
@@ -883,7 +883,7 @@ taskkill /PID <PID> /F
 **Module not found:**
 
 ```powershell
-cd src/frontend/easm-web-portal
+cd src/frontend/easm-user-portal
 
 # Clean reinstall
 Remove-Item -Recurse node_modules

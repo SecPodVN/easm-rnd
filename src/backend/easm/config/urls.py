@@ -14,14 +14,36 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
-# Import ViewSets from API presentation layer
-from easm.api.authentication.views import (
+# Import ViewSets from domain apps
+from easm.auth.views import (
     AuthenticationViewSet,
     UserProfileViewSet,
     UserViewSet
 )
-from easm.api.example.views import TodoViewSet
-from easm.api.views import api_root, health_check
+from easm.example.views import TodoViewSet
+
+# Create a simple API root and health check
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    """API root endpoint"""
+    return Response({
+        'auth': reverse('auth-list', request=request, format=format),
+        'users': reverse('user-list', request=request, format=format),
+        'profiles': reverse('userprofile-list', request=request, format=format),
+        'todos': reverse('todo-list', request=request, format=format),
+    })
+
+
+@api_view(['GET'])
+def health_check(request):
+    """Health check endpoint"""
+    return Response({'status': 'healthy'})
+
 
 # Create router and register all viewsets
 router = DefaultRouter()

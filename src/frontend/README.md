@@ -8,7 +8,7 @@ The frontend is organized into multiple applications, each serving a specific pu
 
 ### 📱 Applications
 
-#### **easm-web-portal** (Main User Portal)
+#### **easm-user-portal** (Main User Portal)
 The primary user-facing application for External Attack Surface Management.
 
 **Features:**
@@ -23,7 +23,7 @@ The primary user-facing application for External Attack Surface Management.
 
 ---
 
-#### **easm-web-admin** (Administrative Portal)
+#### **easm-admin-portal** (Administrative Portal)
 Administrative interface for platform management and configuration.
 
 **Features:** (Planned)
@@ -55,14 +55,14 @@ Shared component library and utilities used across all EASM applications.
 
 ```
 frontend/
-├── easm-web-portal/      # Main user portal
+├── easm-user-portal/      # Main user portal
 │   ├── src/
 │   │   ├── features/     # Feature modules
 │   │   ├── shared/       # Portal-specific shared code
 │   │   └── components/   # Portal components
 │   └── package.json
 │
-├── easm-web-admin/       # Admin portal
+├── easm-admin-portal/       # Admin portal
 │   ├── src/
 │   │   ├── features/     # Admin features
 │   │   └── shared/       # Admin-specific shared code
@@ -79,18 +79,18 @@ frontend/
 
 ## Development Workflow
 
-### Working on easm-web-portal
+### Working on easm-user-portal
 
 ```bash
-cd easm-web-portal
+cd easm-user-portal
 pnpm install
 pnpm start
 ```
 
-### Working on easm-web-admin
+### Working on easm-admin-portal
 
 ```bash
-cd easm-web-admin
+cd easm-admin-portal
 pnpm install
 pnpm start
 ```
@@ -106,14 +106,14 @@ pnpm run dev  # Watch mode for development
 ## Shared Components Strategy
 
 ### App-Specific Shared Components
-Each application (easm-web-portal, easm-web-admin) has its own `shared/` directory for components that are:
+Each application (easm-user-portal, easm-admin-portal) has its own `shared/` directory for components that are:
 - Specific to that application's domain
 - Used across multiple features within that app
 - Not needed by other EASM applications
 
 Example:
-- `easm-web-portal/src/shared/components/` - Components specific to portal features
-- `easm-web-admin/src/shared/components/` - Components specific to admin features
+- `easm-user-portal/src/shared/components/` - Components specific to portal features
+- `easm-admin-portal/src/shared/components/` - Components specific to admin features
 
 ### Cross-Application Shared Components
 Components used by multiple applications should be placed in `easm-react`:
@@ -139,8 +139,8 @@ Components used by multiple applications should be placed in `easm-react`:
 
 Each application manages its own dependencies independently:
 
-- `easm-web-portal/package.json` - Portal dependencies
-- `easm-web-admin/package.json` - Admin dependencies
+- `easm-user-portal/package.json` - Portal dependencies
+- `easm-admin-portal/package.json` - Admin dependencies
 - `easm-react/package.json` - Shared library dependencies
 
 Applications can reference `easm-react` using:

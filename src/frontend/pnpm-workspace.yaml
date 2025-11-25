@@ -1,4 +1,4 @@
 packages:
-  - 'easm-web-portal'
-  - 'easm-web-admin'
+  - 'easm-user-portal'
+  - 'easm-admin-portal'
   - 'easm-react'

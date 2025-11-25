@@ -39,7 +39,7 @@ This guide will walk you through working with the EASM Platform React frontend. 
 easm-platform/
 └── src/
     └── frontend/
-        ├── easm-web-portal/              # 🎯 Main User Portal
+        ├── easm-user-portal/              # 🎯 Main User Portal
         │   ├── public/               # Static assets
         │   │   ├── index.html
         │   │   └── manifest.json
@@ -72,7 +72,7 @@ easm-platform/
         │   ├── package.json          # Dependencies
         │   └── tsconfig.json         # TypeScript config
         │
-        ├── easm-web-admin/               # 📦 Admin Portal (future)
+        ├── easm-admin-portal/               # 📦 Admin Portal (future)
         └── easm-react/             # 📚 Shared UI library
 ```
 
@@ -149,7 +149,7 @@ User sees update ← Component Re-renders ← Cache Updated ← Response
 ### Detailed Directory Structure
 
 ```
-src/frontend/easm-web-portal/
+src/frontend/easm-user-portal/
 ├── public/
 │   ├── index.html              # HTML template
 │   ├── manifest.json           # PWA manifest
@@ -266,7 +266,7 @@ src/frontend/easm-web-portal/
 
 ```powershell
 # Navigate to frontend directory
-cd src/frontend/easm-web-portal
+cd src/frontend/easm-user-portal
 
 # Install dependencies
 npm install
@@ -289,7 +289,7 @@ npm run format     # Format code with Prettier
 
 ### Environment Variables
 
-Create `.env` file in `easm-web-portal/` directory:
+Create `.env` file in `easm-user-portal/` directory:
 
 ```bash
 REACT_APP_API_URL=http://localhost:8000/api

@@ -12,8 +12,8 @@ The EASM Platform is built using modern, production-ready technologies across mu
 ┌─────────────────────────────────────────────────────────────────┐
 │                 FRONTEND LAYER (Monorepo)                        │
 │  src/frontend/                                                   │
-│  ├── easm-web-portal/    (React 19 + TypeScript 5.7)               │
-│  ├── easm-web-admin/     (React 19 + TypeScript 5.7)               │
+│  ├── easm-user-portal/    (React 19 + TypeScript 5.7)               │
+│  ├── easm-admin-portal/     (React 19 + TypeScript 5.7)               │
 │  └── easm-react/   (Shared UI Library)                        │
 │                                                                  │
 │  Material-UI 7 + Recharts + Vite 6                             │
@@ -59,13 +59,13 @@ easm-platform/
 │   │   └── easm-core/          # Shared backend libraries
 │   │
 │   ├── frontend/               # Frontend monorepo
-│   │   ├── easm-web-portal/        # User-facing portal
-│   │   ├── easm-web-admin/         # Admin dashboard (under development)
+│   │   ├── easm-user-portal/        # User-facing portal
+│   │   ├── easm-admin-portal/         # Admin dashboard (under development)
 │   │   └── easm-react/       # Shared React components
 │   │
 │   ├── charts/                 # Helm charts for deployment
 │   │   ├── easm-api/           # Backend API chart
-│   │   └── easm-web-portal/    # Frontend portal chart
+│   │   └── easm-user-portal/    # Frontend portal chart
 │   │
 │   └── cli/                    # CLI tools
 │       └── easm-cli/           # Unified CLI (easm.py)

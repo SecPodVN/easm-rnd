@@ -1,6 +1,0 @@
-apiVersion: v2
-name: easm-web-portal
-description: A Helm chart for EASM React Frontend
-type: application
-version: 1.0.0-beta.0
-appVersion: "1.0.0"

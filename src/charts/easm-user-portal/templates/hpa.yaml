@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "easm-frontend.fullname" . }}
+  name: {{ include "easm-user-portal.fullname" . }}
   labels:
-    {{- include "easm-frontend.labels" . | nindent 4 }}
+    {{- include "easm-user-portal.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "easm-frontend.fullname" . }}
+    name: {{ include "easm-user-portal.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

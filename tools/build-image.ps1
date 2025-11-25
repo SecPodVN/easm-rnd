@@ -596,7 +596,7 @@ if ($Image -eq 'all' -or $Image -eq 'frontend') {
 
     $imagesToBuild += @{
         Name = 'easm-frontend'
-        Context = 'src/frontend/easm-web-portal'
+        Context = 'src/frontend/easm-user-portal'
         Dockerfile = 'Dockerfile'
         FullName = "easm-frontend:${frontendVersion}"
         RegistryFullName = "${Registry}/${Owner}/images/easm-frontend:${frontendVersion}"

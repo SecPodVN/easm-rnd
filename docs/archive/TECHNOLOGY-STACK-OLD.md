@@ -65,7 +65,7 @@ easm-platform/
 │   │
 │   ├── charts/                 # Helm charts for deployment
 │   │   ├── easm-api/           # Backend API chart
-│   │   └── easm-web-portal/    # Frontend portal chart
+│   │   └── easm-user-portal/    # Frontend portal chart
 │   │
 │   └── cli/                    # CLI tools
 │       └── easm-cli/           # Unified CLI (easm.py)

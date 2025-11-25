@@ -156,7 +156,7 @@ Sidebar automatically highlights active page based on URL
 ### Installation
 
 ```bash
-cd src/frontend/easm-web-portal
+cd src/frontend/easm-user-portal
 npm install  # All packages installed successfully ✅
 ```
 
@@ -369,7 +369,7 @@ Now that React Router is implemented, we can easily add:
 ### 1. Install Dependencies
 
 ```bash
-cd src/frontend/easm-web-portal
+cd src/frontend/easm-user-portal
 npm install
 ```
 

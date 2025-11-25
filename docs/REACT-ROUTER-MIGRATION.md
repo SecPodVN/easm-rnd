@@ -200,7 +200,7 @@ http://localhost:3000/assets
 ### Start Development Server
 
 ```bash
-cd src/frontend/easm-web-portal
+cd src/frontend/easm-user-portal
 npm start
 ```
 

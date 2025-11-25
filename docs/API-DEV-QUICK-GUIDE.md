@@ -295,7 +295,7 @@ src/backend/easm/
 │   │   ├── services.py             # Auth logic
 │   │   └── permissions.py          # Custom permissions
 │   │
-│   ├── asset_discovery/            # 🔍 Asset Discovery Domain
+│   ├── asset/            # 🔍 Asset Discovery Domain
 │   │   ├── models.py               # Scan, Asset, Target
 │   │   ├── services.py             # Orchestration logic
 │   │   ├── tasks.py                # Celery workers
@@ -346,7 +346,7 @@ src/backend/easm/
 │       ├── pagination.py           # Custom pagination
 │       ├── filters.py              # Common filters
 │       │
-│       ├── asset_discovery/        # Asset Discovery API
+│       ├── asset/        # Asset Discovery API
 │       │   ├── serializers.py
 │       │   ├── views.py
 │       │   └── urls.py

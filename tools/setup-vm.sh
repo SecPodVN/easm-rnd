@@ -21,32 +21,22 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Default values
-SKIP_SYSTEM_UPDATE=false
-SKIP_MICROK8S=false
 METALLB_RANGE="192.168.1.200-192.168.1.210"
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --skip-system-update)
-            SKIP_SYSTEM_UPDATE=true
-            shift
-            ;;
-        --skip-microk8s)
-            SKIP_MICROK8S=true
-            shift
-            ;;
         --metallb-range)
             METALLB_RANGE="$2"
             shift 2
             ;;
-        --help)
+        --help|-h)
             grep '^#' "$0" | grep -v '#!/bin/bash' | sed 's/^# //'
             exit 0
             ;;
         *)
             echo -e "${RED}Unknown option: $1${NC}"
-            echo "Use --help for usage information"
+            echo "Use -h or --help for usage information"
             exit 1
             ;;
     esac
@@ -54,31 +44,31 @@ done
 
 # Functions
 print_header() {
-    echo -e "\n${BLUE}========================================${NC}"
-    echo -e "${BLUE}$1${NC}"
-    echo -e "${BLUE}========================================${NC}\n"
+    echo -e "\n========================================"
+    echo -e "$1"
+    echo -e "========================================\n"
 }
 
 print_success() {
-    echo -e "${GREEN}✓ $1${NC}"
+    echo -e "\n${GREEN}$1${NC}\n"
 }
 
 print_warning() {
-    echo -e "${YELLOW}⚠ $1${NC}"
+    echo -e "\n${YELLOW}$1${NC}\n"
 }
 
 print_error() {
-    echo -e "${RED}✗ $1${NC}"
+    echo -e "\n${RED}$1${NC}\n"
 }
 
 print_info() {
-    echo -e "${BLUE}ℹ $1${NC}"
+    echo -e "\n$1${NC}\n"
 }
 
 check_root() {
     if [[ $EUID -eq 0 ]]; then
-        print_error "This script should NOT be run as root (don't use sudo)"
-        print_info "The script will ask for sudo password when needed"
+        print_warning "This script should NOT be run as root."
+        print_info "The script will ask for sudo password when needed."
         exit 1
     fi
 }
@@ -104,16 +94,17 @@ check_ubuntu_version() {
 
 # Main installation functions
 
+system_update() {
+    print_header "Updating System Packages"
+
+    print_info "Updating system..."
+    sudo apt update && sudo apt upgrade -y
+
+    print_success "System packages updated"
+}
+
 install_basic_tools() {
     print_header "Installing Basic Tools"
-
-    if [[ "$SKIP_SYSTEM_UPDATE" = false ]]; then
-        print_info "Updating system packages..."
-        sudo apt update && sudo apt upgrade -y
-        print_success "System updated"
-    else
-        print_info "Skipping system update (--skip-system-update flag)"
-    fi
 
     print_info "Installing essential packages..."
     sudo apt install -y \
@@ -136,11 +127,6 @@ install_basic_tools() {
 }
 
 install_microk8s() {
-    if [[ "$SKIP_MICROK8S" = true ]]; then
-        print_info "Skipping MicroK8s installation (--skip-microk8s flag)"
-        return
-    fi
-
     print_header "Installing MicroK8s"
 
     # Check if already installed
@@ -155,29 +141,24 @@ install_microk8s() {
         fi
     fi
 
-    print_info "Installing MicroK8s (stable channel 1.34)..."
+    print_info "Installing MicroK8s..."
     sudo snap install microk8s --classic --channel=1.34/stable
 
     print_info "Configuring UFW firewall..."
     sudo ufw allow in on cni0 && sudo ufw allow out on cni0
     sudo ufw default allow routed
-    print_success "Firewall configured"
 
     print_info "Waiting for MicroK8s to be ready..."
     sudo microk8s status --wait-ready
 
     print_info "Adding user to microk8s group..."
-    sudo usermod -aG microk8s $USER
-    sudo chown -R $USER ~/.kube
+    sudo usermod -a -G microk8s $USER
+    newgrp microk8s
 
     print_success "MicroK8s installed"
 }
 
 configure_microk8s() {
-    if [[ "$SKIP_MICROK8S" = true ]]; then
-        return
-    fi
-
     print_header "Configuring MicroK8s Add-ons"
 
     print_info "Enabling required add-ons..."
@@ -191,10 +172,6 @@ configure_microk8s() {
 }
 
 setup_kubectl_alias() {
-    if [[ "$SKIP_MICROK8S" = true ]]; then
-        return
-    fi
-
     print_header "Setting up kubectl alias"
 
     print_info "Creating kubectl alias..."
@@ -220,30 +197,26 @@ display_summary() {
     echo ""
     print_header "Next Steps"
 
-    echo "1. ${YELLOW}Apply group changes (required for microk8s):${NC}"
-    echo "   newgrp microk8s"
-    echo "   ${BLUE}Or logout and login again${NC}"
-    echo ""
-
-    echo "2. ${YELLOW}Verify MicroK8s status:${NC}"
+    echo "2. Verify MicroK8s status:"
     echo "   microk8s status"
     echo "   kubectl get nodes"
     echo "   kubectl get pods --all-namespaces"
     echo ""
 
-    echo "3. ${YELLOW}Deploy EASM platform:${NC}"
+    echo "3. Deploy EASM platform:"
     echo "   See docs/PROXMOX-VM-SETUP.md for deployment instructions"
     echo ""
 
-    print_success "All dependencies installed successfully! 🎉"
+    print_success "All dependencies installed successfully!"
 }
 
 # Main execution
 main() {
-    print_header "EASM Platform - VM Setup Script"
+    print_header "EASM Platform - Setup Script"
 
     check_root
     check_ubuntu_version
+    system_update
     install_basic_tools
     install_microk8s
     configure_microk8s

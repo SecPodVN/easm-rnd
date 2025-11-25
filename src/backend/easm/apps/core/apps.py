@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 
-class ApiConfig(AppConfig):
+class CoreConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'easm.apps.api'
-    verbose_name = 'API Layer'
+    name = 'easm.apps.core'
+    verbose_name = 'Core'

@@ -26,11 +26,25 @@ def api_root(request):
                 'token': '/api/token/',
                 'token_refresh': '/api/token/refresh/',
                 'register': '/api/auth/register/',
-                'profile': '/api/auth/profile/',
+                'login': '/api/auth/login/',
+                'me': '/api/auth/me/',
+                'change_password': '/api/auth/change-password/',
+                'password_reset': '/api/auth/password-reset/',
+                'password_reset_confirm': '/api/auth/password-reset/confirm/',
+            },
+            'profile': {
+                'detail': '/api/profile/{id}/',
+            },
+            'account': {
+                'detail': '/api/account/{id}/',
             },
             'example': {
                 'list': '/api/example/',
                 'detail': '/api/example/{id}/',
+                'stats': '/api/example/stats/',
+                'overdue': '/api/example/overdue/',
+                'complete': '/api/example/{id}/complete/',
+                'bulk_update_priority': '/api/example/bulk_update_priority/',
             },
             'documentation': {
                 'swagger': '/api/docs/',
@@ -38,7 +52,7 @@ def api_root(request):
                 'schema': '/api/schema/',
             },
         },
-        'description': 'External Attack Surface Management API',
+        'description': 'External Attack Surface Management API - All endpoints use ViewSet-based routing',
     })
 
 

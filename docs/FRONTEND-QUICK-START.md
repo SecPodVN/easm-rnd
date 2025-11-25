@@ -1,28 +1,109 @@
 # Frontend Development Guide
 
-**Date: November 21, 2025**
+**Date: November 24, 2025**
 
 ---
 
-- API Service: how to call app and resuable code
-- API Parser : snakecase to cammel or Pascal case
-- react router
-- State management: redux, recoil, zustandmobx, scope of stayte: compoent, page
-- react validator, form input
-
-Extra notes: Rebuilding images in skaffold takes very long, if applicable just use npm start (might need to install react-scripts with `npm install react-scripts
-
 ## 1. Run the Frontend
+
+### Local Development (Fast)
 
 ```powershell
 cd src/frontend/easm-web-portal
-npm install
-npm start
+pnpm install --ignore-workspace
+pnpm run dev
 ```
 
-Opens `http://localhost:3000`. Edit files → see changes instantly.
+Opens `http://localhost:3000`. Edit files → see changes instantly with Vite HMR.
 
-**Stack:** React 19 + TypeScript + Material-UI + Redux Toolkit + RTK Query + React Router v7
+### Docker/Skaffold (Full Stack)
+
+```powershell
+# Run entire application stack (frontend + backend + databases)
+.\skaffold.ps1
+```
+
+**Stack:** React 19 + TypeScript + Vite + Material-UI + Redux Toolkit + RTK Query + React Router v7 + pnpm
+
+---
+
+## 1.1. Package Management with pnpm
+
+### ⚠️ Critical: Lockfile Consistency
+
+**Always ensure `pnpm-lock.yaml` is consistent with `package.json`!**
+
+#### After Installing/Updating Packages:
+
+```powershell
+cd src/frontend/easm-web-portal
+
+# Install or update packages
+pnpm add <package-name>
+# or
+pnpm remove <package-name>
+# or
+pnpm update <package-name>
+
+# Always regenerate lockfile
+pnpm install --ignore-workspace
+```
+
+#### Before Committing:
+
+```powershell
+# Verify lockfile consistency (CI/CD check)
+pnpm install --frozen-lockfile --ignore-workspace
+```
+
+- ✅ **Success** → Lockfile matches package.json, safe to commit
+- ❌ **Fails** → Run `pnpm install --ignore-workspace` to regenerate
+
+#### Always Commit Both Files Together:
+
+```powershell
+git add src/frontend/easm-web-portal/package.json
+git add src/frontend/easm-web-portal/pnpm-lock.yaml
+git commit -m "chore(frontend): update dependencies"
+```
+
+#### Why This Matters:
+
+- 🔒 **Deterministic builds** - Same versions across all environments
+- 🚀 **CI/CD reliability** - Builds won't fail due to mismatched versions
+- 🐛 **Bug prevention** - Avoid "works on my machine" issues
+- ⚡ **Fast installs** - pnpm uses content-addressable storage (faster than npm)
+
+#### Common Commands:
+
+```powershell
+# Install dependencies (local dev)
+pnpm install --ignore-workspace
+
+# Install with frozen lockfile (CI/CD)
+pnpm install --frozen-lockfile --ignore-workspace
+
+# Add new dependency
+pnpm add <package>
+
+# Add dev dependency
+pnpm add -D <package>
+
+# Remove dependency
+pnpm remove <package>
+
+# Update specific package
+pnpm update <package>
+
+# Update all packages
+pnpm update
+
+# List installed packages
+pnpm list --depth=0
+
+# Check for outdated packages
+pnpm outdated
+```
 
 ---
 
@@ -460,8 +541,12 @@ taskkill /PID <PID> /F
 ### ⚠️ Module not found
 
 ```powershell
+# Remove node_modules and reinstall
 Remove-Item -Recurse node_modules
-npm install
+pnpm install --ignore-workspace
+
+# Verify lockfile consistency
+pnpm install --frozen-lockfile --ignore-workspace
 ```
 
 ### ⚠️ API not working
@@ -479,12 +564,15 @@ curl http://localhost:8000/api/docs/
 2. Check Network tab in DevTools
 3. Verify token: `console.log(localStorage.getItem('token'))`
 4. Check Redux state: Use Redux DevTools
+5. Check Vite proxy configuration in `vite.config.ts`
 
-### ⚠️ Hot reload not working
+### ⚠️ Hot reload not working (Vite HMR)
 
 1. Save file (Ctrl+S)
-2. Check console for compilation errors
-3. Restart dev server: Ctrl+C → `npm start`
+2. Check terminal for Vite compilation errors
+3. Check browser console for HMR errors
+4. Restart dev server: Ctrl+C → `pnpm run dev`
+5. Clear browser cache if needed (Ctrl+Shift+R)
 
 ---
 
@@ -525,6 +613,7 @@ return (
 <Box sx={{ p: 3 }}>
 <PageHeader title="Notes" />
 {data?.map(note => (
+
 <div key={note.id}>{note.title}</div>
 ))}
 </Box>
@@ -785,6 +874,8 @@ import { Box, Button, Typography, TextField } from '@mui/material';
 **Port 3000 in use:**
 
 ```powershell
+# Vite will automatically try the next available port (3001, 3002, etc.)
+# Or manually kill the process:
 netstat -ano | findstr :3000
 taskkill /PID <PID> /F
 ```
@@ -792,8 +883,24 @@ taskkill /PID <PID> /F
 **Module not found:**
 
 ```powershell
+cd src/frontend/easm-web-portal
+
+# Clean reinstall
 Remove-Item -Recurse node_modules
-npm install
+pnpm install --ignore-workspace
+
+# Verify lockfile consistency
+pnpm install --frozen-lockfile --ignore-workspace
+```
+
+**Lockfile out of sync:**
+
+```powershell
+# Error: "Lockfile is out of date"
+pnpm install --ignore-workspace
+
+# Commit both files
+git add package.json pnpm-lock.yaml
 ```
 
 ### ⚠️ API not working
@@ -808,15 +915,29 @@ curl http://localhost:8000/api/docs/
 **Debug steps:**
 
 1. Check browser console for errors
-2. Check Network tab in DevTools
-3. Verify token: `console.log(localStorage.getItem('token'))`
-4. Check Redux state: Use Redux DevTools
+2. Check Network tab in DevTools → Look for `/api/` requests
+3. Verify Vite proxy in `vite.config.ts` (should proxy `/api` to `http://localhost:8000`)
+4. Verify token: `console.log(localStorage.getItem('token'))`
+5. Check Redux state: Use Redux DevTools extension
 
-### ⚠️ Hot reload not working
+### ⚠️ Hot reload not working (Vite HMR)
 
 1. Save file (Ctrl+S)
-2. Check console for compilation errors
-3. Restart dev server: Ctrl+C → `npm start`
+2. Check Vite terminal output for compilation errors
+3. Check browser console for HMR connection errors
+4. Restart dev server: Ctrl+C → `pnpm run dev`
+5. Hard refresh browser: Ctrl+Shift+R
+6. Clear Vite cache: Remove `.vite` folder and restart
+
+**Build fails:**
+
+```powershell
+# Check TypeScript errors
+pnpm run build
+
+# If errors about unused variables, they're just warnings
+# Check tsconfig.json: noUnusedLocals and noUnusedParameters are set to false
+```
 
 ---
 

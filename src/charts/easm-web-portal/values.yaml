@@ -1,11 +1,11 @@
-# Default values for easm-frontend.
+# Default values for easm-web-portal.
 replicaCount: 1
 
 # Application version
 appVersion: "0.1.0"
 
 image:
-  repository: easm-frontend
+  repository: easm-web-portal
   pullPolicy: IfNotPresent
   tag: "latest"
 
@@ -36,7 +36,7 @@ ingress:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: /
   hosts:
-    - host: easm-frontend.local
+    - host: easm-web-portal.local
       paths:
         - path: /
           pathType: Prefix

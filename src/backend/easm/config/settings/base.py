@@ -35,14 +35,15 @@ INSTALLED_APPS = [
     'django_filters',
 
     # Local apps - Core & Infrastructure
-    'easm.apps.core.apps.CoreConfig',
-    'easm.apps.authentication.apps.AuthenticationConfig',
+    'easm.core',
+    'easm.auth',
 
     # Local apps - API Layer (Presentation)
-    'easm.apps.api.apps.ApiConfig',
+    'easm.api',
 
     # Local apps - Domain Apps
-    'easm.apps.example.apps.ExampleConfig',
+    'easm.example',
+    'easm.asset',
 ]
 
 MIDDLEWARE = [
@@ -147,10 +148,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    'DEFAULT_PAGINATION_CLASS': 'easm.apps.core.pagination.StandardResultsSetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'easm.core.pagination.StandardResultsSetPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'EXCEPTION_HANDLER': 'easm.apps.core.exceptions.custom_exception_handler',
+    'EXCEPTION_HANDLER': 'easm.core.exceptions.custom_exception_handler',
 }
 
 # JWT Settings

@@ -3,7 +3,7 @@ Management command to create a superuser with profile
 """
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from easm.apps.authentication.models import UserProfile
+from easm.auth.models import UserProfile
 
 
 class Command(BaseCommand):

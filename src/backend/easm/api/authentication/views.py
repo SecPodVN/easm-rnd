@@ -2,7 +2,7 @@
 Authentication API Views
 Re-exports ViewSets from authentication domain layer
 """
-from easm.apps.authentication.views import (
+from easm.auth.views import (
     AuthenticationViewSet,
     UserProfileViewSet,
     UserViewSet

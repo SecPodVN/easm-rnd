@@ -2,7 +2,7 @@
 Authentication API Serializers
 Re-exports from domain layer
 """
-from easm.apps.authentication.serializers import (
+from easm.auth.serializers import (
     UserSerializer,
     UserRegistrationSerializer,
     LoginSerializer,

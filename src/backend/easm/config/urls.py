@@ -15,13 +15,13 @@ from drf_spectacular.views import (
 )
 
 # Import ViewSets from API presentation layer
-from easm.apps.api.authentication.views import (
+from easm.api.authentication.views import (
     AuthenticationViewSet,
     UserProfileViewSet,
     UserViewSet
 )
-from easm.apps.api.example.views import TodoViewSet
-from easm.apps.api.views import api_root, health_check
+from easm.api.example.views import TodoViewSet
+from easm.api.views import api_root, health_check
 
 # Create router and register all viewsets
 router = DefaultRouter()

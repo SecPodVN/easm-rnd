@@ -3,7 +3,7 @@ Serializers for the Example domain API.
 Presentation layer - transforms domain models to/from JSON.
 """
 from rest_framework import serializers
-from easm.apps.example.models import Todo
+from easm.example.models import Todo
 from easm.common.enums import TodoStatus, TodoPriority
 
 

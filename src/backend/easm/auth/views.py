@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth.models import User
 from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiResponse, extend_schema_view
-from easm.apps.core.permissions import IsOwner
+from easm.core.permissions import IsOwner
 from .models import UserProfile
 from .serializers import (
     UserSerializer,

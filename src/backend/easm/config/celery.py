@@ -24,7 +24,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     # Example periodic task
     # 'example-task': {
-    #     'task': 'easm.apps.example.tasks.example_periodic_task',
+    #     'task': 'easm.example.tasks.example_periodic_task',
     #     'schedule': crontab(minute=0, hour='*/1'),  # Every hour
     # },
 }

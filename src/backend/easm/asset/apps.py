@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 
-class CoreConfig(AppConfig):
+class AssetConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'easm.core'
-    verbose_name = 'Core'
+    name = 'easm.asset'
+    verbose_name = 'Asset'

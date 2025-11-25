@@ -1,4 +1,4 @@
-# Asset Discovery App
+# Asset App
 
 **Domain**: External Attack Surface Management (EASM) - Asset Discovery Module
 
@@ -8,10 +8,10 @@ This Django app handles the core asset discovery functionality for the EASM plat
 
 ## 📁 Folder Structure
 
-**Domain App** (`apps/asset_discovery/`) - Business Logic Only:
+**Domain App** (`asset/`) - Business Logic Only:
 
 ```
-asset_discovery/
+asset/
 ├── __init__.py
 ├── apps.py                     # Django app configuration
 ├── models.py                   # ⭐ Core models (Seed, Asset, Service, Certificate, etc.)
@@ -52,10 +52,10 @@ asset_discovery/
         # - import_assets.py      # Import assets from external sources
 ```
 
-**API Layer** (`apps/api/asset_discovery/`) - Presentation Only:
+**API Layer** (`apps/api/asset/`) - Presentation Only:
 
 ```
-apps/api/asset_discovery/
+apps/api/asset/
 ├── __init__.py
 ├── views.py                    # ViewSets for REST API endpoints
 └── serializers.py              # DRF Serializers for models
@@ -223,10 +223,10 @@ class SubfinderEngine(BaseDiscoveryEngine):
 
 ## 🌐 API Layer
 
-API endpoints are defined in `apps/api/asset_discovery/` (presentation layer only):
+API endpoints are defined in `apps/api/asset/` (presentation layer only):
 
 ```
-apps/api/asset_discovery/
+apps/api/asset/
 ├── __init__.py
 ├── views.py            # ViewSets (SeedViewSet, AssetViewSet, ServiceViewSet)
 └── serializers.py      # DRF Serializers
@@ -254,7 +254,7 @@ from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 from apps.api.core.filters import BaseFilter  # Shared from core
 from apps.api.core.permissions import IsOrgMember  # Shared from core
-from apps.asset_discovery.models import Asset
+from apps.asset.models import Asset
 from .serializers import AssetSerializer
 
 class AssetViewSet(viewsets.ModelViewSet):
@@ -293,14 +293,14 @@ tests/
 
 ### 1. Configure the App
 
-**Edit `apps/asset_discovery/apps.py`**:
+**Edit `asset/apps.py`**:
 
 ```python
 from django.apps import AppConfig
 
-class AssetDiscoveryConfig(AppConfig):
+class AssetConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'easm.apps.asset_discovery'
+    name = 'easm.asset'
     verbose_name = 'Asset Discovery'
 ```
 
@@ -309,7 +309,7 @@ class AssetDiscoveryConfig(AppConfig):
 ```python
 INSTALLED_APPS = [
     # ...
-    'easm.apps.asset_discovery.apps.AssetDiscoveryConfig',
+    'easm.asset.apps.AssetConfig',
 ]
 ```
 
@@ -327,7 +327,7 @@ Edit `models.py` to define:
 
 ```bash
 cd src/backend/easm
-poetry run python manage.py makemigrations asset_discovery
+poetry run python manage.py makemigrations asset
 poetry run python manage.py migrate
 ```
 
@@ -348,7 +348,7 @@ Create tool integrations in `engines/`:
 
 ### 6. Create API Endpoints
 
-Edit `apps/api/asset_discovery/`:
+Edit `apps/api/asset/`:
 
 - `serializers.py` - Define serializers
 - `views.py` - Create ViewSets

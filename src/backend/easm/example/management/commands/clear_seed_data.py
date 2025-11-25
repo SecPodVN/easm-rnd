@@ -3,7 +3,7 @@ Clear all seed data from database
 """
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from easm.apps.example.models import Todo
+from easm.example.models import Todo
 
 
 class Command(BaseCommand):

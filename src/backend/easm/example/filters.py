@@ -1,9 +1,9 @@
 """
-Filters for the Example domain API.
+Filters for the Example domain.
 """
 from django_filters import rest_framework as filters
-from easm.apps.example.models import Todo
-from easm.apps.core.filters import BaseFilterSet
+from .models import Todo
+from easm.core.filters import BaseFilterSet
 
 
 class TodoFilter(BaseFilterSet):

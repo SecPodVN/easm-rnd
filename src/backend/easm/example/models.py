@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from easm.apps.core.models import TimeStampedModel
+from easm.core.models import TimeStampedModel
 from easm.common.enums import TodoStatus, TodoPriority
 
 

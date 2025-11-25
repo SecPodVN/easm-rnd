@@ -9,37 +9,52 @@ This project follows a modular monorepo architecture inspired by and customized 
 ```
 easm-platform/
 ├── src/                        # Source code directory
-│   ├── backend/                # Contain all backend application/lib
-│   │   ├── easm/               # Base Django application
-│   │   │   ├── apps/           # Django applications
-│   │   │   ├── config/         # Project configuration
-│   │   │   ├── pyproject.toml  # Poetry dependencies
-│   │   │   └── manage.py       # Manage command inside app
-│   │   └── easm-core/          # Core, Shared libraries and utilities
-│   ├── frontend/               # Contain all frontend application/lib
-│   │   ├── easm-web-portal/    # Portal interface
+│   ├── backend/                # Django backend applications and libraries
+│   │   ├── easm/               # Main Django project (domain-driven design)
+│   │   │   ├── api/            # 🎨 API Layer - REST endpoints (Presentation)
+│   │   │   ├── asset/          # 📦 Asset Discovery Domain - models, services, tasks
+│   │   │   ├── auth/           # 🔐 Authentication Domain - user management
+│   │   │   ├── core/           # 🏗️ Core Infrastructure - base models, permissions
+│   │   │   ├── sample/         # 📚 Sample/Template App - reference implementation
+│   │   │   ├── common/         # 🛠️ Common Utilities - helpers, validators
+│   │   │   ├── config/         # ⚙️ Django Configuration - settings, URLs, WSGI
+│   │   │   ├── pyproject.toml  # Poetry dependencies and project metadata
+│   │   │   └── manage.py       # Django management command entry point
+│   │   └── easm-core/          # Shared Python libraries across backend projects
+│   ├── frontend/               # React TypeScript frontend applications
+│   │   ├── easm-web-portal/    # 🌐 Main user-facing portal interface
 │   │   │   ├── src/
+│   │   │   │   ├── features/   # Domain-specific feature modules
+│   │   │   │   └── shared/     # App-specific shared components
 │   │   │   ├── public/
 │   │   │   ├── package.json
 │   │   │   └── tsconfig.json
-│   │   ├── easm-web-admin/     # Admin dashboard
-│   │   ├── easm-core/          # Shared core utilities
-│   │   └── easm-react/         # React components library
-│   ├── charts/                 # Helm charts for deployment
-│   │   ├── easm-api/           # Backend API Helm chart
-│   │   └── easm-web-portal/    # Web portal Helm chart
-│   └── cli/                    # CLI tools and commands
-│       └── easm-cli/           # Command-line interface for EASM platform
-├── infra/                      # Kubernetes & deployment configs
-│   ├── helm/                   # Helm charts
-│   ├── docker/                 # Dockerfiles
-│   └── k8s/                    # Kubernetes manifests
-├── docs/                       # Project documentation
-├── tests/                      # Integration and E2E tests
-├── tools/                      # Development tools and scripts
+│   │   ├── easm-web-admin/     # 🛡️ Administrative dashboard (in development)
+│   │   │   └── src/
+│   │   ├── easm-core/          # Shared TypeScript utilities and types
+│   │   └── easm-react/         # 🧩 Shared React component library
+│   ├── charts/                 # Helm charts for Kubernetes deployment
+│   │   ├── api/                # Backend API Helm chart (easm.api)
+│   │   └── web-portal/         # Web portal Helm chart (easm.web-portal)
+│   └── cli/                    # Command-line tools and utilities
+│       └── easm-cli/           # CLI for development and deployment automation
+├── infra/                      # Infrastructure as Code (IaC)
+│   ├── helm/                   # Additional Helm charts and values
+│   ├── docker/                 # Custom Dockerfiles and build contexts
+│   └── k8s/                    # Raw Kubernetes manifests
+├── docs/                       # Comprehensive project documentation
+│   ├── API-DOCUMENTATION.md    # API reference and examples
+│   ├── DEPLOYMENT.md           # Deployment guides
+│   └── GIT-WORKFLOW.md         # Git workflow and conventions
+├── tests/                      # Integration and end-to-end tests
+├── tools/                      # Development scripts and utilities
+│   ├── Makefile                # Build automation commands
+│   ├── delete-package.ps1      # GHCR package management script
+│   └── verify-setup.ps1        # Environment verification script
 ├── .github/
-│   └── workflows/              # GitHub Actions
-├── skaffold.yaml               # Skaffold configuration
+│   └── workflows/              # CI/CD pipelines (GitHub Actions)
+├── skaffold.yaml               # Skaffold configuration for local K8s development
+├── docker-compose.yml          # Docker Compose for local development
 └── README.md
 ```
 

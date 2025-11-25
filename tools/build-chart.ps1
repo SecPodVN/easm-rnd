@@ -23,7 +23,7 @@
     OCI Registry URL (default: ghcr.io, or GHCR_REGISTRY from .env)
 
 .PARAMETER Owner
-    GitHub repository owner (default: secpodvn, or GHCR_OWNER from .env)
+    GitHub repository owner (default: SecPod-Git, or GHCR_OWNER from .env)
 
 .PARAMETER Token
     GitHub PAT for GHCR authentication (or GITHUB_TOKEN from .env)
@@ -55,7 +55,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $Script:Config = @{
     ChartsDir   = "./src/charts"
-    PackageDir  = "./.build/charts"
+    PackageDir  = "./.build/chart"
     EnvFile     = "./.env"
     AliasPrefix = "easm-"
 }
@@ -211,20 +211,8 @@ function Invoke-HelmLogin {
         [Parameter(Mandatory=$true)][string]$Token,
         [Parameter(Mandatory=$true)][string]$HelmPath
     )
-
-    Write-ColorMessage "Logging in to $Registry..." -Type Info
-
-    # Validate token format
-    if (-not ($Token -match '^(ghp_|github_pat_)')) {
-        Write-ColorMessage "Warning: Token does not appear to be a valid GitHub token" -Type Warning
-        Write-ColorMessage "GitHub tokens should start with 'ghp_' or 'github_pat_'" -Type Info
-    }
-
     try {
-        # Use 'oauth2' as username for GHCR (this is the standard for GitHub Container Registry)
-        $username = 'oauth2'
-
-        $Token | & $HelmPath registry login $Registry --username $username --password-stdin 2>&1 | Out-Null
+        $Token | & $HelmPath registry login $Registry --username $env:USERNAME --password-stdin 2>&1 | Out-Null
         if ($LASTEXITCODE -ne 0) {
             throw "Helm login returned exit code $LASTEXITCODE"
         }
@@ -232,17 +220,7 @@ function Invoke-HelmLogin {
         return $true
     } catch {
         Write-ColorMessage "Failed to login to ${Registry}: $_" -Type Error
-        Write-Host ""
-        Write-Host "To create a GitHub Personal Access Token (Classic):" -ForegroundColor Yellow
-        Write-Host "  1. Go to: https://github.com/settings/tokens" -ForegroundColor Gray
-        Write-Host "  2. Click 'Generate new token' → 'Generate new token (classic)'" -ForegroundColor Gray
-        Write-Host "  3. Add a note (e.g., 'GHCR Push Access')" -ForegroundColor Gray
-        Write-Host "  4. Select scopes:" -ForegroundColor Gray
-        Write-Host "     ✓ write:packages (Upload packages to GitHub Package Registry)" -ForegroundColor Green
-        Write-Host "     ✓ read:packages (Download packages from GitHub Package Registry)" -ForegroundColor Green
-        Write-Host "  5. Click 'Generate token' and copy it" -ForegroundColor Gray
-        Write-Host "  6. Add to .env file: GITHUB_TOKEN=ghp_xxxxxxxxxxxx" -ForegroundColor Gray
-        Write-Host ""
+        Write-ColorMessage "Make sure your token has 'write:packages' scope" -Type Info
         return $false
     }
 }
@@ -269,7 +247,7 @@ function Invoke-ChartPush {
         [Parameter(Mandatory=$true)][string]$Owner,
         [Parameter(Mandatory=$true)][string]$HelmPath
     )
-    $ociUrl = "oci://${Registry}/${Owner}/charts"
+    $ociUrl = "oci://${Registry}/${Owner}"
     $output = & $HelmPath push $Package $ociUrl 2>&1
     if ($LASTEXITCODE -eq 0) {
         return @{ Success = $true; Output = $output }
@@ -317,8 +295,8 @@ function Show-Summary {
             $chartName = $result.Chart
             $chartVersion = $result.Version
             Write-Host "[$chartName]" -ForegroundColor Yellow
-            Write-Host "  helm pull oci://${Registry}/${Owner}/charts/${chartName} --version ${chartVersion}" -ForegroundColor Gray
-            Write-Host "  helm install ${chartName} oci://${Registry}/${Owner}/charts/${chartName} --version ${chartVersion}" -ForegroundColor Gray
+            Write-Host "  helm pull oci://${Registry}/${Owner}/${chartName} --version ${chartVersion}" -ForegroundColor Gray
+            Write-Host "  helm install ${chartName} oci://${Registry}/${Owner}/${chartName} --version ${chartVersion}" -ForegroundColor Gray
             Write-Host ""
         }
     }
@@ -358,7 +336,7 @@ try {
         $Registry = "ghcr.io"
     }
     if ([string]::IsNullOrEmpty($Owner)) {
-        $Owner = "secpodvn"
+        $Owner = "SecPod-Git"
     }
 
     # Load configuration from .env file
@@ -395,10 +373,6 @@ try {
         Write-ColorMessage "Registry: $Registry (default)" -Type Info
         Write-ColorMessage "Owner: $Owner (default)" -Type Info
     }
-
-    # GHCR requires lowercase owner names
-    $Owner = $Owner.ToLower()
-
     $chartMapping = Get-ChartMapping -ChartsDirectory $Script:Config.ChartsDir
     if ($chartMapping.Count -eq 0) {
         Write-ColorMessage "No Helm charts found in $($Script:Config.ChartsDir)" -Type Error
@@ -499,7 +473,7 @@ try {
                         Version  = $chartVersion
                         Package  = $chartPackage
                         Status   = "Pushed"
-                        Registry = "${Registry}/${Owner}/charts/${chartName}:${chartVersion}"
+                        Registry = "${Registry}/${Owner}/${chartName}:${chartVersion}"
                     })
                 } else {
                     Write-ColorMessage "Failed to push chart: $($pushResult.Error)" -Type Error

@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useLocation, NavLink } from "react-router-dom";
+import React, { useState } from 'react';
 import {
   Box,
   Drawer,
@@ -14,7 +13,7 @@ import {
   ListItemIcon,
   ListItemText,
   Collapse,
-} from "@mui/material";
+} from '@mui/material';
 import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
@@ -33,74 +32,71 @@ import {
   PriorityHigh as PriorityIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
-} from "@mui/icons-material";
+} from '@mui/icons-material';
 
 const drawerWidth = 240;
 const collapsedDrawerWidth = 72;
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
+  onNavigate?: (page: string) => void;
+  currentPage?: string;
 }
 
-const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const location = useLocation();
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({
+  children,
+  onNavigate,
+  currentPage: externalCurrentPage
+}) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [openAssets, setOpenAssets] = useState(true);
   const [openSecurity, setOpenSecurity] = useState(false);
   const [openJobs, setOpenJobs] = useState(false);
   const [openReports, setOpenReports] = useState(false);
+  const [internalCurrentPage, setInternalCurrentPage] = useState('overview');
+
+  const currentPage = externalCurrentPage || internalCurrentPage;
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  // Helper function to check if a path is active
-  const isActive = (path: string) => location.pathname === path;
+  const handleNavigation = (page: string) => {
+    if (onNavigate) {
+      onNavigate(page);
+    } else {
+      setInternalCurrentPage(page);
+    }
+  };
 
   const drawer = (
     <div>
-      <Toolbar
-        sx={{
-          bgcolor: "#1976d2",
-          color: "white",
-          py: 2,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            flex: 1,
-            justifyContent: collapsed ? "center" : "center",
-          }}
-        >
+      <Toolbar sx={{ bgcolor: '#1976d2', color: 'white', py: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, justifyContent: collapsed ? 'center' : 'center' }}>
           {collapsed ? (
             <Box
               component="img"
               src="/SecPod-Icon.svg"
               alt="SecPod"
-              sx={{ height: 32, width: 32, objectFit: "contain" }}
+              sx={{ height: 32, width: 32, objectFit: 'contain' }}
             />
           ) : (
             <Box
               component="img"
               src="/SecPod-Logo-Full-Light-Background.png"
               alt="SecPod Logo"
-              sx={{ height: 40, width: "auto", maxWidth: "90%", objectFit: "contain" }}
+              sx={{ height: 40, width: 'auto', maxWidth: '90%', objectFit: 'contain' }}
             />
           )}
         </Box>
         <IconButton
           onClick={() => setCollapsed(!collapsed)}
           sx={{
-            color: "white",
-            position: "absolute",
+            color: 'white',
+            position: 'absolute',
             right: 8,
-            "&:hover": { bgcolor: "rgba(255, 255, 255, 0.1)" },
+            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.1)' }
           }}
           size="small"
         >
@@ -112,13 +108,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <List sx={{ pt: 2 }}>
         <ListItem disablePadding>
           <ListItemButton
-            component={NavLink}
-            to="/dashboard"
-            selected={isActive("/dashboard")}
-            sx={{ justifyContent: collapsed ? "center" : "flex-start" }}
+            selected={currentPage === 'overview'}
+            onClick={() => handleNavigation('overview')}
+            sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}
           >
-            <ListItemIcon sx={{ minWidth: collapsed ? "unset" : 36, justifyContent: "center" }}>
-              <DashboardIcon color={isActive("/dashboard") ? "primary" : "inherit"} />
+            <ListItemIcon sx={{ minWidth: collapsed ? 'unset' : 36, justifyContent: 'center' }}>
+              <DashboardIcon color={currentPage === 'overview' ? 'primary' : 'inherit'} />
             </ListItemIcon>
             {!collapsed && <ListItemText primary="Overview" />}
           </ListItemButton>
@@ -129,12 +124,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       {/* Assets Section */}
       <List dense>
-        <ListItemButton
-          onClick={() => setOpenAssets(!openAssets)}
-          sx={{ justifyContent: collapsed ? "center" : "flex-start" }}
-        >
+        <ListItemButton onClick={() => setOpenAssets(!openAssets)} sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
           {collapsed ? (
-            <ListItemIcon sx={{ minWidth: "unset", justifyContent: "center" }}>
+            <ListItemIcon sx={{ minWidth: 'unset', justifyContent: 'center' }}>
               <InventoryIcon fontSize="small" />
             </ListItemIcon>
           ) : (
@@ -142,8 +134,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <ListItemText
                 primary="ASSETS"
                 primaryTypographyProps={{
-                  variant: "caption",
-                  sx: { fontWeight: 600, color: "text.secondary", textTransform: "uppercase" },
+                  variant: 'caption',
+                  sx: { fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase' }
                 }}
               />
               {openAssets ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
@@ -153,29 +145,30 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <Collapse in={openAssets && !collapsed} timeout="auto" unmountOnExit>
           <List component="div" disablePadding dense>
             <ListItemButton
-              component={NavLink}
-              to="/discovery/seeds"
               sx={{ pl: 3 }}
-              selected={isActive("/discovery/seeds")}
+              selected={currentPage === 'seed-config'}
+              onClick={() => handleNavigation('seed-config')}
             >
               <ListItemIcon sx={{ minWidth: 36 }}>
                 <ConfigIcon />
               </ListItemIcon>
               <ListItemText
                 primary="Seed Configuration"
-                primaryTypographyProps={{ variant: "body2" }}
+                primaryTypographyProps={{ variant: 'body2' }}
               />
             </ListItemButton>
             <ListItemButton
-              component={NavLink}
-              to="/assets"
               sx={{ pl: 3 }}
-              selected={isActive("/assets")}
+              selected={currentPage === 'asset-list'}
+              onClick={() => handleNavigation('asset-list')}
             >
               <ListItemIcon sx={{ minWidth: 36 }}>
                 <InventoryIcon />
               </ListItemIcon>
-              <ListItemText primary="Asset List" primaryTypographyProps={{ variant: "body2" }} />
+              <ListItemText
+                primary="Asset List"
+                primaryTypographyProps={{ variant: 'body2' }}
+              />
             </ListItemButton>
           </List>
         </Collapse>
@@ -183,12 +176,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       {/* Security & Risk Section */}
       <List dense>
-        <ListItemButton
-          onClick={() => setOpenSecurity(!openSecurity)}
-          sx={{ justifyContent: collapsed ? "center" : "flex-start" }}
-        >
+        <ListItemButton onClick={() => setOpenSecurity(!openSecurity)} sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
           {collapsed ? (
-            <ListItemIcon sx={{ minWidth: "unset", justifyContent: "center" }}>
+            <ListItemIcon sx={{ minWidth: 'unset', justifyContent: 'center' }}>
               <VulnIcon fontSize="small" />
             </ListItemIcon>
           ) : (
@@ -196,8 +186,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <ListItemText
                 primary="SECURITY & RISK"
                 primaryTypographyProps={{
-                  variant: "caption",
-                  sx: { fontWeight: 600, color: "text.secondary", textTransform: "uppercase" },
+                  variant: 'caption',
+                  sx: { fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase' }
                 }}
               />
               {openSecurity ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
@@ -207,17 +197,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <Collapse in={openSecurity && !collapsed} timeout="auto" unmountOnExit>
           <List component="div" disablePadding dense>
             <ListItemButton
-              component={NavLink}
-              to="/vulnerabilities"
               sx={{ pl: 3 }}
-              selected={isActive("/vulnerabilities")}
+              selected={currentPage === 'vulnerabilities'}
+              onClick={() => handleNavigation('vulnerabilities')}
             >
               <ListItemIcon sx={{ minWidth: 36 }}>
                 <VulnIcon />
               </ListItemIcon>
               <ListItemText
                 primary="Vulnerabilities"
-                primaryTypographyProps={{ variant: "body2" }}
+                primaryTypographyProps={{ variant: 'body2' }}
               />
             </ListItemButton>
             <ListItemButton sx={{ pl: 3 }}>
@@ -226,7 +215,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               </ListItemIcon>
               <ListItemText
                 primary="Risk Prioritization"
-                primaryTypographyProps={{ variant: "body2" }}
+                primaryTypographyProps={{ variant: 'body2' }}
               />
             </ListItemButton>
             <ListItemButton sx={{ pl: 3 }}>
@@ -235,7 +224,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               </ListItemIcon>
               <ListItemText
                 primary="Alerts & Monitoring"
-                primaryTypographyProps={{ variant: "body2" }}
+                primaryTypographyProps={{ variant: 'body2' }}
               />
             </ListItemButton>
           </List>
@@ -244,12 +233,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       {/* Job Management Section */}
       <List dense>
-        <ListItemButton
-          onClick={() => setOpenJobs(!openJobs)}
-          sx={{ justifyContent: collapsed ? "center" : "flex-start" }}
-        >
+        <ListItemButton onClick={() => setOpenJobs(!openJobs)} sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
           {collapsed ? (
-            <ListItemIcon sx={{ minWidth: "unset", justifyContent: "center" }}>
+            <ListItemIcon sx={{ minWidth: 'unset', justifyContent: 'center' }}>
               <JobIcon fontSize="small" />
             </ListItemIcon>
           ) : (
@@ -257,8 +243,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <ListItemText
                 primary="JOB MANAGEMENT"
                 primaryTypographyProps={{
-                  variant: "caption",
-                  sx: { fontWeight: 600, color: "text.secondary", textTransform: "uppercase" },
+                  variant: 'caption',
+                  sx: { fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase' }
                 }}
               />
               {openJobs ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
@@ -268,17 +254,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <Collapse in={openJobs && !collapsed} timeout="auto" unmountOnExit>
           <List component="div" disablePadding dense>
             <ListItemButton
-              component={NavLink}
-              to="/jobs"
               sx={{ pl: 3 }}
-              selected={isActive("/jobs")}
+              selected={currentPage === 'jobs'}
+              onClick={() => handleNavigation('jobs')}
             >
               <ListItemIcon sx={{ minWidth: 36 }}>
                 <ListIcon />
               </ListItemIcon>
               <ListItemText
                 primary="List & Actions"
-                primaryTypographyProps={{ variant: "body2" }}
+                primaryTypographyProps={{ variant: 'body2' }}
               />
             </ListItemButton>
           </List>
@@ -287,12 +272,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       {/* Reports & Compliance */}
       <List dense>
-        <ListItemButton
-          onClick={() => setOpenReports(!openReports)}
-          sx={{ justifyContent: collapsed ? "center" : "flex-start" }}
-        >
+        <ListItemButton onClick={() => setOpenReports(!openReports)} sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
           {collapsed ? (
-            <ListItemIcon sx={{ minWidth: "unset", justifyContent: "center" }}>
+            <ListItemIcon sx={{ minWidth: 'unset', justifyContent: 'center' }}>
               <ReportIcon fontSize="small" />
             </ListItemIcon>
           ) : (
@@ -300,8 +282,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <ListItemText
                 primary="REPORTS & COMPLIANCE"
                 primaryTypographyProps={{
-                  variant: "caption",
-                  sx: { fontWeight: 600, color: "text.secondary", textTransform: "uppercase" },
+                  variant: 'caption',
+                  sx: { fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase' }
                 }}
               />
               {openReports ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
@@ -311,24 +293,26 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <Collapse in={openReports && !collapsed} timeout="auto" unmountOnExit>
           <List component="div" disablePadding dense>
             <ListItemButton
-              component={NavLink}
-              to="/reports"
               sx={{ pl: 3 }}
-              selected={isActive("/reports")}
+              selected={currentPage === 'reports'}
+              onClick={() => handleNavigation('reports')}
             >
               <ListItemIcon sx={{ minWidth: 36 }}>
                 <ReportIcon />
               </ListItemIcon>
               <ListItemText
                 primary="Report Builder"
-                primaryTypographyProps={{ variant: "body2" }}
+                primaryTypographyProps={{ variant: 'body2' }}
               />
             </ListItemButton>
             <ListItemButton sx={{ pl: 3 }}>
               <ListItemIcon sx={{ minWidth: 36 }}>
                 <AssessmentIcon />
               </ListItemIcon>
-              <ListItemText primary="Compliance" primaryTypographyProps={{ variant: "body2" }} />
+              <ListItemText
+                primary="Compliance"
+                primaryTypographyProps={{ variant: 'body2' }}
+              />
             </ListItemButton>
           </List>
         </Collapse>
@@ -340,12 +324,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <List dense>
         <ListItem disablePadding>
           <ListItemButton
-            component={NavLink}
-            to="/settings"
-            selected={isActive("/settings")}
-            sx={{ justifyContent: collapsed ? "center" : "flex-start" }}
+            selected={currentPage === 'settings'}
+            onClick={() => handleNavigation('settings')}
+            sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}
           >
-            <ListItemIcon sx={{ minWidth: collapsed ? "unset" : 36, justifyContent: "center" }}>
+            <ListItemIcon sx={{ minWidth: collapsed ? 'unset' : 36, justifyContent: 'center' }}>
               <SettingsIcon />
             </ListItemIcon>
             {!collapsed && <ListItemText primary="Settings" />}
@@ -354,20 +337,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       </List>
 
       {/* Help & Support - Fixed at bottom */}
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: 0,
-          width: "100%",
-          borderTop: 1,
-          borderColor: "divider",
-          bgcolor: "background.paper",
-        }}
-      >
+      <Box sx={{ position: 'absolute', bottom: 0, width: '100%', borderTop: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
         <List dense>
           <ListItem disablePadding>
-            <ListItemButton sx={{ justifyContent: collapsed ? "center" : "flex-start" }}>
-              <ListItemIcon sx={{ minWidth: collapsed ? "unset" : 36, justifyContent: "center" }}>
+            <ListItemButton sx={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
+              <ListItemIcon sx={{ minWidth: collapsed ? 'unset' : 36, justifyContent: 'center' }}>
                 <HelpIcon />
               </ListItemIcon>
               {!collapsed && <ListItemText primary="Help & Support" />}
@@ -379,18 +353,18 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   );
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <AppBar
         position="fixed"
         elevation={0}
         sx={{
           width: { sm: `calc(100% - ${collapsed ? collapsedDrawerWidth : drawerWidth}px)` },
           ml: { sm: `${collapsed ? collapsedDrawerWidth : drawerWidth}px` },
-          bgcolor: "background.paper",
-          color: "text.primary",
-          borderBottom: "1px solid",
-          borderColor: "divider",
-          transition: "width 0.2s, margin-left 0.2s",
+          bgcolor: 'background.paper',
+          color: 'text.primary',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          transition: 'width 0.2s, margin-left 0.2s',
         }}
       >
         <Toolbar sx={{ minHeight: 64 }}>
@@ -399,16 +373,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
+            sx={{ mr: 2, display: { sm: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ color: "text.primary", fontWeight: 600 }}
-          >
+          <Typography variant="h6" noWrap component="div" sx={{ color: 'text.primary', fontWeight: 600 }}>
             EASM Platform
           </Typography>
         </Toolbar>
@@ -418,7 +387,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         sx={{
           width: { sm: collapsed ? collapsedDrawerWidth : drawerWidth },
           flexShrink: { sm: 0 },
-          transition: "width 0.2s",
+          transition: 'width 0.2s',
         }}
       >
         <Drawer
@@ -429,8 +398,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             keepMounted: true,
           }}
           sx={{
-            display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
+            display: { xs: 'block', sm: 'none' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
           }}
         >
           {drawer}
@@ -438,12 +407,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: "none", sm: "block" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
+            display: { xs: 'none', sm: 'block' },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
               width: collapsed ? collapsedDrawerWidth : drawerWidth,
-              transition: "width 0.2s",
-              overflowX: "hidden",
+              transition: 'width 0.2s',
+              overflowX: 'hidden',
             },
           }}
           open
@@ -457,9 +426,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           flexGrow: 1,
           p: 3,
           width: { sm: `calc(100% - ${collapsed ? collapsedDrawerWidth : drawerWidth}px)` },
-          bgcolor: "background.default",
-          minHeight: "100vh",
-          transition: "width 0.2s",
+          bgcolor: 'background.default',
+          minHeight: '100vh',
+          transition: 'width 0.2s',
         }}
       >
         <Toolbar />

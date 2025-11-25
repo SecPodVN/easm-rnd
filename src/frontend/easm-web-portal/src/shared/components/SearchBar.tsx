@@ -1,5 +1,6 @@
-import { TextField, InputAdornment } from "@mui/material";
-import { Search as SearchIcon } from "@mui/icons-material";
+import React from 'react';
+import { TextField, InputAdornment } from '@mui/material';
+import { Search as SearchIcon } from '@mui/icons-material';
 
 interface SearchBarProps {
   placeholder?: string;
@@ -9,10 +10,10 @@ interface SearchBarProps {
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
-  placeholder = "Search...",
+  placeholder = 'Search...',
   value,
   onChange,
-  fullWidth = false,
+  fullWidth = false
 }) => {
   return (
     <TextField
@@ -29,9 +30,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
         ),
       }}
       sx={{
-        minWidth: fullWidth ? "100%" : 300,
-        "& .MuiOutlinedInput-root": {
-          bgcolor: "background.paper",
+        minWidth: fullWidth ? '100%' : 300,
+        '& .MuiOutlinedInput-root': {
+          bgcolor: 'background.paper',
         },
       }}
     />

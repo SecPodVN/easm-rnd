@@ -83,24 +83,24 @@ frontend/
 
 ```bash
 cd easm-web-portal
-pnpm install
-pnpm start
+npm install
+npm start
 ```
 
 ### Working on easm-web-admin
 
 ```bash
 cd easm-web-admin
-pnpm install
-pnpm start
+npm install
+npm start
 ```
 
 ### Working on easm-react
 
 ```bash
 cd easm-react
-pnpm install
-pnpm run dev  # Watch mode for development
+npm install
+npm run dev  # Watch mode for development
 ```
 
 ## Shared Components Strategy
@@ -159,19 +159,19 @@ Applications can reference `easm-react` using:
 
 ```bash
 # From frontend directory
-cd EASM-ui-core && pnpm run build && cd ..
-cd EASM-portal && pnpm run build && cd ..
-cd EASM-admin && pnpm run build && cd ..
+cd EASM-ui-core && npm run build && cd ..
+cd EASM-portal && npm run build && cd ..
+cd EASM-admin && npm run build && cd ..
 ```
 
 ### Build Individual Applications
 
 ```bash
 # Portal only
-cd EASM-portal && pnpm run build
+cd EASM-portal && npm run build
 
 # Admin only
-cd EASM-admin && pnpm run build
+cd EASM-admin && npm run build
 ```
 
 ## Tech Stack

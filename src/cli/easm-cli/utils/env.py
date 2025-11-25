@@ -8,7 +8,9 @@ from typing import Dict, Optional
 
 def get_project_root() -> Path:
     """Get project root directory"""
-    return Path(__file__).parent.parent.parent
+    # From src/cli/easm-cli/utils/env.py, go up to project root
+    # utils -> easm-cli -> cli -> src -> root
+    return Path(__file__).parent.parent.parent.parent.parent
 
 
 def load_env_file(env_file: Optional[Path] = None) -> Dict[str, str]:

@@ -2,7 +2,6 @@
   "name": "@easm/ui-core",
   "version": "1.0.0",
   "description": "Shared UI components and utilities for EASM applications",
-  "packageManager": "pnpm@10.23.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {

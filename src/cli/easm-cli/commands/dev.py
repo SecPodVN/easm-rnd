@@ -129,19 +129,19 @@ def start_k8s(watch: bool = False):
         print_info("Starting Skaffold in auto-watch mode...")
         if sys.platform == 'win32':
             script = root / 'skaffold.ps1'
-            subprocess.run(['powershell', '-File', str(script)], input=b'6\n')
+            subprocess.run(['powershell', '-File', str(script)], input=b'6\n', cwd=root)
         else:
             script = root / 'skaffold.sh'
-            subprocess.run([str(script)], input=b'6\n')
+            subprocess.run([str(script)], input=b'6\n', cwd=root)
     else:
         # Run development mode (option 1)
         print_info("Starting Skaffold in development mode...")
         if sys.platform == 'win32':
             script = root / 'skaffold.ps1'
-            subprocess.run(['powershell', '-File', str(script)], input=b'1\n')
+            subprocess.run(['powershell', '-File', str(script)], input=b'1\n', cwd=root)
         else:
             script = root / 'skaffold.sh'
-            subprocess.run([str(script)], input=b'1\n')
+            subprocess.run([str(script)], input=b'1\n', cwd=root)
 
     return 0
 

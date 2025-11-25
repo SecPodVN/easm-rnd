@@ -98,7 +98,7 @@ frontend/
 | **Infra**       | Minikube   | 1.35+   | Local       | Local Kubernetes cluster for development and testing           |
 | **Infra**       | Skaffold   | 2.16+   | Local, Dev  | Command-line tool for continuous development on Kubernetes     |
 | **Infra**       | Helm       | 3.19+   | All         | Package manager for Kubernetes applications                    |
-| **Backend**     | Python     | 3.13+   | All         | Python runtime for backend services                            |
+| **Backend**     | Python     | 3.14+   | All         | Python runtime for backend services                            |
 | **Backend**     | Django     | 5.2+    | All         | High-level Python web framework (LTS)                          |
 | **Backend**     | Poetry     | 2.2+    | All         | Python dependency management and packaging tool                |
 | **Backend**     | PostgreSQL | 18+     | All         | Advanced open-source relational database                       |
@@ -155,8 +155,8 @@ poetry run python manage.py createsuperuser
 
 # Frontend setup (new terminal)
 cd src/frontend
-pnpm install
-pnpm dev
+pnpm install  # or yarn install
+pnpm dev      # or yarn dev
 ```
 
 ### Local Development with Minikube & Skaffold
@@ -307,11 +307,11 @@ poetry run pytest --cov=apps
 
 # Frontend tests
 cd src/frontend
-pnpm test
-pnpm test:coverage
+pnpm test              # or yarn test
+pnpm test:coverage     # or yarn test:coverage
 
 # E2E tests
-pnpm test:e2e
+pnpm test:e2e         # or yarn test:e2e
 ```
 
 ## 📊 Monitoring

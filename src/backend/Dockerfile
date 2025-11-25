@@ -1,7 +1,7 @@
-# Python 3.13.7 - Latest stable version
-FROM python:3.13.7
-# Force rebuild - Updated 2025-11-24 for Python 3.13.7, Django 5.2 LTS, Redis 8+
-ARG REBUILD=2025-11-24-03:00
+# Python 3.13 - Latest stable version (3.14 is still in beta/RC)
+FROM python:3.13-slim
+# Force rebuild - Updated 2025-11-24 for Python 3.13, Django 5.2 LTS, Redis 8+
+ARG REBUILD=2025-11-24-14:00
 
 # Security: Add labels for metadata
 LABEL maintainer="thinh.huynh@secpod.com" \

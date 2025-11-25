@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "EASM Admin Portal - Administrative interface for EASM platform",
   "private": true,
-  "packageManager": "pnpm@10.23.0",
   "dependencies": {
     "@easm/ui-core": "file:../EASM-ui-core",
     "@mui/material": "^5.15.0",

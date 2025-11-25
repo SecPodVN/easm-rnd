@@ -269,7 +269,7 @@ poetry run python manage.py makemigrations myapp
 
 # Recommended Project Structure for EASM
 
-
+```
 src/backend/easm/
 ├── config/                         # Project configuration
 │   ├── settings/
@@ -378,3 +378,4 @@ src/backend/easm/
     │   └── test_models/
     └── integration/
         └── test_api/
+```
